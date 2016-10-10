@@ -14,7 +14,7 @@ use UI\Combo;
 use UI\EditableCombo;
 use UI\Radio;
 
-$window = new UI\Window("libui Control Gallery", 640, 480);
+$window = new UI\Window("libui Control Gallery", 640, 480, true);
 
 $window->setMargin(true);
 
@@ -34,7 +34,7 @@ $tab->append("Basic Controls", (function(){
 	$group = new Group("Entries");
 	$group->setMargins(true);
 
-	$vbox->append($group);
+	$vbox->append($group, true);
 
 	$entryForm = new Form();
 	$entryForm->setPadded(true);
