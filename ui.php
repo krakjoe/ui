@@ -35,6 +35,7 @@ $button = new Button("OK");
 $button->onClick(function() use($user, $pass){
 	var_dump($user->getText(), $pass->getText());
 });
+$button->disable();
 
 $box->append($button);
 
