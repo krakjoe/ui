@@ -32,6 +32,7 @@
 #include <classes/window.h>
 #include <classes/control.h>
 #include <classes/tab.h>
+#include <classes/form.h>
 #include <classes/box.h>
 #include <classes/check.h>
 #include <classes/button.h>
@@ -72,6 +73,7 @@ PHP_MINIT_FUNCTION(ui)
 
 	PHP_MINIT(UI_Window)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Control)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Form)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Tab)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Box)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Check)(INIT_FUNC_ARGS_PASSTHRU);

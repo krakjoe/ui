@@ -1,108 +1,116 @@
 <?php
 use UI\Window;
-use UI\Button;
+use UI\Tab;
 use UI\Box;
-use UI\Label;
+use UI\Group;
+use UI\Form;
+use UI\Button;
 use UI\Entry;
+use UI\Multi;
 use UI\Spin;
 use UI\Slider;
 use UI\Progress;
-use UI\Separator;
 use UI\Combo;
 use UI\EditableCombo;
 use UI\Radio;
-use UI\Picker;
-use UI\Menu;
 
-$window = new Window("PHP-GTK is not dead", 480, 240);
+$window = new UI\Window("libui Control Gallery", 640, 480);
 
-$box = new UI\Box(UI\Box::VERTICAL);
+$window->setMargin(true);
 
-$box->append(new Label("Username:"));
+$tab = new Tab();
 
-$user = new Entry();
+$window->add($tab);
 
-$box->append($user);
+$tab->append("Basic Controls", (function(){
+	$vbox = new Box(BOX::VERTICAL);
+	$vbox->setPadded(true);
 
-$box->append(new Label("Password:"));
+	$hbox = new Box(BOX::HORIZONTAL);
+	$hbox->setPadded(true);
 
-$pass = new Entry(ENTRY::PASSWORD);
+	$vbox->append($hbox);
 
-$box->append($pass);
+	$group = new Group("Entries");
+	$group->setMargins(true);
 
-$button = new Button("OK");
+	$vbox->append($group);
 
-$button->onClick(function() use($user, $pass){
-	var_dump($user->getText(), $pass->getText());
-});
-$button->disable();
+	$entryForm = new Form();
+	$entryForm->setPadded(true);
 
-$box->append($button);
+	$entryForm->append("Entry", new Entry(ENTRY::NORMAL), false);
+	$entryForm->append("Password Entry", new Entry(ENTRY::PASSWORD), false);
+	$entryForm->append("Search Entry", new Entry(ENTRY::SEARCH), false);
+	$entryForm->append("Multiline Entry", new Multi(MULTI::WRAP), true);
+	$entryForm->append("Multiline Entry Without Wrapping", new Multi(MULTI::NOWRAP), true);
 
-$spin = new Spin(0, 100);
+	$group->add($entryForm);
 
-$spin->setValue(50);
+	return $vbox;
+})());
 
-$spin->onChange(function() use($spin) {
-	var_dump($spin->getValue());
-});
+$tab->append("Numbers and Lists", (function(){
+	$hbox = new Box(BOX::HORIZONTAL);
+	$hbox->setPadded(true);
 
-$box->append($spin);
+	$group = new Group("Numbers");
+	$group->setMargins(true);
+	
+	$hbox->append($group, true);
 
-$box->append(new Separator(SEPARATOR::HORIZONTAL));
+	$vbox = new Box(BOX::VERTICAL);
+	$vbox->setPadded(true);
 
-$progress = new Progress();
+	$group->add($vbox);
+	
+	$spin = new Spin(0, 100);
+//	$spin->onChange(function(){
+//
+//	});
+	$slider = new Slider(0, 100);
+//	$slider->onChange(function(){
+//
+//	});	
+	$progress = new Progress();
+	$vbox->append($spin);
+	$vbox->append($slider);
+	$vbox->append($progress);
+	
+	$ip = new Progress();
+	$ip->setValue(-1);
+	$vbox->append($ip);
 
-$progress->setValue(50);
+	$group = new Group("Lists");
+	$group->setMargins(true);
+	$hbox->append($group);
+	
+	$vbox = new Box(BOX::VERTICAL);
+	$vbox->setPadded(true);
+	$group->add($vbox);
 
-$box->append($progress);
+	$combo = new Combo();
+	$combo->append("Item 1");
+	$combo->append("Item 2");
+	$combo->append("Item 3");
+	$vbox->append($combo);
 
-$slider = new Slider(0, 100);
+	$ecombo = new EditableCombo();
+	$ecombo->append("Editable Item 1");
+	$ecombo->append("Editable Item 2");
+	$ecombo->append("Editable Item 3");
+	$vbox->append($ecombo);
 
-$slider->setValue(50);
+	$radio = new Radio();
+	$radio->append("Radio Button 1");
+	$radio->append("Radio Button 2");
+	$radio->append("Radio Button 3");
+	$vbox->append($radio);
+	
+	return $hbox;
+})());
 
-$slider->onChange(function() use($slider, $progress) {
-	var_dump($slider->getValue());
-	$progress->setValue($slider->getValue());
-});
-
-$box->append($slider);
-
-$combo = new Combo();
-$combo->append("Oranges");
-$combo->append("Apples");
-$combo->onSelected(function() use($combo) {
-	var_dump($combo->getSelected());
-});
-
-$box->append($combo);
-
-$ecombo = new EditableCombo();
-$ecombo->append("Oranges");
-$ecombo->append("Apples");
-$ecombo->onChange(function() use($ecombo) {
-	var_dump($ecombo->getText());
-});
-
-$box->append($ecombo);
-
-$radio = new Radio();
-$radio->append("Oranges");
-$radio->append("Apples");
-$radio->onSelected(function() use($radio) {
-	var_dump($radio->getSelected());
-});
-
-$box->append($radio);
-
-$picker = new Picker(PICKER::DATE);
-
-$box->append($picker);
-
-$window->add($box);
-
-$file = new UI\Menu("File");
-$file->append("Open");
+$tab->setMargin(0, true);
 
 $window->show();
 

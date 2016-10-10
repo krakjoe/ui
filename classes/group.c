@@ -136,7 +136,7 @@ PHP_METHOD(Group, add)
 	zval *control = NULL;
 	php_ui_control_t *ctrl;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &ctrl, uiControl_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &control, uiControl_ce) != SUCCESS) {
 		return;
 	}
 
