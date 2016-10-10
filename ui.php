@@ -65,14 +65,18 @@ $tab->append("Numbers and Lists", (function(){
 	$group->add($vbox);
 	
 	$spin = new Spin(0, 100);
-//	$spin->onChange(function(){
-//
-//	});
 	$slider = new Slider(0, 100);
-//	$slider->onChange(function(){
-//
-//	});	
 	$progress = new Progress();
+
+	$spin->onChange(function() use ($slider, $spin, $progress) {
+		$slider->setValue($spin->getValue());
+		$progress->setValue($spin->getValue());
+	});
+	$slider->onChange(function() use($slider, $spin, $progress) {
+		$spin->setValue($slider->getValue());
+		$progress->setValue($slider->getValue());
+	});	
+
 	$vbox->append($spin);
 	$vbox->append($slider);
 	$vbox->append($progress);
