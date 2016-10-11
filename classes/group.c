@@ -89,28 +89,28 @@ PHP_METHOD(Group, getTitle)
 	RETURN_STRING(uiGroupTitle(group->g));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_group_set_margins_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, margins, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_group_set_margin_info, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, margin, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Group::setMargins(bool margins) */
-PHP_METHOD(Group, setMargins) 
+/* {{{ proto void Group::setMargin(bool margin) */
+PHP_METHOD(Group, setMargin) 
 {
 	php_ui_group_t *group = php_ui_group_fetch(getThis());
-	zend_bool margins = 0;
+	zend_bool margin = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "b", &margins) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "b", &margin) != SUCCESS) {
 		return;
 	}
 
-	uiGroupSetMargined(group->g, (int) margins);
+	uiGroupSetMargined(group->g, (int) margin);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_has_margins_info, 0, 0, _IS_BOOL, NULL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_has_margin_info, 0, 0, _IS_BOOL, NULL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto bool Group::hasMargins(void) */
-PHP_METHOD(Group, hasMargins) 
+/* {{{ proto bool Group::hasMargin(void) */
+PHP_METHOD(Group, hasMargin) 
 {
 	php_ui_group_t *group = php_ui_group_fetch(getThis());
 
@@ -150,8 +150,8 @@ const zend_function_entry php_ui_group_methods[] = {
 	PHP_ME(Group, __construct,  php_ui_group_construct_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Group, setTitle,     php_ui_group_set_title_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Group, getTitle,     php_ui_group_get_title_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(Group, setMargins,   php_ui_group_set_margins_info, ZEND_ACC_PUBLIC)
-	PHP_ME(Group, hasMargins,   php_ui_group_has_margins_info, ZEND_ACC_PUBLIC)
+	PHP_ME(Group, setMargin,    php_ui_group_set_margin_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(Group, hasMargin,    php_ui_group_has_margin_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Group, add,          php_ui_group_add_info,         ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */

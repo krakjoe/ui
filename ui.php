@@ -42,7 +42,7 @@ $basicControlsVbox->append(
 $basicControlsVbox->append(new Separator(SEPARATOR::HORIZONTAL));
 
 $entriesGroup = new Group("Entries");
-$entriesGroup->setMargins(true);
+$entriesGroup->setMargin(true);
 
 $basicControlsVbox->append($entriesGroup, true);
 
@@ -63,7 +63,7 @@ $numbersHbox = new Box(BOX::HORIZONTAL);
 $numbersHbox->setPadded(true);
 
 $numbersGroup = new Group("Numbers");
-$numbersGroup->setMargins(true);
+$numbersGroup->setMargin(true);
 
 $numbersHbox->append($numbersGroup, true);
 
@@ -94,7 +94,7 @@ $ip->setValue(-1);
 $numbersVbox->append($ip);
 
 $listsGroup = new Group("Lists");
-$listsGroup->setMargins(true);
+$listsGroup->setMargin(true);
 $numbersHbox->append($listsGroup);
 
 $otherBox = new Box(BOX::VERTICAL);
