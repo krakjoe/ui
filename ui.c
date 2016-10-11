@@ -52,6 +52,39 @@
 #include <classes/menu.h>
 #include <classes/item.h>
 
+/* {{{ */
+typedef struct _php_ui_event_t {
+	uiControl *ctrl;
+	zend_object std;
+	zval handler;
+} php_ui_event_t;
+
+void php_ui_event_handler(void *u, void *_event) {
+	php_ui_event_t *event = (php_ui_event_t*) _event;
+
+	if (Z_TYPE(event->handler) != IS_UNDEF) {
+		zval rv;
+		zend_fcall_info fci = empty_fcall_info;
+		zend_fcall_info_cache fcc = empty_fcall_info_cache;
+
+		if (zend_fcall_info_init(&event->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
+			return;
+		}
+
+		fci.retval = &rv;
+
+		ZVAL_UNDEF(&rv);
+
+		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+			return;
+		}
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
+} /* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ui)

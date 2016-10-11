@@ -26,6 +26,10 @@
 
 zend_object_handlers php_ui_check_handlers;
 
+extern void php_ui_event_handler(void *, void *);
+
+typedef void (*php_ui_check_on_toggle_handler)(uiCheckbox *, void *);
+
 zend_object* php_ui_check_create(zend_class_entry *ce) {
 	php_ui_check_t *check = 
 		(php_ui_check_t*) ecalloc(1, sizeof(php_ui_check_t));
@@ -51,34 +55,6 @@ void php_ui_check_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
-void php_ui_check_on_toggle(uiCheckbox *u, void *_check) {
-	php_ui_check_t *check = (php_ui_check_t*) _check;
-
-	if (Z_TYPE(check->handler) != IS_UNDEF) {
-		zval rv;
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-		zend_string *cn = NULL;
-		char *er = NULL;
-
-		if (zend_fcall_info_init(&check->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, &cn, &er) != SUCCESS) {
-			return;
-		}
-
-		fci.retval = &rv;
-
-		ZVAL_UNDEF(&rv);
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-	}
-}
-
 ZEND_BEGIN_ARG_INFO_EX(php_ui_check_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -95,7 +71,7 @@ PHP_METHOD(Check, __construct)
 
 	check->c = uiNewCheckbox(ZSTR_VAL(text));
 
-	uiCheckboxOnToggled(check->c, php_ui_check_on_toggle, check);
+	uiCheckboxOnToggled(check->c, (php_ui_check_on_toggle_handler) php_ui_event_handler, check);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_check_set_text_info, 0, 0, 1)

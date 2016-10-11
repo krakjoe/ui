@@ -140,7 +140,13 @@ $openEntry  = new Entry();
 $openEntry->setReadOnly(true);
 
 $openButton->onClick(function() use($openEntry, $window) {
-	$openEntry->setText($window->open());
+	$openFile = $window->open();
+
+	if (!$openFile) {
+		return;
+	}
+
+	$openEntry->setText($openFile);
 });
 
 $filesGrid->append($openButton, 0, 0, 1, 1, 
@@ -153,7 +159,13 @@ $saveEntry = new Entry();
 $saveEntry->setReadOnly(true);
 
 $saveButton->onClick(function() use($saveEntry, $window) {
-	$saveEntry->setText($window->save());
+	$saveFile = $window->save();
+
+	if (!$saveFile) {
+		return;
+	}
+
+	$saveEntry->setText($saveFile);
 });
 
 $filesGrid->append($saveButton, 0, 1, 1, 1,

@@ -374,7 +374,7 @@ PHP_METHOD(Window, error)
 	uiMsgBoxError(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 0)	
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 1)	
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Window::open(void) */
@@ -387,20 +387,32 @@ PHP_METHOD(Window, open)
 		return;
 	}
 
-	RETURN_STRING(uiOpenFile(win->w));
+	open = uiOpenFile(win->w);
+
+	if (!open) {
+		return;
+	}
+
+	RETURN_STRING(open);
 } /* }}} */
 
 /* {{{ proto string Window::save(void) */
 PHP_METHOD(Window, save) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	char *open = NULL;
+	char *save = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	RETURN_STRING(uiSaveFile(win->w));
+	save = uiSaveFile(win->w);
+
+	if (!save) {
+		return;
+	}
+
+	RETURN_STRING(save);
 } /* }}} */
 
 /* {{{ */

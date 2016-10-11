@@ -26,6 +26,10 @@
 
 zend_object_handlers php_ui_spin_handlers;
 
+extern void php_ui_event_handler(void *, void *);
+
+typedef void (*php_ui_spin_on_change_handler)(uiSpinbox *, void *);
+
 zend_object* php_ui_spin_create(zend_class_entry *ce) {
 	php_ui_spin_t *spin = 
 		(php_ui_spin_t*) ecalloc(1, sizeof(php_ui_spin_t));
@@ -51,34 +55,6 @@ void php_ui_spin_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
-void php_ui_spin_on_change(uiSpinbox *u, void *_spin) {
-	php_ui_spin_t *spin = (php_ui_spin_t*) _spin;
-
-	if (Z_TYPE(spin->handler) != IS_UNDEF) {
-		zval rv;
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-		zend_string *cn = NULL;
-		char *er = NULL;
-
-		if (zend_fcall_info_init(&spin->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, &cn, &er) != SUCCESS) {
-			return;
-		}
-
-		fci.retval = &rv;
-
-		ZVAL_UNDEF(&rv);
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-	}
-}
-
 ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_construct_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, min, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, max, IS_LONG, 0)
@@ -96,7 +72,7 @@ PHP_METHOD(Spin, __construct)
 
 	spin->s = uiNewSpinbox((int) min, (int) max);
 
-	uiSpinboxOnChanged(spin->s, php_ui_spin_on_change, spin);
+	uiSpinboxOnChanged(spin->s, (php_ui_spin_on_change_handler) php_ui_event_handler, spin);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_set_value_info, 0, 0, 1)

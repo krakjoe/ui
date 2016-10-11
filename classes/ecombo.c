@@ -26,6 +26,10 @@
 
 zend_object_handlers php_ui_ecombo_handlers;
 
+extern void php_ui_event_handler(void *, void *);
+
+typedef void (*php_ui_ecombo_on_change_handler)(uiEditableCombobox *, void *);
+
 zend_object* php_ui_ecombo_create(zend_class_entry *ce) {
 	php_ui_ecombo_t *ecombo = 
 		(php_ui_ecombo_t*) ecalloc(1, sizeof(php_ui_ecombo_t));
@@ -51,34 +55,6 @@ void php_ui_ecombo_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
-void php_ui_ecombo_on_change(uiEditableCombobox *u, void *_ecombo) {
-	php_ui_ecombo_t *ecombo = (php_ui_ecombo_t*) _ecombo;
-
-	if (Z_TYPE(ecombo->handler) != IS_UNDEF) {
-		zval rv;
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-		zend_string *cn = NULL;
-		char *er = NULL;
-
-		if (zend_fcall_info_init(&ecombo->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, &cn, &er) != SUCCESS) {
-			return;
-		}
-
-		fci.retval = &rv;
-
-		ZVAL_UNDEF(&rv);
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-	}
-}
-
 ZEND_BEGIN_ARG_INFO_EX(php_ui_ecombo_construct_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -93,7 +69,7 @@ PHP_METHOD(EditableCombo, __construct)
 
 	ecombo->c = uiNewEditableCombobox();
 
-	uiEditableComboboxOnChanged(ecombo->c, php_ui_ecombo_on_change, ecombo);
+	uiEditableComboboxOnChanged(ecombo->c, (php_ui_ecombo_on_change_handler) php_ui_event_handler, ecombo);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_ecombo_set_text_info, 0, 0, 1)
