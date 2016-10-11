@@ -65,6 +65,7 @@ void php_ui_event_handler(void *u, void *_event) {
 
 	if (Z_TYPE(event->handler) != IS_UNDEF) {
 		zval rv;
+		zval arg;
 		zend_fcall_info fci = empty_fcall_info;
 		zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
@@ -72,9 +73,11 @@ void php_ui_event_handler(void *u, void *_event) {
 			return;
 		}
 
-		fci.retval = &rv;
-
+		ZVAL_OBJ(&arg, &event->std);
 		ZVAL_UNDEF(&rv);
+
+		zend_fcall_info_argn(&fci, 1, &arg);
+		fci.retval = &rv;
 
 		if (zend_call_function(&fci, &fcc) != SUCCESS) {
 			return;
@@ -83,6 +86,8 @@ void php_ui_event_handler(void *u, void *_event) {
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
 		}
+
+		zend_fcall_info_args_clear(&fci, 1);
 	}
 } /* }}} */
 

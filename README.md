@@ -8,7 +8,6 @@ TODO
 ====
 
   - make sense of menus
-  - make all handlers pass current control
   - make pthreads friendly
   - make other people test stuff
   - make onClosing/onQuit tidy
