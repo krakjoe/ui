@@ -19,6 +19,8 @@ use UI\Check;
 use UI\Label;
 use UI\Separator;
 
+use UI\ColorButton;
+
 $window = new UI\Window("libui Control Gallery", 640, 480, true);
 
 $window->setMargin(true);
@@ -132,6 +134,7 @@ $dataHbox->append($dataVbox);
 $dataVbox->append(new Picker(PICKER::DATE));
 $dataVbox->append(new Picker(PICKER::TIME));
 $dataVbox->append(new Picker(PICKER::DATETIME));
+$dataVbox->append(new ColorButton());
 
 $dataHbox->append(new Separator(SEPARATOR::VERTICAL));	
 
