@@ -168,7 +168,7 @@ $tab->append("Data Choosers", (function() use($window) {
 	$msggrid->setPadded(true);
 	$grid->append($msggrid, 0, 2, 2, 1,
 		false, GRID::CENTER, false, GRID::START);
-	
+
 	$mbutton = new Button("Message Box");
 	//$mbutton->onClick();
 	$msggrid->append($mbutton, 0, 0, 1, 1,
