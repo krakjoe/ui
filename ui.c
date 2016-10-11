@@ -98,6 +98,8 @@ PHP_MINIT_FUNCTION(ui)
 	initError = uiInit(&options);
 
 	if (initError) {
+		zend_error(E_ERROR,
+			"Cannot initialize libui: %s", initError);
 		uiFreeInitError(initError);
 
 		return FAILURE;
