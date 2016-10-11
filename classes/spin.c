@@ -96,7 +96,6 @@ PHP_METHOD(Spin, __construct)
 
 	spin->s = uiNewSpinbox((int) min, (int) max);
 
-	//_UI_EXTERN void uiSpinboxOnChanged(uiSpinbox *s, void (*f)(uiSpinbox *s, void *data), void *data);
 	uiSpinboxOnChanged(spin->s, php_ui_spin_on_change, spin);
 } /* }}} */
 
