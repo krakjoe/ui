@@ -116,12 +116,12 @@ PHP_METHOD(ColorButton, getColor)
 	add_next_index_double(return_value, a);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_on_changed_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_on_change_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void ColorButton::onChanged(callable handler) */
-PHP_METHOD(ColorButton, onChanged)
+/* {{{ proto void ColorButton::onChange(callable handler) */
+PHP_METHOD(ColorButton, onChange)
 {
 	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
 	zval *handler = NULL;
@@ -142,7 +142,7 @@ const zend_function_entry php_ui_cbutton_methods[] = {
 	PHP_ME(ColorButton, __construct,    php_ui_cbutton_construct_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, setColor,	    php_ui_cbutton_set_color_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, getColor,	    php_ui_cbutton_get_color_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(ColorButton, onChanged,      php_ui_cbutton_on_changed_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(ColorButton, onChange,      php_ui_cbutton_on_change_info,  ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

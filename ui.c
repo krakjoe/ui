@@ -53,6 +53,8 @@
 #include <classes/menu.h>
 #include <classes/item.h>
 
+#include <classes/area.h>
+
 /* {{{ */
 typedef struct _php_ui_event_t {
 	uiControl *ctrl;
@@ -136,6 +138,8 @@ PHP_MINIT_FUNCTION(ui)
 	PHP_MINIT(UI_Picker)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Menu)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_MenuItem)(INIT_FUNC_ARGS_PASSTHRU);
+
+	PHP_MINIT(UI_Area)(INIT_FUNC_ARGS_PASSTHRU);
 
 	return SUCCESS;
 }
