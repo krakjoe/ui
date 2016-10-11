@@ -167,11 +167,19 @@ $filesGrid->append($messageGrid, 0, 2, 2, 1,
 	false, GRID::CENTER, false, GRID::START);
 
 $messageButton = new Button("Message Box");
-//$mbutton->onClick();
+$messageButton->onClick(function() use($window) {
+	$window->msg(
+		"This is a normal message box", 
+		"More detailed information can be shown here.");
+});
 $messageGrid->append($messageButton, 0, 0, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
 $errorButton = new Button("Error Box");
-//$ebutton->onClick();
+$errorButton->onClick(function() use($window) {
+	$window->error(
+		"This message box describes an error",
+		"More detailed information can be shown here.");
+});
 $messageGrid->append($errorButton, 1, 0, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
 
