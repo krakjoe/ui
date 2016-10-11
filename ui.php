@@ -140,19 +140,44 @@ $tab->append("Data Choosers", (function() use($window) {
 	$grid->setPadded(true);
 	$vbox->append($grid);
 
-	$button = new Button("Open File");
-	$entry  = new Entry();
-	$entry->setReadOnly(true);
+	$obutton = new Button("Open File");
+	$oentry  = new Entry();
+	$oentry->setReadOnly(true);
 
 	//$button->onClick(function() use($entry) {
 	//	$entry->setValue($window->openFile());
 	//});
 
-	$grid->append($button, 0, 0, 1, 1, 
+	$grid->append($obutton, 0, 0, 1, 1, 
 		false, GRID::FILL, false, GRID::FILL);
-	$grid->append($entry, 1, 0, 1, 1, 
+	$grid->append($oentry, 1, 0, 1, 1, 
 		true, GRID::FILL, false, GRID::FILL);
+
+	$sbutton = new Button("Save File");
+	$sentry = new Entry();
+	$sentry->setReadOnly(true);
 	
+	//$sbutton->onClick();
+
+	$grid->append($sbutton, 0, 1, 1, 1,
+		false, GRID::FILL, false, GRID::FILL);
+	$grid->append($sentry, 1, 1, 1, 1,
+		true, GRID::FILL, false, GRID::FILL);
+
+	$msggrid = new Grid();
+	$msggrid->setPadded(true);
+	$grid->append($msggrid, 0, 2, 2, 1,
+		false, GRID::CENTER, false, GRID::START);
+	
+	$mbutton = new Button("Message Box");
+	//$mbutton->onClick();
+	$msggrid->append($mbutton, 0, 0, 1, 1,
+		false, GRID::FILL, false, GRID::FILL);
+	$ebutton = new Button("Error Box");
+	//$ebutton->onClick();
+	$msggrid->append($ebutton, 1, 0, 1, 1,
+		false, GRID::FILL, false, GRID::FILL);
+
 	return $hbox;
 })());
 
