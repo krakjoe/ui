@@ -13,6 +13,9 @@ use UI\Progress;
 use UI\Combo;
 use UI\EditableCombo;
 use UI\Radio;
+use UI\Grid;
+use UI\Picker;
+use UI\Separator;
 
 $window = new UI\Window("libui Control Gallery", 640, 480, true);
 
@@ -114,7 +117,48 @@ $tab->append("Numbers and Lists", (function(){
 	return $hbox;
 })());
 
+$tab->append("Data Choosers", (function() use($window) {
+	$hbox = new Box(BOX::HORIZONTAL);
+	$hbox->setPadded(true);
+
+	$vbox = new Box(BOX::VERTICAL);
+	$vbox->setPadded(true);
+
+	$hbox->append($vbox);
+
+	$vbox->append(new Picker(PICKER::DATE));
+	$vbox->append(new Picker(PICKER::TIME));
+	$vbox->append(new Picker(PICKER::DATETIME));
+	
+	$hbox->append(new Separator(SEPARATOR::VERTICAL));	
+	
+	$vbox = new Box(BOX::VERTICAL);
+	$vbox->setPadded(true);
+	$hbox->append($vbox);
+
+	$grid = new Grid();
+	$grid->setPadded(true);
+	$vbox->append($grid);
+
+	$button = new Button("Open File");
+	$entry  = new Entry();
+	$entry->setReadOnly(true);
+
+	//$button->onClick(function() use($entry) {
+	//	$entry->setValue($window->openFile());
+	//});
+
+	$grid->append($button, 0, 0, 1, 1, 
+		false, GRID::FILL, false, GRID::FILL);
+	$grid->append($entry, 1, 0, 1, 1, 
+		true, GRID::FILL, false, GRID::FILL);
+	
+	return $hbox;
+})());
+
 $tab->setMargin(0, true);
+$tab->setMargin(1, true);
+$tab->setMargin(2, true);
 
 $window->show();
 

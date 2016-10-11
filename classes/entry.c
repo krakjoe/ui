@@ -184,7 +184,7 @@ PHP_METHOD(Entry, setReadOnly)
 		return;
 	}
 
-	uiEntrySetReadonly(entry->e, readOnly);
+	uiEntrySetReadOnly(entry->e, readOnly);
 } /* }}} */
 
 /* {{{ proto void Entry::isReadOnly(void) */
