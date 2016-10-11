@@ -129,7 +129,7 @@ $dataHbox->append(new Separator(SEPARATOR::VERTICAL));
 
 $filesVbox = new Box(BOX::VERTICAL);
 $filesVbox->setPadded(true);
-$dataHbox->append($filesVbox);
+$dataHbox->append($filesVbox, true);
 
 $filesGrid = new Grid();
 $filesGrid->setPadded(true);
