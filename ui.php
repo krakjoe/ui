@@ -25,161 +25,157 @@ $tab = new Tab();
 
 $window->add($tab);
 
-$tab->append("Basic Controls", (function(){
-	$vbox = new Box(BOX::VERTICAL);
-	$vbox->setPadded(true);
+$basicControlsVbox = new Box(BOX::VERTICAL);
+$basicControlsVbox->setPadded(true);
 
-	$hbox = new Box(BOX::HORIZONTAL);
-	$hbox->setPadded(true);
+$basicControlsHbox = new Box(BOX::HORIZONTAL);
+$basicControlsHbox->setPadded(true);
 
-	$vbox->append($hbox);
+$basicControlsVbox->append($basicControlsHbox);
 
-	$group = new Group("Entries");
-	$group->setMargins(true);
+$entriesGroup = new Group("Entries");
+$entriesGroup->setMargins(true);
 
-	$vbox->append($group, true);
+$basicControlsVbox->append($entriesGroup, true);
 
-	$entryForm = new Form();
-	$entryForm->setPadded(true);
+$entryForm = new Form();
+$entryForm->setPadded(true);
 
-	$entryForm->append("Entry", new Entry(ENTRY::NORMAL), false);
-	$entryForm->append("Password Entry", new Entry(ENTRY::PASSWORD), false);
-	$entryForm->append("Search Entry", new Entry(ENTRY::SEARCH), false);
-	$entryForm->append("Multiline Entry", new Multi(MULTI::WRAP), true);
-	$entryForm->append("Multiline Entry Without Wrapping", new Multi(MULTI::NOWRAP), true);
+$entryForm->append("Entry", new Entry(ENTRY::NORMAL), false);
+$entryForm->append("Password Entry", new Entry(ENTRY::PASSWORD), false);
+$entryForm->append("Search Entry", new Entry(ENTRY::SEARCH), false);
+$entryForm->append("Multiline Entry", new Multi(MULTI::WRAP), true);
+$entryForm->append("Multiline Entry Without Wrapping", new Multi(MULTI::NOWRAP), true);
 
-	$group->add($entryForm);
+$entriesGroup->add($entryForm);
 
-	return $vbox;
-})());
+$tab->append("Basic Controls", $basicControlsVbox);
 
-$tab->append("Numbers and Lists", (function(){
-	$hbox = new Box(BOX::HORIZONTAL);
-	$hbox->setPadded(true);
+$numbersHbox = new Box(BOX::HORIZONTAL);
+$numbersHbox->setPadded(true);
 
-	$group = new Group("Numbers");
-	$group->setMargins(true);
-	
-	$hbox->append($group, true);
+$numbersGroup = new Group("Numbers");
+$numbersGroup->setMargins(true);
 
-	$vbox = new Box(BOX::VERTICAL);
-	$vbox->setPadded(true);
+$numbersHbox->append($numbersGroup, true);
 
-	$group->add($vbox);
-	
-	$spin = new Spin(0, 100);
-	$slider = new Slider(0, 100);
-	$progress = new Progress();
+$numbersVbox = new Box(BOX::VERTICAL);
+$numbersVbox->setPadded(true);
 
-	$spin->onChange(function() use ($slider, $spin, $progress) {
-		$slider->setValue($spin->getValue());
-		$progress->setValue($spin->getValue());
-	});
-	$slider->onChange(function() use($slider, $spin, $progress) {
-		$spin->setValue($slider->getValue());
-		$progress->setValue($slider->getValue());
-	});	
+$numbersGroup->add($numbersVbox);
 
-	$vbox->append($spin);
-	$vbox->append($slider);
-	$vbox->append($progress);
-	
-	$ip = new Progress();
-	$ip->setValue(-1);
-	$vbox->append($ip);
+$spin = new Spin(0, 100);
+$slider = new Slider(0, 100);
+$progress = new Progress();
 
-	$group = new Group("Lists");
-	$group->setMargins(true);
-	$hbox->append($group);
-	
-	$vbox = new Box(BOX::VERTICAL);
-	$vbox->setPadded(true);
-	$group->add($vbox);
+$spin->onChange(function() use ($slider, $spin, $progress) {
+	$slider->setValue($spin->getValue());
+	$progress->setValue($spin->getValue());
+});
+$slider->onChange(function() use($slider, $spin, $progress) {
+	$spin->setValue($slider->getValue());
+	$progress->setValue($slider->getValue());
+});	
 
-	$combo = new Combo();
-	$combo->append("Item 1");
-	$combo->append("Item 2");
-	$combo->append("Item 3");
-	$vbox->append($combo);
+$numbersVbox->append($spin);
+$numbersVbox->append($slider);
+$numbersVbox->append($progress);
 
-	$ecombo = new EditableCombo();
-	$ecombo->append("Editable Item 1");
-	$ecombo->append("Editable Item 2");
-	$ecombo->append("Editable Item 3");
-	$vbox->append($ecombo);
+$ip = new Progress();
+$ip->setValue(-1);
+$numbersVbox->append($ip);
 
-	$radio = new Radio();
-	$radio->append("Radio Button 1");
-	$radio->append("Radio Button 2");
-	$radio->append("Radio Button 3");
-	$vbox->append($radio);
-	
-	return $hbox;
-})());
+$listsGroup = new Group("Lists");
+$listsGroup->setMargins(true);
+$numbersHbox->append($listsGroup);
 
-$tab->append("Data Choosers", (function() use($window) {
-	$hbox = new Box(BOX::HORIZONTAL);
-	$hbox->setPadded(true);
+$otherBox = new Box(BOX::VERTICAL);
+$otherBox->setPadded(true);
+$listsGroup->add($otherBox);
 
-	$vbox = new Box(BOX::VERTICAL);
-	$vbox->setPadded(true);
+$combo = new Combo();
+$combo->append("Item 1");
+$combo->append("Item 2");
+$combo->append("Item 3");
+$otherBox->append($combo);
 
-	$hbox->append($vbox);
+$ecombo = new EditableCombo();
+$ecombo->append("Editable Item 1");
+$ecombo->append("Editable Item 2");
+$ecombo->append("Editable Item 3");
+$otherBox->append($ecombo);
 
-	$vbox->append(new Picker(PICKER::DATE));
-	$vbox->append(new Picker(PICKER::TIME));
-	$vbox->append(new Picker(PICKER::DATETIME));
-	
-	$hbox->append(new Separator(SEPARATOR::VERTICAL));	
-	
-	$vbox = new Box(BOX::VERTICAL);
-	$vbox->setPadded(true);
-	$hbox->append($vbox);
+$radio = new Radio();
+$radio->append("Radio Button 1");
+$radio->append("Radio Button 2");
+$radio->append("Radio Button 3");
+$otherBox->append($radio);
 
-	$grid = new Grid();
-	$grid->setPadded(true);
-	$vbox->append($grid);
+$tab->append("Numbers and Lists", $numbersHbox);
 
-	$obutton = new Button("Open File");
-	$oentry  = new Entry();
-	$oentry->setReadOnly(true);
+$dataHbox = new Box(BOX::HORIZONTAL);
+$dataHbox->setPadded(true);
 
-	//$button->onClick(function() use($entry) {
-	//	$entry->setValue($window->openFile());
-	//});
+$dataVbox = new Box(BOX::VERTICAL);
+$dataVbox->setPadded(true);
 
-	$grid->append($obutton, 0, 0, 1, 1, 
-		false, GRID::FILL, false, GRID::FILL);
-	$grid->append($oentry, 1, 0, 1, 1, 
-		true, GRID::FILL, false, GRID::FILL);
+$dataHbox->append($dataVbox);
 
-	$sbutton = new Button("Save File");
-	$sentry = new Entry();
-	$sentry->setReadOnly(true);
-	
-	//$sbutton->onClick();
+$dataVbox->append(new Picker(PICKER::DATE));
+$dataVbox->append(new Picker(PICKER::TIME));
+$dataVbox->append(new Picker(PICKER::DATETIME));
 
-	$grid->append($sbutton, 0, 1, 1, 1,
-		false, GRID::FILL, false, GRID::FILL);
-	$grid->append($sentry, 1, 1, 1, 1,
-		true, GRID::FILL, false, GRID::FILL);
+$dataHbox->append(new Separator(SEPARATOR::VERTICAL));	
 
-	$msggrid = new Grid();
-	$msggrid->setPadded(true);
-	$grid->append($msggrid, 0, 2, 2, 1,
-		false, GRID::CENTER, false, GRID::START);
+$filesVbox = new Box(BOX::VERTICAL);
+$filesVbox->setPadded(true);
+$dataHbox->append($filesVbox);
 
-	$mbutton = new Button("Message Box");
-	//$mbutton->onClick();
-	$msggrid->append($mbutton, 0, 0, 1, 1,
-		false, GRID::FILL, false, GRID::FILL);
-	$ebutton = new Button("Error Box");
-	//$ebutton->onClick();
-	$msggrid->append($ebutton, 1, 0, 1, 1,
-		false, GRID::FILL, false, GRID::FILL);
+$filesGrid = new Grid();
+$filesGrid->setPadded(true);
+$filesVbox->append($filesGrid);
 
-	return $hbox;
-})());
+$openButton = new Button("Open File");
+$openEntry  = new Entry();
+$openEntry->setReadOnly(true);
+
+$openButton->onClick(function() use($openEntry, $window) {
+	$openEntry->setText($window->open());
+});
+
+$filesGrid->append($openButton, 0, 0, 1, 1, 
+	false, GRID::FILL, false, GRID::FILL);
+$filesGrid->append($openEntry, 1, 0, 1, 1, 
+	true, GRID::FILL, false, GRID::FILL);
+
+$saveButton = new Button("Save File");
+$saveEntry = new Entry();
+$saveEntry->setReadOnly(true);
+
+$saveButton->onClick(function() use($saveEntry, $window) {
+	$saveEntry->setText($window->save());
+});
+
+$filesGrid->append($saveButton, 0, 1, 1, 1,
+	false, GRID::FILL, false, GRID::FILL);
+$filesGrid->append($saveEntry, 1, 1, 1, 1,
+	true, GRID::FILL, false, GRID::FILL);
+
+$messageGrid = new Grid();
+$messageGrid->setPadded(true);
+$filesGrid->append($messageGrid, 0, 2, 2, 1,
+	false, GRID::CENTER, false, GRID::START);
+
+$messageButton = new Button("Message Box");
+//$mbutton->onClick();
+$messageGrid->append($messageButton, 0, 0, 1, 1,
+	false, GRID::FILL, false, GRID::FILL);
+$errorButton = new Button("Error Box");
+//$ebutton->onClick();
+$messageGrid->append($errorButton, 1, 0, 1, 1,
+	false, GRID::FILL, false, GRID::FILL);
+
+$tab->append("Data Choosers", $dataHbox);
 
 $tab->setMargin(0, true);
 $tab->setMargin(1, true);
