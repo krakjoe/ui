@@ -15,6 +15,8 @@ use UI\EditableCombo;
 use UI\Radio;
 use UI\Grid;
 use UI\Picker;
+use UI\Check;
+use UI\Label;
 use UI\Separator;
 
 $window = new UI\Window("libui Control Gallery", 640, 480, true);
@@ -32,6 +34,12 @@ $basicControlsHbox = new Box(BOX::HORIZONTAL);
 $basicControlsHbox->setPadded(true);
 
 $basicControlsVbox->append($basicControlsHbox);
+
+$basicControlsHbox->append(new Button("Button"));
+$basicControlsHbox->append(new Check("Checkbox"));
+$basicControlsVbox->append(
+	new Label("This is a label. Right now, labels can only span one line."));
+$basicControlsVbox->append(new Separator(SEPARATOR::HORIZONTAL));
 
 $entriesGroup = new Group("Entries");
 $entriesGroup->setMargins(true);
