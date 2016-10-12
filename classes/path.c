@@ -42,7 +42,9 @@ zend_object* php_ui_path_create(zend_class_entry *ce) {
 void php_ui_path_free(zend_object *o) {
 	php_ui_path_t *path = php_ui_path_from(o);
 
-	uiDrawPathFree(path->p);
+	if (path->p) {
+		uiDrawFreePath(path->p);
+	}
 
 	zend_object_std_dtor(o);
 }
@@ -221,6 +223,9 @@ PHP_MINIT_FUNCTION(UI_DrawPath)
 
 	uiDrawPath_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiDrawPath_ce->create_object = php_ui_path_create;
+
+	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("WINDING"), PHP_UI_PATH_WINDING);
+	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("ALTERNATE"), PHP_UI_PATH_ALTERNATE);
 
 	memcpy(&php_ui_path_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

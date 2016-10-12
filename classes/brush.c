@@ -49,18 +49,26 @@ zend_object* php_ui_brush_create(zend_class_entry *ce) {
 	return &brush->std;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 5)
+	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, r, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, g, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, b, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, a, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, X0, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, Y0, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, X1, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, radius, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawBrush DrawBrush::__construct(int type, double r, double r, double b, double a, double X0, double, Y0, double X1, double Y1, double radius) */
+/* {{{ proto DrawBrush DrawBrush::__construct(int type, double r, double r, double b, double a [, double X0, double, Y0, double X1, double Y1, double radius]) */
 PHP_METHOD(DrawBrush, __construct) 
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	zend_long type = PHP_UI_BRUSH_SOLID;
 	double r = 0, g = 0, b = 0, a = 0, X0 = 0, Y0 = 0, X1 = 0, Y1 = 0, radius = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "lddddddddd", &type, &r, &g, &b, &a, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ldddd|ddddd", &type, &r, &g, &b, &a, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
 		return;
 	}
 
