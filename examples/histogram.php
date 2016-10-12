@@ -162,12 +162,11 @@ if (extension_loaded("pthreads")) {
 						"More information goes here ...");
 			}
 
-			public function __construct(Window $window,) {
+			public function __construct(Window $window) {
 				$this->window = $window;
 			}
 		});
 	});
-
 	$vBox->append($backgroundButton);
 }
 
