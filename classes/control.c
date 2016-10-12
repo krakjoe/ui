@@ -25,6 +25,9 @@
 
 zend_object_handlers php_ui_control_handlers;
 
+extern int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *buffer, size_t blen, zend_unserialize_data *data);
+extern int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_serialize_data *data);
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_control_void_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -195,6 +198,8 @@ PHP_MINIT_FUNCTION(UI_Control)
 	INIT_NS_CLASS_ENTRY(ce, "UI", "Control", php_ui_control_methods);
 
 	uiControl_ce = zend_register_internal_class(&ce);
+	uiControl_ce->serialize = php_ui_serialize;
+	uiControl_ce->unserialize = php_ui_unserialize;
 
 	memcpy(&php_ui_control_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

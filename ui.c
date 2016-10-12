@@ -29,6 +29,10 @@
 
 #include <ui.h>
 
+#ifdef HAVE_UI_X_THREADS
+#	include <X11/Xlib.h>
+#endif
+
 #include <classes/point.h>
 #include <classes/size.h>
 
@@ -109,6 +113,10 @@ PHP_MINIT_FUNCTION(ui)
 	const char *initError = NULL;
 
 	uiInitOptions options;
+
+#ifdef HAVE_UI_X_THREADS
+	XInitThreads();
+#endif
 
 	memset(&options, 0, sizeof(uiInitOptions));
 
@@ -220,11 +228,71 @@ PHP_FUNCTION(mainStep)
 	uiMainStep(block);
 } /* }}} */
 
+/* {{{ */
+PHP_FUNCTION(mainSteps)
+{
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+	
+	uiMainSteps();
+} /* }}} */
+
+/* {{{ nothing happening here ... ignore this ... */
+int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_serialize_data *data) {
+	void *address = ((char*) Z_OBJ_P(object) - XtOffsetOf(php_ui_window_t, std));
+
+#ifdef _WIN64
+	(*buflen) = snprintf(NULL, 0, ":%I64u:", (unsigned __int64) address);
+#else
+	(*buflen) = snprintf(NULL, 0, ":%lu:", (long unsigned int) address);
+#endif
+	(*buffer) = emalloc((*buflen) + 1);
+	sprintf(
+#ifdef _WIN64
+		(char*) (*buffer), ":%I64u:", (unsigned __int64) address);
+#else
+		(char*) (*buffer), ":%lu:", (long unsigned int) address);
+#endif
+	(*buffer)[(*buflen)] = 0;
+
+	return SUCCESS;
+}
+
+typedef struct _php_ui_object_t {
+	void *p;
+	zend_object std;
+} php_ui_object_t;
+
+#define php_ui_object_from(o) ((php_ui_object_t*) ((char*) o - XtOffsetOf(php_ui_object_t, std)))
+#define php_ui_object_fetch(o) php_ui_object_from(Z_OBJ_P(o))
+
+int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *buffer, size_t blen, zend_unserialize_data *data) {
+	php_ui_object_t *address = NULL;
+	php_ui_object_t *o;
+
+#ifdef _WIN64
+	if (!sscanf((const char*) buffer, ":%I64u:", (unsigned __int64*)&address)) {
+#else
+	if (!sscanf((const char*) buffer, ":%lu:", (long unsigned int*)&address)) {
+#endif
+		return FAILURE;
+	}
+
+	object_init_ex(object, ce);
+
+	o = php_ui_object_fetch(object);
+	o->p = address->p;
+
+	return SUCCESS;
+} /* }}} */
+
 /* {{{ ui_functions[]
  */
 const zend_function_entry ui_functions[] = {
 	ZEND_NS_FE("UI", main, NULL)	
 	ZEND_NS_FE("UI", mainStep, NULL)	
+	ZEND_NS_FE("UI", mainSteps, NULL)
 	PHP_FE_END
 };
 /* }}} */

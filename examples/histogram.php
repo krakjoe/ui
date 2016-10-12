@@ -5,6 +5,7 @@ use UI\Size;
 use UI\Box;
 use UI\Spin;
 use UI\ColorButton;
+use UI\Button;
 use UI\Area;
 use UI\DrawPath;
 use UI\DrawBrush;
@@ -148,9 +149,33 @@ for ($i = 0; $i < 10; $i++) {
 
 $vBox->append($colorButton);
 
+if (extension_loaded("pthreads")) {
+	$backgroundButton = new Button("Background");
+	$backgroundPool = new Pool(8);
+
+	$backgroundButton->onClick(function() use($window, $backgroundPool) {
+		$backgroundPool->submit(new class($window) extends Threaded {
+
+			public function run() {
+				$this->window->msg(
+						"Message from Background Thread",
+						"More information goes here ...");
+			}
+
+			public function __construct(Window $window,) {
+				$this->window = $window;
+			}
+		});
+	});
+
+	$vBox->append($backgroundButton);
+}
+
 $hBox->append($histogram, true);
 
 $window->show();
 
 UI\main();
+
+$backgroundPool->shutdown();
 ?>

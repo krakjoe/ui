@@ -1,5 +1,8 @@
-PHP_ARG_WITH(ui, for ui support,
-[  --with-ui             Include ui support])
+PHP_ARG_WITH(ui,           for ui support,
+[  --with-ui               Include ui support])
+
+PHP_ARG_ENABLE(ui-threads, for ui threads,
+[  --enable-ui-threads     Initialize X11 threads])
 
 if test "$PHP_UI" != "no"; then
   SEARCH_PATH="/usr/local /usr"
@@ -38,6 +41,10 @@ if test "$PHP_UI" != "no"; then
     -L$UI_DIR/$PHP_LIBDIR -lm
   ])
   dnl
+
+  if test "$PHP_UI_THREADS" != "no"; then
+    AC_DEFINE(HAVE_UI_X_THREADS,1,[ ])
+  fi
 
   PHP_ADD_BUILD_DIR($ext_builddir/classes, 1)
   PHP_ADD_INCLUDE($ext_builddir)
