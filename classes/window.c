@@ -21,8 +21,8 @@
 
 #include "php.h"
 
-#include <classes/window.h>
 #include <classes/control.h>
+#include <classes/window.h>
 
 zend_object_handlers php_ui_window_handlers;
 
@@ -298,18 +298,6 @@ PHP_METHOD(Window, hasMargin)
 	}
 } /* }}} */
 
-/* {{{ proto void Window::show(void) */
-PHP_METHOD(Window, show)
-{
-	php_ui_window_t *win = php_ui_window_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	uiControlShow(uiControl(win->w));
-} /* }}} */
-
 /* {{{ proto void Window::center(void) */
 PHP_METHOD(Window, center)
 {
@@ -430,7 +418,6 @@ const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, hasBorders,     php_ui_window_has_borders_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Window, setMargin,      php_ui_window_set_margin_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Window, hasMargin,      php_ui_window_has_margin_info,      ZEND_ACC_PUBLIC)
-	PHP_ME(Window, show,           NULL,                               ZEND_ACC_PUBLIC)
 	PHP_ME(Window, center,         NULL,          					   ZEND_ACC_PUBLIC)
 	PHP_ME(Window, add,            php_ui_window_add_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, msg,            php_ui_window_box_info,             ZEND_ACC_PUBLIC)
@@ -447,7 +434,7 @@ PHP_MINIT_FUNCTION(UI_Window)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "Window", php_ui_window_methods);
 
-	uiWindow_ce = zend_register_internal_class(&ce);
+	uiWindow_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiWindow_ce->create_object = php_ui_window_create;
 
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

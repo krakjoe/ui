@@ -29,8 +29,8 @@
 
 #include <ui.h>
 
-#include <classes/window.h>
 #include <classes/control.h>
+#include <classes/window.h>
 #include <classes/tab.h>
 #include <classes/form.h>
 #include <classes/grid.h>
@@ -121,8 +121,8 @@ PHP_MINIT_FUNCTION(ui)
 
 	uiMainSteps();
 
-	PHP_MINIT(UI_Window)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Control)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Window)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Form)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Grid)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Tab)(INIT_FUNC_ARGS_PASSTHRU);
