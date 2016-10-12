@@ -150,6 +150,7 @@ for ($i = 0; $i < 10; $i++) {
 $vBox->append($colorButton);
 
 if (extension_loaded("pthreads")) {
+	/* THIS IS VERY PROBABLY DANGEROUS, LET'S FIND OUT */
 	$backgroundButton = new Button("Background");
 	$backgroundPool = new Pool(8);
 
