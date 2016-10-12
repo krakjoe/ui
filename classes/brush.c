@@ -112,6 +112,39 @@ PHP_METHOD(DrawBrush, setRGB)
 	php_ui_brush_rgb(&brush->b, (uint32_t) color);	
 } /* }}} */
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_alpha_info, 0, 0, IS_DOUBLE, NULL, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto double DrawBrush::getAlpha(void) */
+PHP_METHOD(DrawBrush, getAlpha)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_DOUBLE(brush->b.A);
+} /* }}} */
+
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_set_alpha_info, 0, 0, 1)
+
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void DrawBrush::setAlpha(double alpha) */
+PHP_METHOD(DrawBrush, setAlpha)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	double alpha = 0;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "d", &alpha) != SUCCESS) {
+		return;
+	}
+
+	brush->b.A = alpha;
+} /* }}} */
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_type_info, 0, 0, IS_LONG, NULL, 0)
 ZEND_END_ARG_INFO()
 
@@ -150,6 +183,8 @@ const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, getType,     php_ui_brush_get_type_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, setRGB,      php_ui_brush_set_rgb_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, setAlpha,    php_ui_brush_set_alpha_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, getAlpha,    php_ui_brush_get_alpha_info, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

@@ -69,10 +69,12 @@ function getGraphPath($locations, $width, $height, $extend) {
 	return $path;
 }
 
+$colorButton = new ColorButton();
+
 $white = new DrawBrush(DRAWBRUSH::SOLID, 1, 1, 1, 1);
 $black = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
 
-$histogram = new Area(function($area, $context, $areaWidth, $areaHeight, $clipX, $clipY, $clipWidth, $clipHeight) use($white, $black, &$dataPoints) {
+$histogram = new Area(function($area, $context, $areaWidth, $areaHeight, $clipX, $clipY, $clipWidth, $clipHeight) use($white, $black, &$dataPoints, $colorButton) {
 	$path = new DrawPath(DRAWPATH::WINDING);
 
 	$path
@@ -106,13 +108,14 @@ $histogram = new Area(function($area, $context, $areaWidth, $areaHeight, $clipX,
 
 	$brush = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
 	$brush->setRGB(0x8892BF);
-
+	
+	$brush = $colorButton->getBrush();
+	
 	Draw::fill($context, $path, $brush);
 
 	$path = getGraphPath($locations, $graphWidth, $graphHeight, false);
 
-	$brush = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 0.5);
-	$brush->setRGB(0x4F5B93);
+	$brush->setAlpha($brush->getAlpha()/2);
 
 	Draw::stroke($context, $path, $brush, new DrawStroke(DRAWSTROKE::CAP_FLAT, DRAWSTROKE::JOIN_MITER, 2, 10));
 });
@@ -121,15 +124,14 @@ $redrawHistogram = function() use($histogram) {
 	$histogram->redraw();
 };
 
+$colorButton->onChange($redrawHistogram);
+
 for ($i = 0; $i < 10; $i++) {
 	$dataPoints[$i] = new Spin(0, 100);
 	$dataPoints[$i]->setValue(mt_rand(0, 100));
 	$dataPoints[$i]->onChange($redrawHistogram);
 	$vBox->append($dataPoints[$i]);
 }
-
-$colorButton = new ColorButton();
-$colorButton->onChange($redrawHistogram);
 
 $vBox->append($colorButton);
 
