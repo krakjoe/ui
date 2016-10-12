@@ -23,6 +23,7 @@
 
 #include <classes/control.h>
 #include <classes/area.h>
+#include <classes/context.h>
 
 zend_object_handlers php_ui_area_handlers;
 
@@ -91,7 +92,50 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
 
-	php_ui_area_event(area, &area->draw, NULL, p);
+	int ret = 0;
+
+	if (Z_TYPE(area->draw) != IS_UNDEF) {
+		zval rv;
+		zval ctrl, context, areaWidth, areaHeight, clipX, clipY, clipWidth, clipHeight;
+		php_ui_context_t *ctxt;
+
+		zend_fcall_info fci = empty_fcall_info;
+		zend_fcall_info_cache fcc = empty_fcall_info_cache;
+		
+		if (zend_fcall_info_init(&area->draw, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
+			return;
+		}
+
+		ZVAL_UNDEF(&rv);
+		fci.retval = &rv;
+
+		ZVAL_OBJ(&ctrl, &area->std);
+
+		object_init_ex(&context, uiDrawContext_ce);
+		ctxt = php_ui_context_fetch(&context);
+		ctxt->c = p->Context;
+		
+		ZVAL_DOUBLE(&areaWidth, p->AreaWidth);
+		ZVAL_DOUBLE(&areaHeight, p->AreaHeight);
+		ZVAL_DOUBLE(&clipX, p->ClipX);
+		ZVAL_DOUBLE(&clipY, p->ClipY);
+		ZVAL_DOUBLE(&clipWidth, p->ClipWidth);
+		ZVAL_DOUBLE(&clipHeight, p->ClipHeight);
+
+		zend_fcall_info_argn(&fci, 8, &ctrl, &context, &areaWidth, &areaHeight, &clipX, &clipY, &clipWidth, &clipHeight);
+
+		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+
+		zval_ptr_dtor(&context);
+	}
 }
 
 static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouseEvent *e) {
