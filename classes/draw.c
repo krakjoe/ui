@@ -103,11 +103,74 @@ PHP_METHOD(Draw, transform)
 	uiDrawTransform(c->c, &m->m);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_clip_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
+	ZEND_ARG_OBJ_INFO(0, path, UI\\DrawPath, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Draw::clip(UI\DrawContext context, UI\DrawPath path) */
+PHP_METHOD(Draw, clip)
+{
+	zval *context = NULL, *path = NULL;
+	php_ui_context_t *c;
+	php_ui_path_t *p;
+	
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &context, uiDrawContext_ce, &path, uiDrawPath_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_context_fetch(context);
+	p = php_ui_path_fetch(path);
+
+	uiDrawClip(c->c, p->p);
+} /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_save_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Draw::save(UI\DrawContext context) */
+PHP_METHOD(Draw, save)
+{
+	zval *context = NULL;
+	php_ui_context_t *c;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &context, uiDrawContext_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_context_fetch(c);	
+
+	uiDrawSave(c->c);
+} /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_restore_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Draw::restore(UI\\DrawContext context) */
+PHP_METHOD(Draw, restore)
+{
+	zval *context = NULL;
+	php_ui_context_t *c;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &context, uiDrawContext_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_context_fetch(c);	
+
+	uiDrawRestore(c->c);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_draw_methods[] = {
-	PHP_ME(Draw, fill,     php_ui_draw_fill_info,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-	PHP_ME(Draw, stroke,   php_ui_draw_stroke_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, fill,      php_ui_draw_fill_info,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, stroke,    php_ui_draw_stroke_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(Draw, transform, php_ui_draw_transform_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, clip,      php_ui_draw_clip_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, save,      php_ui_draw_save_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, restore,   php_ui_draw_restore_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
