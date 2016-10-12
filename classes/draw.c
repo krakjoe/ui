@@ -25,6 +25,7 @@
 #include <classes/context.h>
 #include <classes/path.h>
 #include <classes/brush.h>
+#include <classes/stroke.h>
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_fill_info, 0, 0, 3)
 	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
@@ -51,9 +52,38 @@ PHP_METHOD(Draw, fill)
 	uiDrawFill(c->c, p->p, &b->b);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_stroke_info, 0, 0, 4)
+	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
+	ZEND_ARG_OBJ_INFO(0, path, UI\\DrawPath, 0)
+	ZEND_ARG_OBJ_INFO(0, brush, UI\\DrawBrush, 0)
+	ZEND_ARG_OBJ_INFO(0, stroke, UI\\DrawStroke, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Draw::stroke(UI\DrawContext context, UI\DrawPath path, UI\DrawBrush brush, UI\DrawStroke stroke) */
+PHP_METHOD(Draw, stroke)
+{
+	zval *context = NULL, *path = NULL, *brush = NULL, *stroke = NULL;
+	php_ui_context_t *c;
+	php_ui_path_t *p;
+	php_ui_brush_t *b;
+	php_ui_stroke_t *s;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OOOO", &context, uiDrawContext_ce, &path, uiDrawPath_ce, &brush, uiDrawBrush_ce, &stroke, uiDrawStroke_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_context_fetch(context);
+	p = php_ui_path_fetch(path);
+	b = php_ui_brush_fetch(brush);
+	s = php_ui_stroke_fetch(stroke);
+
+	uiDrawStroke(c->c, p->p, &b->b, &s->s);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_draw_methods[] = {
 	PHP_ME(Draw, fill,     php_ui_draw_fill_info,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, stroke,   php_ui_draw_stroke_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

@@ -58,6 +58,7 @@
 #include <classes/context.h>
 #include <classes/brush.h>
 #include <classes/draw.h>
+#include <classes/stroke.h>
 
 /* {{{ */
 typedef struct _php_ui_event_t {
@@ -148,6 +149,7 @@ PHP_MINIT_FUNCTION(ui)
 	PHP_MINIT(UI_DrawContext)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_DrawBrush)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Draw)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_DrawStroke)(INIT_FUNC_ARGS_PASSTHRU);
 
 	return SUCCESS;
 }
