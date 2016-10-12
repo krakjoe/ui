@@ -105,9 +105,6 @@ $histogram = new Area(function($area, $context, $areaWidth, $areaHeight, $clipX,
 		$dataPoints, $graphWidth, $graphHeight);	
 
 	$path = getGraphPath($locations, $graphWidth, $graphHeight, true);
-
-	$brush = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
-	$brush->setRGB(0x8892BF);
 	
 	$brush = $colorButton->getBrush();
 	
@@ -124,6 +121,11 @@ $redrawHistogram = function() use($histogram) {
 	$histogram->redraw();
 };
 
+$brush = new DrawBrush(DRAWBRUSH::SOLID);
+$brush->setAlpha(1);
+$brush->setRGB(0x8892BF); # this is the color of PHP, internally ...
+
+$colorButton->setColorFromBrush($brush);
 $colorButton->onChange($redrawHistogram);
 
 for ($i = 0; $i < 10; $i++) {
