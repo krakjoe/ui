@@ -21,7 +21,6 @@
 
 #include "php.h"
 
-#include <classes/control.h>
 #include <classes/context.h>
 
 zend_object_handlers php_ui_context_handlers;
@@ -51,7 +50,7 @@ PHP_MINIT_FUNCTION(UI_DrawContext)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawContext", php_ui_context_methods);
 
-	uiDrawContext_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiDrawContext_ce = zend_register_internal_class(&ce);
 	uiDrawContext_ce->create_object = php_ui_context_create;
 
 	memcpy(&php_ui_context_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

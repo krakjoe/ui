@@ -21,7 +21,6 @@
 
 #include "php.h"
 
-#include <classes/control.h>
 #include <classes/brush.h>
 
 zend_object_handlers php_ui_brush_handlers;
@@ -195,7 +194,7 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawBrush", php_ui_brush_methods);
 
-	uiDrawBrush_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiDrawBrush_ce = zend_register_internal_class(&ce);
 	uiDrawBrush_ce->create_object = php_ui_brush_create;
 
 	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("SOLID"), PHP_UI_BRUSH_SOLID);
