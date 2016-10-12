@@ -179,7 +179,18 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-UI\main();
+if (extension_loaded("pthreads")) {	
+	/* STEP WHILE VISIBLE */
+	while ($window->isVisible()) {
+		/* GIVE THE UI PRIOTIY */
+		UI\mainStep(true);
+
+		while ($backgroundPool->collect())
+			continue;
+	}
+} else {
+	UI\main();
+}
 
 $backgroundPool->shutdown();
 ?>
