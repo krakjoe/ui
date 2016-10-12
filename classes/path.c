@@ -21,7 +21,6 @@
 
 #include "php.h"
 
-#include <classes/control.h>
 #include <classes/path.h>
 
 zend_object_handlers php_ui_path_handlers;
@@ -49,6 +48,16 @@ void php_ui_path_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+static uint32_t php_ui_path_type(zend_long type) {
+	switch (type) {
+		case PHP_UI_PATH_WINDING:
+			return uiDrawFillModeWinding;
+		case PHP_UI_PATH_ALTERNATE:
+			return uiDrawFillModeAlternate;
+	}
+	return uiDrawFillModeWinding;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_path_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, mode, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -63,7 +72,7 @@ PHP_METHOD(DrawPath, __construct)
 		return;
 	}
 
-	path->p = uiDrawNewPath(mode);
+	path->p = uiDrawNewPath(php_ui_path_type(mode));
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_path_new_figure_info, 0, 0, 2)
@@ -221,7 +230,7 @@ PHP_MINIT_FUNCTION(UI_DrawPath)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawPath", php_ui_path_methods);
 
-	uiDrawPath_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiDrawPath_ce = zend_register_internal_class(&ce);
 	uiDrawPath_ce->create_object = php_ui_path_create;
 
 	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("WINDING"), PHP_UI_PATH_WINDING);

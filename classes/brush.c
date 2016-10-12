@@ -49,7 +49,7 @@ zend_object* php_ui_brush_create(zend_class_entry *ce) {
 	return &brush->std;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, r, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, g, IS_DOUBLE, 0)
@@ -68,7 +68,7 @@ PHP_METHOD(DrawBrush, __construct)
 	zend_long type = PHP_UI_BRUSH_SOLID;
 	double r = 0, g = 0, b = 0, a = 0, X0 = 0, Y0 = 0, X1 = 0, Y1 = 0, radius = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ldddd|ddddd", &type, &r, &g, &b, &a, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|ddddddddd", &type, &r, &g, &b, &a, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
 		return;
 	}
 
@@ -81,6 +81,35 @@ PHP_METHOD(DrawBrush, __construct)
 	brush->b.Y0 = Y0;
 	brush->b.X1 = X1;
 	brush->b.Y1 = Y1;
+} /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_set_rgb_info, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, color, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+static inline void php_ui_brush_rgb(uiDrawBrush *brush, uint32_t color)
+{
+	uint8_t component;
+
+	component = (uint8_t) ((color >> 16) & 0xFF);
+	brush->R = ((double) component) / 255;
+	component = (uint8_t) ((color >> 8) & 0xFF);
+	brush->G = ((double) component) / 255;
+	component = (uint8_t) (color & 0xFF);
+	brush->B = ((double) component) / 255;
+}
+
+/* {{{ proto void DrawBrush::setRGB(int color) */
+PHP_METHOD(DrawBrush, setRGB)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	zend_long color = 0;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &color) != SUCCESS) {
+		return;
+	}
+
+	php_ui_brush_rgb(&brush->b, (uint32_t) color);	
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_type_info, 0, 0, IS_LONG, NULL, 0)
@@ -120,6 +149,7 @@ PHP_METHOD(DrawBrush, getType)
 const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, getType,     php_ui_brush_get_type_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, setRGB,      php_ui_brush_set_rgb_info,   ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
