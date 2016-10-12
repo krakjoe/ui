@@ -22,6 +22,8 @@
 #include "php.h"
 
 #include <classes/control.h>
+#include <classes/point.h>
+#include <classes/size.h>
 #include <classes/window.h>
 
 zend_object_handlers php_ui_window_handlers;
@@ -52,28 +54,28 @@ int php_ui_window_quit(void *arg) {
 	return 1;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 3)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 	ZEND_ARG_TYPE_INFO(0, menu, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Window Window::__construct(string title, int width, int height, bool menu) */
+/* {{{ proto Window Window::__construct(string title, Size size, bool menu) */
 PHP_METHOD(Window, __construct) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
 	zend_string *title = NULL;
-	zend_long width = 0;
-	zend_long height = 0;
+	zval *size = NULL;
+	php_ui_size_t *s;
 	zend_bool menu = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Sll|b", &title, &width, &height, &menu) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO|b", &title, &size, uiSize_ce, &menu) != SUCCESS) {
 		return;
 	}
 
-	win->w = uiNewWindow(
-		ZSTR_VAL(title), width, height, menu);
+	s = php_ui_size_fetch(size);
+
+	win->w = uiNewWindow(ZSTR_VAL(title), (int) s->width, (int) s->height, menu);
 
 	uiWindowOnClosing(win->w, php_ui_window_closing, NULL);
 	uiOnShouldQuit(php_ui_window_quit, win->w);
@@ -112,28 +114,30 @@ PHP_METHOD(Window, getTitle)
 	RETURN_STRING(uiWindowTitle(win->w));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_size_info, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_size_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Window::setSize(int width, int height) */
+/* {{{ proto void Window::setSize(Size size) */
 PHP_METHOD(Window, setSize) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	zend_long width = 0, height = 0;
+	zval *size = NULL;
+	php_ui_size_t *s;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &size, uiSize_ce) != SUCCESS) {
 		return;
 	}
 
-	uiWindowSetContentSize(win->w, width, height);
+	s = php_ui_size_fetch(size);
+
+	uiWindowSetContentSize(win->w, (int) s->width, (int) s->height);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_size_info, 0, 0, IS_ARRAY, NULL, 0)	
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_size_info, 0, 0, IS_OBJECT, "UI\\Size", 0)	
 ZEND_END_ARG_INFO()
 
-/* {{{ proto array Window::getSize(void) */
+/* {{{ proto Size Window::getSize(void) */
 PHP_METHOD(Window, getSize) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
@@ -143,36 +147,35 @@ PHP_METHOD(Window, getSize)
 		return;
 	}
 
-	array_init(return_value);
-
 	uiWindowContentSize(win->w, &width, &height);
 
-	add_next_index_long(return_value, (zend_long) width);
-	add_next_index_long(return_value, (zend_long) height);	
+	php_ui_size_construct(return_value, (double) width, (double) height);	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_position_info, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, x, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_position_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Window::setPosition(int x, int y) */
+/* {{{ proto void Window::setPosition(Point point) */
 PHP_METHOD(Window, setPosition) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	zend_long x = 0, y = 0;
+	zval *point = NULL;
+	php_ui_point_t *p;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &x, &y) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &point, uiPoint_ce) != SUCCESS) {
 		return;
 	}
 
-	uiWindowSetPosition(win->w, x, y);
+	p = php_ui_point_fetch(point);
+
+	uiWindowSetPosition(win->w, p->x, p->y);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_position_info, 0, 0, IS_ARRAY, NULL, 0)	
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_position_info, 0, 0, IS_OBJECT, "UI\\Point", 0)	
 ZEND_END_ARG_INFO()
 
-/* {{{ proto array Window::getPosition(void) */
+/* {{{ proto Point Window::getPosition(void) */
 PHP_METHOD(Window, getPosition)
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
@@ -182,12 +185,9 @@ PHP_METHOD(Window, getPosition)
 		return;
 	}
 
-	array_init(return_value);
-
 	uiWindowPosition(win->w, &x, &y);
 
-	add_next_index_long(return_value, (zend_long) x);
-	add_next_index_long(return_value, (zend_long) y);	
+	php_ui_point_construct(return_value, (double) x, (double) y);	
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_full_screen_info, 0, 0, 1)

@@ -22,6 +22,8 @@
 #include "php.h"
 
 #include <classes/control.h>
+#include <classes/point.h>
+#include <classes/size.h>
 #include <classes/area.h>
 #include <classes/context.h>
 
@@ -96,7 +98,7 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 	if (Z_TYPE(area->draw) != IS_UNDEF) {
 		zval rv;
-		zval ctrl, context, areaWidth, areaHeight, clipX, clipY, clipWidth, clipHeight;
+		zval ctrl, context, areaSize, clipPoint, clipSize;
 		php_ui_context_t *ctxt;
 
 		zend_fcall_info fci = empty_fcall_info;
@@ -111,18 +113,12 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 		ZVAL_OBJ(&ctrl, &area->std);
 
-		object_init_ex(&context, uiDrawContext_ce);
-		ctxt = php_ui_context_fetch(&context);
-		ctxt->c = p->Context;
-		
-		ZVAL_DOUBLE(&areaWidth, p->AreaWidth);
-		ZVAL_DOUBLE(&areaHeight, p->AreaHeight);
-		ZVAL_DOUBLE(&clipX, p->ClipX);
-		ZVAL_DOUBLE(&clipY, p->ClipY);
-		ZVAL_DOUBLE(&clipWidth, p->ClipWidth);
-		ZVAL_DOUBLE(&clipHeight, p->ClipHeight);
+		php_ui_context_construct(&context, p->Context);
+		php_ui_size_construct(&areaSize, p->AreaWidth, p->AreaHeight);
+		php_ui_point_construct(&clipPoint, p->ClipX, p->ClipY);
+		php_ui_size_construct(&clipSize, p->ClipWidth, p->ClipHeight);
 
-		zend_fcall_info_argn(&fci, 8, &ctrl, &context, &areaWidth, &areaHeight, &clipX, &clipY, &clipWidth, &clipHeight);
+		zend_fcall_info_argn(&fci, 5, &ctrl, &context, &areaSize, &clipPoint, &clipSize);
 
 		if (zend_call_function(&fci, &fcc) != SUCCESS) {
 			return;
@@ -135,6 +131,9 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 		}
 
 		zval_ptr_dtor(&context);
+		zval_ptr_dtor(&areaSize);
+		zval_ptr_dtor(&clipPoint);
+		zval_ptr_dtor(&clipSize);
 	}
 }
 
@@ -243,42 +242,47 @@ PHP_METHOD(Area, redraw)
 	uiAreaQueueRedrawAll(area->a);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_area_set_size_info, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_set_size_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Area::setSize(int width, int height) */
+/* {{{ proto void Area::setSize(Size size) */
 PHP_METHOD(Area, setSize)
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zend_long width = 0, height = 0;
+	zval *size = NULL;
+	php_ui_size_t *s;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &size, uiSize_ce) != SUCCESS) {
 		return;
 	}
+	
+	s = php_ui_size_fetch(size);
 
-	uiAreaSetSize(area->a, (int) width, (int) height);
+	uiAreaSetSize(area->a, (int) s->width, (int) s->height);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_area_scroll_to_info, 0, 0, 4)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, width, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, height, IS_DOUBLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_scroll_to_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Area::scrollTo(double x, double y, double width, double height) */
+/* {{{ proto void Area::scrollTo(Point point, Size size) */
 PHP_METHOD(Area, scrollTo)
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	double x = 0, y = 0, width = 0, height = 0;
+	zval *point = NULL, *size = NULL;
+	php_ui_point_t *p;
+	php_ui_size_t *s;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dddd", &x, &y, &width, &height) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &point, uiPoint_ce, &size, uiSize_ce) != SUCCESS) {
 		return;
 	}
 
-	uiAreaScrollTo(area->a, x, y, width, height);
+	p = php_ui_point_fetch(point);
+	s = php_ui_size_fetch(size);
+
+	uiAreaScrollTo(area->a, p->x, p->y, s->width, s->height);
 } /* }}} */
 
 /* {{{ */

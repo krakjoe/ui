@@ -15,20 +15,21 @@
   | Author: krakjoe                                                      |
   +----------------------------------------------------------------------+
 */
-#ifndef HAVE_PHP_UI_CONTEXT_H
-#define HAVE_PHP_UI_CONTEXT_H
+#ifndef HAVE_PHP_UI_SIZE_H
+#define HAVE_PHP_UI_SIZE_H
 
-zend_class_entry *uiDrawContext_ce;
+zend_class_entry *uiSize_ce;
 
-typedef struct _php_ui_context_t {
-	uiDrawContext *c;
+typedef struct _php_ui_size_t {
+	double width;
+	double height;
 	zend_object std;
-} php_ui_context_t;
+} php_ui_size_t;
 
-#define php_ui_context_from(o) ((php_ui_context_t*) ((char*) o - XtOffsetOf(php_ui_context_t, std)))
-#define php_ui_context_fetch(z) php_ui_context_from(Z_OBJ_P(z))
+#define php_ui_size_from(o) ((php_ui_size_t*) ((char*) o - XtOffsetOf(php_ui_size_t, std)))
+#define php_ui_size_fetch(z) php_ui_size_from(Z_OBJ_P(z))
 
-zval* php_ui_context_construct(zval *context, uiDrawContext *c);
+zval *php_ui_size_construct(zval *size, double width, double height);
 
-PHP_MINIT_FUNCTION(UI_DrawContext);
+PHP_MINIT_FUNCTION(UI_Size);
 #endif

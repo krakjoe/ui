@@ -29,6 +29,9 @@
 
 #include <ui.h>
 
+#include <classes/point.h>
+#include <classes/size.h>
+
 #include <classes/control.h>
 #include <classes/window.h>
 #include <classes/tab.h>
@@ -121,6 +124,9 @@ PHP_MINIT_FUNCTION(ui)
 
 	uiMainSteps();
 
+	PHP_MINIT(UI_Point)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Size)(INIT_FUNC_ARGS_PASSTHRU);
+
 	PHP_MINIT(UI_Control)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Window)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Form)(INIT_FUNC_ARGS_PASSTHRU);
@@ -149,9 +155,9 @@ PHP_MINIT_FUNCTION(ui)
 	PHP_MINIT(UI_DrawPath)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_DrawContext)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_DrawBrush)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(UI_Draw)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_DrawStroke)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_DrawMatrix)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Draw)(INIT_FUNC_ARGS_PASSTHRU);
 
 	return SUCCESS;
 }

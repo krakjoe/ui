@@ -1,5 +1,7 @@
 <?php
 use UI\Window;
+use UI\Point;
+use UI\Size;
 use UI\Box;
 use UI\Spin;
 use UI\ColorButton;
@@ -10,7 +12,7 @@ use UI\Draw;
 use UI\DrawStroke;
 use UI\DrawMatrix;
 
-$window = new Window("libui Histogram Example", 640, 480, true);
+$window = new Window("libui Histogram Example", new Size(640, 480), true);
 
 $window->setMargin(true);
 
@@ -24,44 +26,38 @@ $window->add($hBox);
 
 $hBox->append($vBox);
 
-$dataPoints = [];
+$dataSources = [];
 
-$xs = [];
-$ys = [];
+function getGraphPoints(array $dataSources, Size $size) : array {
+	$width = $size->getWidth();
+	$height = $size->getHeight();
 
-function getGraphSize($clientWidth, $clientHeight, &$graphWidth, &$graphHeight) {
-	$graphWidth = $clientWidth - 40;
-	$graphHeight = $clientHeight - 40;
-}
-
-function getGraphLocations($dataPoints, $width, $height) {
 	$xincr = $width / 9;
 	$yincr = $height / 100;
 
-	$xs = [];
-	$ys = [];
+	$points = [];
 
-	for ($i = 0; $i < count($dataPoints); $i++) {
-		$xs[$i] = $xincr * $i;
-		$ys[$i] = $yincr * (100 - $dataPoints[$i]->getValue());
+	for ($i = 0; $i < count($dataSources); $i++) {
+		$points[$i] = new Point(
+						$xincr * $i, 
+						$yincr * (100 - $dataSources[$i]->getValue()));
 	}
 
-	return [
-		"xs" => $xs,
-		"ys" => $ys
-	];
+	return $points;
 }
 
-function getGraphPath($locations, $width, $height, $extend) {
+function getGraphPath($locations, Size $size, $extend) : DrawPath {
 	$path = new DrawPath(DRAWPATH::WINDING);
 
-	$path->newFigure($locations["xs"][0], $locations["ys"][0]);
+	$path->newFigure($locations[0]);
 	for ($i = 1; $i < 10; $i++)
-		$path->lineTo($locations["xs"][$i], $locations["ys"][$i]);
+		$path->lineTo($locations[$i]);
 	
 	if ($extend) {
-		$path->lineTo($width, $height);
-		$path->lineTo(0, $height);
+		$path->lineTo(new Point(
+			$size->getWidth(), $size->getHeight()));
+		$path->lineTo(new Point(
+			0, $size->getHeight()));
 		$path->closeFigure();
 	}
 
@@ -74,47 +70,60 @@ $colorButton = new ColorButton();
 $white = new DrawBrush(DRAWBRUSH::SOLID, 1, 1, 1, 1);
 $black = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
 
-$histogram = new Area(function($area, $context, $areaWidth, $areaHeight, $clipX, $clipY, $clipWidth, $clipHeight) use($white, $black, &$dataPoints, $colorButton) {
+$histogram = new Area(function($area, $context, $areaSize, $clipPoint, $clipSize) use($white, $black, &$dataSources, $colorButton) {
 	$path = new DrawPath(DRAWPATH::WINDING);
 
 	$path
-		->addRectangle($clipX, $clipY, $areaWidth, $areaHeight);
+		->addRectangle($clipPoint, $areaSize);
 
 	$path->end();
 
 	Draw::fill($context, $path, $white);
 
-	getGraphSize($areaWidth, $areaHeight, $graphWidth, $graphHeight);
+	$graphSize = new Size(
+		$areaSize->getWidth() - 40, 
+		$areaSize->getHeight() - 40);
 
 	$path = new DrawPath(DRAWPATH::WINDING);
 
-	$path->newFigure(20, 20);
-	$path->lineTo(20, 20 + $graphHeight);
-	$path->lineTo(20 + $graphWidth, 20 + $graphHeight);
+	$zero = new Point(20, 20);
+
+	$path->newFigure($zero);
+
+	$path->lineTo(new Point(
+		20, 
+		20 + $graphSize->getHeight()));
+
+	$path->lineTo(new Point(
+		20 + $graphSize->getWidth(), 
+		20 + $graphSize->getHeight()));
 	
 	$path->end();
 
-	Draw::stroke($context, $path, $black, new DrawStroke(DRAWSTROKE::CAP_FLAT, DRAWSTROKE::JOIN_MITER, 2, 10));
+	$stroke = new DrawStroke(DRAWSTROKE::CAP_FLAT, DRAWSTROKE::JOIN_MITER, 2, 10);
+
+	Draw::stroke($context, $path, $black, $stroke);
 
 	$matrix = new DrawMatrix();
-	$matrix->translate(20, 20);
-	
+	$matrix->translate($zero);
+
 	Draw::transform($context, $matrix);
 
-	$locations = getGraphLocations(
-		$dataPoints, $graphWidth, $graphHeight);	
+	$points = 
+		getGraphPoints($dataSources, $graphSize);
 
-	$path = getGraphPath($locations, $graphWidth, $graphHeight, true);
-	
+	$path = getGraphPath($points, $graphSize, true);
+
 	$brush = $colorButton->getBrush();
 	
 	Draw::fill($context, $path, $brush);
 
-	$path = getGraphPath($locations, $graphWidth, $graphHeight, false);
+	$path = getGraphPath($points, $graphSize, false);
 
-	$brush->setAlpha($brush->getAlpha()/2);
+	$brush->setAlpha(
+		$brush->getAlpha()/2);
 
-	Draw::stroke($context, $path, $brush, new DrawStroke(DRAWSTROKE::CAP_FLAT, DRAWSTROKE::JOIN_MITER, 2, 10));
+	Draw::stroke($context, $path, $brush, $stroke);
 });
 
 $redrawHistogram = function() use($histogram) {
@@ -129,10 +138,10 @@ $colorButton->setColorFromBrush($brush);
 $colorButton->onChange($redrawHistogram);
 
 for ($i = 0; $i < 10; $i++) {
-	$dataPoints[$i] = new Spin(0, 100);
-	$dataPoints[$i]->setValue(mt_rand(0, 100));
-	$dataPoints[$i]->onChange($redrawHistogram);
-	$vBox->append($dataPoints[$i]);
+	$dataSources[$i] = new Spin(0, 100);
+	$dataSources[$i]->setValue(mt_rand(0, 100));
+	$dataSources[$i]->onChange($redrawHistogram);
+	$vBox->append($dataSources[$i]);
 }
 
 $vBox->append($colorButton);

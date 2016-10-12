@@ -38,6 +38,17 @@ zend_object* php_ui_context_create(zend_class_entry *ce) {
 	return &context->std;
 }
 
+zval* php_ui_context_construct(zval *context, uiDrawContext *c) {
+	php_ui_context_t *ctxt;
+
+	object_init_ex(context, uiDrawContext_ce);
+	
+	ctxt = php_ui_context_fetch(context);
+	ctxt->c = c;
+
+	return context;
+}
+
 /* {{{ */
 const zend_function_entry php_ui_context_methods[] = {
 	PHP_FE_END

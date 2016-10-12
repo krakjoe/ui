@@ -21,7 +21,7 @@
 
 #include "php.h"
 
-#include <classes/control.h>
+#include <classes/point.h>
 #include <classes/matrix.h>
 #include <classes/context.h>
 
@@ -55,81 +55,90 @@ PHP_METHOD(DrawMatrix, __construct)
 	uiDrawMatrixSetIdentity(&matrix->m);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_translate_info, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_translate_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void DrawMatrix::translate(double x, double y) */
+/* {{{ proto void DrawMatrix::translate(Point point) */
 PHP_METHOD(DrawMatrix, translate)
 {
 	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
-	double x = 0, y = 0;
+	zval *point = NULL;
+	php_ui_point_t *p;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dd", &x, &y) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &point, uiPoint_ce) != SUCCESS) {
 		return;
 	}
 
-	uiDrawMatrixTranslate(&matrix->m, x, y);
+	p = php_ui_point_fetch(point);
+
+	uiDrawMatrixTranslate(&matrix->m, p->x, p->y);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_scale_info, 0, 0, 4)
-	ZEND_ARG_TYPE_INFO(0, xCenter, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, yCenter, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_scale_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, center, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void DrawMatrix::scale(double xCenter, double yCenter, double x, double y) */
+/* {{{ proto void DrawMatrix::scale(Point center, Point point) */
 PHP_METHOD(DrawMatrix, scale)
 {
 	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
-	double xCenter = 0, yCenter = 0, x = 0, y = 0;
+	zval *center = NULL, *point = NULL;
+	php_ui_point_t *p, *c;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dddd", &xCenter, &yCenter, &x, &y) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &center, uiPoint_ce, &point, uiPoint_ce) != SUCCESS) {
 		return;
 	}
 
-	uiDrawMatrixScale(&matrix->m, xCenter, yCenter, x, y);
+	p = php_ui_point_fetch(point);
+	c = php_ui_point_fetch(center);
+
+	uiDrawMatrixScale(&matrix->m, c->x, c->y, p->x, p->y);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_rotate_info, 0, 0, 4)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_rotate_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
 	ZEND_ARG_TYPE_INFO(0, amount, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void DrawMatrix::rotate(double xCenter, double yCenter, double x, double y) */
+/* {{{ proto void DrawMatrix::rotate(Point point, double amount) */
 PHP_METHOD(DrawMatrix, rotate)
 {
 	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
-	double x = 0, y = 0, amount = 0;
+	zval *point = NULL;
+	php_ui_point_t *p;
+	double amount = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ddd", &x, &y, &amount) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Od", &point, uiPoint_ce, &amount) != SUCCESS) {
 		return;
 	}
 
-	uiDrawMatrixRotate(&matrix->m, x, y, amount);
+	p = php_ui_point_fetch(point);
+
+	uiDrawMatrixRotate(&matrix->m, p->x, p->y, amount);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_skew_info, 0, 0, 4)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, xAmount, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, yAmount, IS_DOUBLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_skew_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, amount, UI\\Point, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void DrawMatrix::skew(double x, double y, double xAmount, double yAmount) */
+/* {{{ proto void DrawMatrix::skew(Point point, Point amount) */
 PHP_METHOD(DrawMatrix, skew)
 {
 	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
-	double xAmount = 0, yAmount = 0, x = 0, y = 0;
+	zval *point = NULL, *amount = NULL;
+	php_ui_point_t *p, *a;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dddd", &x, &y, &xAmount, &yAmount) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &point, uiPoint_ce, &amount, uiPoint_ce) != SUCCESS) {
 		return;
 	}
 
-	uiDrawMatrixSkew(&matrix->m, x, y, xAmount, yAmount);
+	p = php_ui_point_fetch(point);
+	a = php_ui_point_fetch(amount);
+
+	uiDrawMatrixSkew(&matrix->m, p->x, p->y, a->x, a->y);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_matrix_multiply_info, 0, 0, IS_OBJECT, "UI\\DrawMatrix", 1)
@@ -206,7 +215,7 @@ PHP_MINIT_FUNCTION(UI_DrawMatrix)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawMatrix", php_ui_matrix_methods);
 
-	uiDrawMatrix_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiDrawMatrix_ce = zend_register_internal_class(&ce);
 	uiDrawMatrix_ce->create_object = php_ui_matrix_create;
 
 	memcpy(&php_ui_matrix_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

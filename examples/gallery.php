@@ -1,5 +1,6 @@
 <?php
 use UI\Window;
+use UI\DrawSize;
 use UI\Tab;
 use UI\Box;
 use UI\Group;
@@ -18,10 +19,9 @@ use UI\Picker;
 use UI\Check;
 use UI\Label;
 use UI\Separator;
-
 use UI\ColorButton;
 
-$window = new UI\Window("libui Control Gallery", 640, 480, true);
+$window = new UI\Window("libui Control Gallery", new DrawSize(640, 480), true);
 
 $window->setMargin(true);
 
