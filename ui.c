@@ -197,13 +197,13 @@ PHP_MINFO_FUNCTION(ui)
 /* }}} */
 
 /* {{{ */
-PHP_FUNCTION(uiMain)
+PHP_FUNCTION(main)
 {
 	uiMain();
 } /* }}} */
 
 /* {{{ */
-PHP_FUNCTION(uiMainStep)
+PHP_FUNCTION(mainStep)
 {
 	zend_bool block = 0;
 
@@ -217,8 +217,8 @@ PHP_FUNCTION(uiMainStep)
 /* {{{ ui_functions[]
  */
 const zend_function_entry ui_functions[] = {
-	PHP_FE(uiMain, NULL)
-	PHP_FE(uiMainStep, NULL)
+	ZEND_NS_FE("UI", main, NULL)	
+	ZEND_NS_FE("UI", mainStep, NULL)	
 	PHP_FE_END
 };
 /* }}} */

@@ -214,5 +214,5 @@ $tab->setMargin(2, true);
 
 $window->show();
 
-uiMain();
+UI\main();
 ?>

@@ -141,5 +141,5 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-uiMain();
+UI\main();
 ?>
