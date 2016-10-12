@@ -7,7 +7,7 @@ if (PHP_UI != "no") {
 	if (CHECK_HEADER_ADD_INCLUDE("ui.h", "CFLAGS_UI", PHP_UI + ";" + configure_module_dirname)) {
 		ADD_SOURCES(
                 "ext/ui/classes",
-                "box.c form.c grid.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c  window.c area.c path.c context.c",
+                "box.c form.c grid.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c  window.c area.c path.c context.c brush.c draw.c",
                 "ui"
         );
 
