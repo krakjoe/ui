@@ -37,27 +37,29 @@ function getGraphPoints(array $dataSources, Size $size) : array {
 
 	$points = [];
 
-	for ($i = 0; $i < count($dataSources); $i++) {
+	foreach ($dataSources as $i => $source) {
 		$points[$i] = new Point(
 						$xincr * $i, 
-						$yincr * (100 - $dataSources[$i]->getValue()));
+						$yincr * (100 - $source->getValue()));
 	}
 
 	return $points;
 }
 
-function getGraphPath($locations, Size $size, $extend) : DrawPath {
+function getGraphPath(array $locations, Size $size, bool $extend = false) : DrawPath {
 	$path = new DrawPath(DRAWPATH::WINDING);
 
-	$path->newFigure($locations[0]);
-	for ($i = 1; $i < 10; $i++)
-		$path->lineTo($locations[$i]);
-	
+	foreach ($locations as $location) {
+		$path->lineTo($location);
+	}
+
 	if ($extend) {
 		$path->lineTo(new Point(
-			$size->getWidth(), $size->getHeight()));
+						$size->getWidth(), 
+						$size->getHeight()));
 		$path->lineTo(new Point(
-			0, $size->getHeight()));
+						0, 
+						$size->getHeight()));
 		$path->closeFigure();
 	}
 
