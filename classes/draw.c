@@ -26,6 +26,7 @@
 #include <classes/path.h>
 #include <classes/brush.h>
 #include <classes/stroke.h>
+#include <classes/matrix.h>
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_fill_info, 0, 0, 3)
 	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
@@ -80,10 +81,33 @@ PHP_METHOD(Draw, stroke)
 	uiDrawStroke(c->c, p->p, &b->b, &s->s);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_transform_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, context, UI\\DrawContext, 0)
+	ZEND_ARG_OBJ_INFO(0, matrix, UI\\DrawMatrix, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Draw::transform(UI\DrawContext context, UI\DrawMatrix matrix) */
+PHP_METHOD(Draw, transform)
+{
+	zval *context = NULL, *matrix = NULL;
+	php_ui_context_t *c;
+	php_ui_matrix_t *m;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &context, uiDrawContext_ce, &matrix, uiDrawMatrix_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_context_fetch(context);	
+	m = php_ui_matrix_fetch(matrix);
+
+	uiDrawTransform(c->c, &m->m);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_draw_methods[] = {
 	PHP_ME(Draw, fill,     php_ui_draw_fill_info,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(Draw, stroke,   php_ui_draw_stroke_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(Draw, transform, php_ui_draw_transform_info, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
