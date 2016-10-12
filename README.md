@@ -13,8 +13,8 @@ TODO
   - make onClosing/onQuit tidy
   - see what can be done about loop
   - make other people do windows build
-  - mouse events ?
-  - drawing
+  - mouse/key events (in progress)
+  - drawing (in progress)
 
 Requirements
 ===========
