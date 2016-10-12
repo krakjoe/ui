@@ -139,7 +139,7 @@ PHP_METHOD(Draw, save)
 		return;
 	}
 
-	c = php_ui_context_fetch(c);	
+	c = php_ui_context_fetch(context);	
 
 	uiDrawSave(c->c);
 } /* }}} */
@@ -158,7 +158,7 @@ PHP_METHOD(Draw, restore)
 		return;
 	}
 
-	c = php_ui_context_fetch(c);	
+	c = php_ui_context_fetch(context);	
 
 	uiDrawRestore(c->c);
 } /* }}} */
