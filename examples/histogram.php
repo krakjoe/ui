@@ -155,19 +155,23 @@ if (extension_loaded("pthreads")) {
 	$backgroundPool = new Pool(8);
 
 	$sync = new Threaded();
-	$backgroundButton->onClick(function() use($window, $sync, $backgroundPool) {
-		$backgroundPool->submit(new class($window, $sync) extends Threaded {
+	$backgroundButton->onClick(function($button) use($window, $sync, $backgroundPool) {
+		$backgroundPool->submit(new class($window, $button, $sync) extends Threaded {
 
 			public function run() {
-				$this->sync->synchronized(function($window){
+				$this->sync->synchronized(function($window, $button){
+					$button->disable();
 					$window->msg(
-						"Message from Background Thread",
-						"More information goes here ...");
-				}, $this->window);
+						"Action",
+						"Background disabled for three seconds");
+					sleep(3);
+					$button->enable();
+				}, $this->window, $this->button);
 			}
 
-			public function __construct(Window $window, Threaded $sync) {
+			public function __construct(Window $window, Button $button, Threaded $sync) {
 				$this->window = $window;
+				$this->button = $button;
 				$this->sync = $sync;
 			}
 		});
