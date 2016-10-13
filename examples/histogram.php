@@ -188,9 +188,8 @@ if (extension_loaded("pthreads")) {
 		while ($backgroundPool->collect())
 			continue;
 	}
+	$backgroundPool->shutdown();
 } else {
 	UI\main();
 }
-
-$backgroundPool->shutdown();
 ?>
