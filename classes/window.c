@@ -28,6 +28,17 @@
 
 zend_object_handlers php_ui_window_handlers;
 
+zval *php_ui_window_construct(zval *object, uiWindow *w) {
+	php_ui_window_t *win;
+
+	object_init_ex(object, uiWindow_ce);
+
+	win = php_ui_window_fetch(object);
+	win->w = w;
+
+	return object;
+}
+
 zend_object* php_ui_window_create(zend_class_entry *ce) {
 	php_ui_window_t *w = (php_ui_window_t*) ecalloc(1, sizeof(php_ui_window_t));
 

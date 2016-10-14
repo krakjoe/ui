@@ -20,6 +20,13 @@ use UI\Check;
 use UI\Label;
 use UI\Separator;
 use UI\ColorButton;
+use UI\Menu;
+
+$menu = new Menu("File");
+$quitButton = $menu->append("Quit");
+$quitButton->onClick(function($item, $window){
+	//$window->close();
+});
 
 $window = new UI\Window("libui Control Gallery", new Size(640, 480), true);
 

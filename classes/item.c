@@ -21,10 +21,45 @@
 
 #include "php.h"
 
+#include <classes/window.h>
 #include <classes/control.h>
 #include <classes/item.h>
 
 zend_object_handlers php_ui_item_handlers;
+
+void php_ui_item_handler(uiMenuItem *i, uiWindow *w,  void *_ev) {
+	php_ui_item_t *ev = (php_ui_item_t*) _ev;
+
+	if (Z_TYPE(ev->handler) != IS_UNDEF) {
+		zval rv;
+		zval window, item;
+
+		zend_fcall_info fci = empty_fcall_info;
+		zend_fcall_info_cache fcc = empty_fcall_info_cache;
+
+		if (zend_fcall_info_init(&ev->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
+			return;
+		}
+
+		ZVAL_OBJ(&item, &ev->std);
+		php_ui_window_construct(&window, w);
+		
+		ZVAL_UNDEF(&rv);
+
+		zend_fcall_info_argn(&fci, 2, &item, &window);
+		fci.retval = &rv;
+
+		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+			return;
+		}
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+
+		zend_fcall_info_args_clear(&fci, 1);
+	}
+} /* }}} */
 
 zend_object* php_ui_item_create(zend_class_entry *ce) {
 	php_ui_item_t *item = 
@@ -37,6 +72,16 @@ zend_object* php_ui_item_create(zend_class_entry *ce) {
 	item->std.handlers = &php_ui_item_handlers;
 
 	return &item->std;
+}
+
+void php_ui_item_free(zend_object *o) {
+	php_ui_item_t *item = php_ui_item_from(o);
+
+	if (Z_TYPE(item->handler) != IS_UNDEF) {
+		zval_ptr_dtor(&item->handler);
+	}
+
+	zend_object_std_dtor(o);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_item_enable_info, 0, 0, 0)
@@ -105,12 +150,36 @@ PHP_METHOD(MenuItem, setChecked)
 	uiMenuItemSetChecked(item->i, (int) checked);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_item_on_click_info, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void MenuItem::onClick(callable handler) */
+PHP_METHOD(MenuItem, onClick)
+{
+	php_ui_item_t *item = php_ui_item_fetch(getThis());
+	zval *handler = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE(item->handler) != IS_UNDEF) {
+		zval_ptr_dtor(&item->handler);
+	}
+
+	ZVAL_COPY(&item->handler, handler);
+
+	uiMenuItemOnClicked(item->i, php_ui_item_handler, item);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_item_methods[] = {
 	PHP_ME(MenuItem, enable, php_ui_item_enable_info,          ZEND_ACC_PUBLIC)
 	PHP_ME(MenuItem, disable, php_ui_item_disable_info,        ZEND_ACC_PUBLIC)
 	PHP_ME(MenuItem, isChecked, php_ui_item_is_checked_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(MenuItem, setChecked, php_ui_item_set_checked_info, ZEND_ACC_PUBLIC)
+	PHP_ME(MenuItem, onClick, php_ui_item_on_click_info,       ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
@@ -127,6 +196,7 @@ PHP_MINIT_FUNCTION(UI_MenuItem)
 	memcpy(&php_ui_item_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_item_handlers.offset = XtOffsetOf(php_ui_item_t, std);
+	php_ui_item_handlers.free_obj = php_ui_item_free;
 
 	return SUCCESS;
 } /* }}} */
