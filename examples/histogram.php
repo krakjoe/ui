@@ -73,7 +73,9 @@ $colorButton = new ColorButton();
 $white = new DrawBrush(DRAWBRUSH::SOLID, 1, 1, 1, 1);
 $black = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
 
-$histogram = new Area(function($area, $context, $areaSize, $clipPoint, $clipSize) use($white, $black, &$dataSources, $colorButton) {
+$histogram = new Area();
+
+$histogram->onDraw(function($area, $context, $areaSize, $clipPoint, $clipSize) use($white, $black, &$dataSources, $colorButton) {
 	$path = new DrawPath(DRAWPATH::WINDING);
 
 	$path
@@ -127,6 +129,16 @@ $histogram = new Area(function($area, $context, $areaSize, $clipPoint, $clipSize
 		$brush->getAlpha()/2);
 
 	Draw::stroke($context, $path, $brush, $stroke);
+});
+
+$histogram->onMouse(function($area, $areaPoint, $areaSize, $flags){
+	if ($flags & AREA::DOWN) {
+		printf("Mouse down %d x %d\n", $areaPoint->getX(), $areaPoint->getY());
+	}
+
+	if ($flags & AREA::UP) {
+		printf("Mouse up %d x %d\n", $areaPoint->getX(), $areaPoint->getY());
+	}
 });
 
 $redrawHistogram = function() use($histogram) {

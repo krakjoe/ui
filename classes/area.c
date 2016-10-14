@@ -141,7 +141,54 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
 
-	php_ui_area_event(area, &area->mouse, NULL, e);
+	int ret = 0;
+
+	if (Z_TYPE(area->mouse) != IS_UNDEF) {
+		zval rv;
+		zval ctrl, areaPoint, areaSize, flags;
+		php_ui_context_t *ctxt;
+		zend_long modifiers = e->Modifiers;
+
+		zend_fcall_info fci = empty_fcall_info;
+		zend_fcall_info_cache fcc = empty_fcall_info_cache;
+
+		if (zend_fcall_info_init(&area->mouse, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
+			return;
+		}
+
+		ZVAL_UNDEF(&rv);
+		fci.retval = &rv;
+
+		ZVAL_OBJ(&ctrl, &area->std);
+
+		php_ui_point_construct(&areaPoint, e->X, e->Y);
+		php_ui_size_construct(&areaSize, e->AreaWidth, e->AreaHeight);
+
+		if (e->Down) {
+			modifiers |= PHP_UI_AREA_DOWN;
+		}
+
+		if (e->Up) {
+			modifiers |= PHP_UI_AREA_UP;
+		}
+
+		ZVAL_LONG(&flags, modifiers);
+
+		zend_fcall_info_argn(&fci, 4, &ctrl, &areaPoint, &areaSize, &flags);
+
+		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+
+		zval_ptr_dtor(&areaPoint);
+		zval_ptr_dtor(&areaSize);
+	}
 }
 
 static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent *e) {
@@ -196,35 +243,19 @@ void php_ui_area_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_area_construct_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, onDraw, IS_CALLABLE, 0)
-	ZEND_ARG_TYPE_INFO(0, onMouseEvent, IS_CALLABLE, 0)
-	ZEND_ARG_TYPE_INFO(0, onKeyEvent, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_construct_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Area Area::__construct(callable onDraw, callable onMouseEvent, callable onKeyEvent) */
+/* {{{ proto Area Area::__construct(void) */
 PHP_METHOD(Area, __construct) 
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zval *draw = NULL;
-	zval *mouse = NULL;
-	zval *key = NULL;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z|zz", &draw, &mouse, &key) != SUCCESS) {
+	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	ZVAL_COPY(&area->draw, draw);
-	
-	if (mouse) {
-		ZVAL_COPY(&area->mouse, mouse);
-	}		
-
-	if (key) {
-		ZVAL_COPY(&area->key, key);
-	}
-
-	area->a = uiNewArea(&area->h);	
+	area->a = uiNewArea(&area->h);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_area_redraw_info, 0, 0, 0)
@@ -285,12 +316,72 @@ PHP_METHOD(Area, scrollTo)
 	uiAreaScrollTo(area->a, p->x, p->y, s->width, s->height);
 } /* }}} */
 
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_callable_info, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Area::onDraw(callable handler) */
+PHP_METHOD(Area, onDraw)
+{
+	php_ui_area_t *area = php_ui_area_fetch(getThis());
+	zval *handler = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE(area->draw) != IS_UNDEF) {
+		zval_ptr_dtor(&area->draw);
+	}
+
+	ZVAL_COPY(&area->draw, handler);
+} /* }}} */
+
+/* {{{ proto void Area::onMouse(callable handler) */
+PHP_METHOD(Area, onMouse)
+{
+	php_ui_area_t *area = php_ui_area_fetch(getThis());
+	zval *handler = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE(area->mouse) != IS_UNDEF) {
+		zval_ptr_dtor(&area->mouse);
+	}
+
+	ZVAL_COPY(&area->mouse, handler);
+} /* }}} */
+
+/* {{{ proto void Area::onKey(callable handler) */
+PHP_METHOD(Area, onKey)
+{
+	php_ui_area_t *area = php_ui_area_fetch(getThis());
+	zval *handler = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE(area->key) != IS_UNDEF) {
+		zval_ptr_dtor(&area->key);
+	}
+
+	ZVAL_COPY(&area->key, handler);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_area_methods[] = {
 	PHP_ME(Area, __construct,  php_ui_area_construct_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Area, redraw,       php_ui_area_redraw_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Area, setSize,      php_ui_area_set_size_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Area, scrollTo,     php_ui_area_scroll_to_info,  ZEND_ACC_PUBLIC)
+
+	PHP_ME(Area, onDraw,       php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(Area, onMouse,      php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(Area, onKey,        php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
@@ -303,6 +394,13 @@ PHP_MINIT_FUNCTION(UI_Area)
 
 	uiArea_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiArea_ce->create_object = php_ui_area_create;
+	
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("CTRL"), PHP_UI_AREA_CTRL);
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("ALT"), PHP_UI_AREA_ALT);
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("SHIFT"), PHP_UI_AREA_SHIFT);
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("SUPER"), PHP_UI_AREA_SUPER);
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("DOWN"), PHP_UI_AREA_DOWN);
+	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("UP"), PHP_UI_AREA_UP);
 
 	memcpy(&php_ui_area_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
