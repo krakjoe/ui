@@ -217,6 +217,12 @@ PHP_FUNCTION(main)
 } /* }}} */
 
 /* {{{ */
+PHP_FUNCTION(quit)
+{
+	uiQuit();
+} /* }}} */
+
+/* {{{ */
 PHP_FUNCTION(mainStep)
 {
 	zend_bool block = 0;
@@ -293,6 +299,7 @@ const zend_function_entry ui_functions[] = {
 	ZEND_NS_FE("UI", main, NULL)	
 	ZEND_NS_FE("UI", mainStep, NULL)	
 	ZEND_NS_FE("UI", mainSteps, NULL)
+	ZEND_NS_FE("UI", quit, NULL)
 	PHP_FE_END
 };
 /* }}} */

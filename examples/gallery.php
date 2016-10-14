@@ -24,12 +24,13 @@ use UI\Menu;
 
 $menu = new Menu("File");
 $quitButton = $menu->append("Quit");
+
 $quitButton->onClick(function($item, $window){
-	//$window->close();
+	/* will cause UI\main to return */
+	UI\quit();
 });
 
 $window = new UI\Window("libui Control Gallery", new Size(640, 480), true);
-
 $window->setMargin(true);
 
 $tab = new Tab();

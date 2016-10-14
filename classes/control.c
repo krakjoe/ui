@@ -176,6 +176,18 @@ PHP_METHOD(Control, disable)
 	uiControlDisable(ctrl->c);
 } /* }}} */
 
+/* {{{ proto void Control::destroy(void) */
+PHP_METHOD(Control, destroy)
+{
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	uiControlDestroy(ctrl->c);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_control_methods[] = {
 	PHP_ME(Control, getParent,   php_ui_control_get_parent_info,      ZEND_ACC_PUBLIC)
@@ -187,6 +199,7 @@ const zend_function_entry php_ui_control_methods[] = {
 	PHP_ME(Control, isEnabled,   php_ui_control_is_enabled_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Control, enable,      php_ui_control_void_info,            ZEND_ACC_PUBLIC)
 	PHP_ME(Control, disable,     php_ui_control_void_info,            ZEND_ACC_PUBLIC)
+	PHP_ME(Control, destroy,     php_ui_control_void_info,            ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
