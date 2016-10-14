@@ -239,8 +239,13 @@ PHP_FUNCTION(mainSteps)
 } /* }}} */
 
 /* {{{ nothing happening here ... ignore this ... */
+typedef struct _php_ui_object_t {
+	void *p;
+	zend_object std;
+} php_ui_object_t;
+
 int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_serialize_data *data) {
-	void *address = ((char*) Z_OBJ_P(object) - XtOffsetOf(php_ui_window_t, std));
+	void *address = ((char*) Z_OBJ_P(object) - XtOffsetOf(php_ui_object_t, std));
 
 #ifdef _WIN64
 	(*buflen) = snprintf(NULL, 0, ":%I64u:", (unsigned __int64) address);
@@ -258,11 +263,6 @@ int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_
 
 	return SUCCESS;
 }
-
-typedef struct _php_ui_object_t {
-	void *p;
-	zend_object std;
-} php_ui_object_t;
 
 #define php_ui_object_from(o) ((php_ui_object_t*) ((char*) o - XtOffsetOf(php_ui_object_t, std)))
 #define php_ui_object_fetch(o) php_ui_object_from(Z_OBJ_P(o))
