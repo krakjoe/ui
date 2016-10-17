@@ -22,7 +22,6 @@
 #include "php.h"
 
 #include <classes/window.h>
-#include <classes/control.h>
 #include <classes/item.h>
 
 zend_object_handlers php_ui_item_handlers;
@@ -190,7 +189,7 @@ PHP_MINIT_FUNCTION(UI_MenuItem)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "MenuItem", php_ui_item_methods);
 
-	uiItem_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiItem_ce = zend_register_internal_class(&ce);
 	uiItem_ce->create_object = php_ui_item_create;
 
 	memcpy(&php_ui_item_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

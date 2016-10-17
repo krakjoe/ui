@@ -21,7 +21,6 @@
 
 #include "php.h"
 
-#include <classes/control.h>
 #include <classes/menu.h>
 #include <classes/item.h>
 
@@ -150,7 +149,6 @@ PHP_METHOD(Menu, appendAbout)
 
 	item->i = uiMenuAppendAboutItem(menu->m);
 } /* }}} */
-
 ZEND_BEGIN_ARG_INFO_EX(php_ui_menu_append_separator_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -185,7 +183,7 @@ PHP_MINIT_FUNCTION(UI_Menu)
 
 	INIT_NS_CLASS_ENTRY(ce, "UI", "Menu", php_ui_menu_methods);
 
-	uiMenu_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
+	uiMenu_ce = zend_register_internal_class(&ce);
 	uiMenu_ce->create_object = php_ui_menu_create;
 
 	memcpy(&php_ui_menu_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
