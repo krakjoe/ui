@@ -139,6 +139,90 @@ const zend_function_entry php_ui_point_methods[] = {
 }; /* }}} */
 
 /* {{{ */
+static zval* php_ui_point_read(zval *object, zval *member, int type, void **cache, zval *rv) {
+	php_ui_point_t *point = php_ui_point_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (Z_STRLEN_P(member) != 1) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (type == BP_VAR_RW || type == BP_VAR_W) {
+		zend_throw_exception_ex(NULL, 0, 
+			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
+		return &EG(uninitialized_zval);	
+	}
+
+	switch (Z_STRVAL_P(member)[0]) {
+		case 'x':
+		case 'X':
+			ZVAL_DOUBLE(rv, point->x);
+			return rv;
+
+		case 'y':
+		case 'Y':
+			ZVAL_DOUBLE(rv, point->y);
+			return rv;
+	}
+
+	zend_throw_exception_ex(NULL, 0,
+		"Failed to fetch %s, does not exist", Z_STRVAL_P(member));
+
+	return &EG(uninitialized_zval);
+} /* }}} */
+
+/* {{{ */
+zval* php_ui_point_noref(zval *object, zval *member, int type, void **cache) {
+	return NULL;
+} /* }}} */
+
+/* {{{ */
+void php_ui_point_write(zval *object, zval *member, zval *value, void **cache) {
+	php_ui_point_t *point = php_ui_point_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return;
+	}
+
+	if (Z_STRLEN_P(member) != 1) {
+		return;
+	}
+
+	switch (Z_STRVAL_P(member)[0]) {
+		case 'x':
+		case 'X':
+			point->x = zval_get_double(value);
+			return;
+
+		case 'y':
+		case 'Y':
+			point->y = zval_get_double(value);
+			return;
+	}
+
+	zend_throw_exception_ex(NULL, 0,
+		"Failed to write %s, does not exist", Z_STRVAL_P(member));
+} /* }}} */
+
+/* {{{ */
+HashTable* php_ui_point_debug(zval *object, int *is_temp) {
+	php_ui_point_t *point = php_ui_point_fetch(object);
+	zval debug;
+
+	array_init(&debug);
+
+	add_assoc_double(&debug, "x", point->x);
+	add_assoc_double(&debug, "y", point->y);
+
+	*is_temp = 1;
+
+	return Z_ARRVAL(debug);
+} /* }}} */
+
+/* {{{ */
 PHP_MINIT_FUNCTION(UI_Point) 
 {
 	zend_class_entry ce;
@@ -147,10 +231,18 @@ PHP_MINIT_FUNCTION(UI_Point)
 
 	uiPoint_ce = zend_register_internal_class(&ce);
 	uiPoint_ce->create_object = php_ui_point_create;
+	uiPoint_ce->ce_flags |= ZEND_ACC_FINAL;
+
+	zend_declare_property_double(uiPoint_ce, ZEND_STRL("x"), 0, ZEND_ACC_PUBLIC);
+	zend_declare_property_double(uiPoint_ce, ZEND_STRL("y"), 0, ZEND_ACC_PUBLIC);
 
 	memcpy(&php_ui_point_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_point_handlers.offset = XtOffsetOf(php_ui_point_t, std);
+	php_ui_point_handlers.read_property = php_ui_point_read;
+	php_ui_point_handlers.get_property_ptr_ptr = php_ui_point_noref;
+	php_ui_point_handlers.write_property = php_ui_point_write;
+	php_ui_point_handlers.get_debug_info = php_ui_point_debug;
 
 	return SUCCESS;
 } /* }}} */
