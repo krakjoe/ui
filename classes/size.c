@@ -139,6 +139,82 @@ const zend_function_entry php_ui_size_methods[] = {
 }; /* }}} */
 
 /* {{{ */
+static zval* php_ui_size_read(zval *object, zval *member, int type, void **cache, zval *rv) {
+	php_ui_size_t *size = php_ui_size_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (Z_STRLEN_P(member) != 1) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (type == BP_VAR_RW || type == BP_VAR_W) {
+		zend_throw_exception_ex(NULL, 0, 
+			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
+		return &EG(uninitialized_zval);	
+	}
+
+	if (zend_string_equals_literal_ci(Z_STR_P(member), "width")) {
+		ZVAL_DOUBLE(rv, size->width);
+		return rv;
+	}
+
+	if (zend_string_equals_literal_ci(Z_STR_P(member), "height")) {
+		ZVAL_DOUBLE(rv, size->height);
+		return rv;
+	}
+
+	zend_throw_exception_ex(NULL, 0,
+		"Failed to fetch %s, does not exist", Z_STRVAL_P(member));
+
+	return &EG(uninitialized_zval);
+} /* }}} */
+
+/* {{{ */
+zval* php_ui_size_noref(zval *object, zval *member, int type, void **cache) {
+	return NULL;
+} /* }}} */
+
+/* {{{ */
+void php_ui_size_write(zval *object, zval *member, zval *value, void **cache) {
+	php_ui_size_t *size = php_ui_size_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return;
+	}
+
+	if (zend_string_equals_literal_ci(Z_STR_P(member), "width")) {
+		size->width = zval_get_double(value);
+		return;
+	}
+
+	if (zend_string_equals_literal_ci(Z_STR_P(member), "height")) {
+		size->height = zval_get_double(value);
+		return;
+	}
+
+	zend_throw_exception_ex(NULL, 0,
+		"Failed to write %s, does not exist", Z_STRVAL_P(member));
+} /* }}} */
+
+/* {{{ */
+HashTable* php_ui_size_debug(zval *object, int *is_temp) {
+	php_ui_size_t *size = php_ui_size_fetch(object);
+	zval debug;
+
+	array_init(&debug);
+
+	add_assoc_double(&debug, "width", size->width);
+	add_assoc_double(&debug, "height", size->height);
+
+	*is_temp = 1;
+
+	return Z_ARRVAL(debug);
+} /* }}} */
+
+/* {{{ */
 PHP_MINIT_FUNCTION(UI_Size) 
 {
 	zend_class_entry ce;
@@ -147,11 +223,15 @@ PHP_MINIT_FUNCTION(UI_Size)
 
 	uiSize_ce = zend_register_internal_class(&ce);
 	uiSize_ce->create_object = php_ui_size_create;
+	uiSize_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_size_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_size_handlers.offset = XtOffsetOf(php_ui_size_t, std);
-
+	php_ui_size_handlers.read_property = php_ui_size_read;
+	php_ui_size_handlers.get_property_ptr_ptr = php_ui_size_noref;
+	php_ui_size_handlers.write_property = php_ui_size_write;
+	php_ui_size_handlers.get_debug_info = php_ui_size_debug;
 	return SUCCESS;
 } /* }}} */
 #endif
