@@ -136,16 +136,6 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 	$pen->stroke($path, $brush, $stroke);
 });
 
-$histogram->onMouse(function($area, $areaPoint, $areaSize, $flags){
-	if ($flags & AREA::DOWN) {
-		printf("Mouse down %d x %d\n", $areaPoint->getX(), $areaPoint->getY());
-	}
-
-	if ($flags & AREA::UP) {
-		printf("Mouse up %d x %d\n", $areaPoint->getX(), $areaPoint->getY());
-	}
-});
-
 $redrawHistogram = function() use($histogram) {
 	$histogram->redraw();
 };
