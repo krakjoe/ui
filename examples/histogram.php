@@ -6,6 +6,7 @@ use UI\Box;
 use UI\Spin;
 use UI\ColorButton;
 use UI\Button;
+use UI\Entry;
 use UI\Area;
 use UI\Draw\Pen;
 use UI\Draw\Path;
@@ -161,6 +162,18 @@ for ($i = 0; $i < 10; $i++) {
 
 $vBox->append($colorButton);
 
+$colorBox = new Entry();
+$colorBox->setText("0x000000");
+
+$colorBoxButton = new Button("Set Color");
+$colorBoxButton->onClick(function() use($colorBox, $colorButton, $redrawHistogram) {
+	$colorButton->setColor(
+		new Color(hexdec($colorBox->getText()), 1));
+	$redrawHistogram();
+});
+
+$vBox->append($colorBox);
+$vBox->append($colorBoxButton);
 $hBox->append($histogram, true);
 
 $window->show();
