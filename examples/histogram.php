@@ -161,51 +161,9 @@ for ($i = 0; $i < 10; $i++) {
 
 $vBox->append($colorButton);
 
-if (extension_loaded("pthreads")) {
-	/* THIS IS VERY PROBABLY DANGEROUS, LET'S FIND OUT */
-	$backgroundButton = new Button("Background");
-	$backgroundPool = new Pool(8);
-
-	$sync = new Threaded();
-	$backgroundButton->onClick(function($button) use($window, $sync, $backgroundPool) {
-		$backgroundPool->submit(new class($window, $button, $sync) extends Threaded {
-
-			public function run() {
-				$this->sync->synchronized(function($window, $button){
-					$button->disable();
-					$window->msg(
-						"Action",
-						"Background disabled for three seconds");
-					sleep(3);
-					$button->enable();
-				}, $this->window, $this->button);
-			}
-
-			public function __construct(Window $window, Button $button, Threaded $sync) {
-				$this->window = $window;
-				$this->button = $button;
-				$this->sync = $sync;
-			}
-		});
-	});
-	$vBox->append($backgroundButton);
-}
-
 $hBox->append($histogram, true);
 
 $window->show();
 
-if (extension_loaded("pthreads")) {	
-	/* STEP WHILE VISIBLE */
-	while ($window->isVisible()) {
-		/* GIVE THE UI PRIOTIY */
-		UI\mainStep(true);
-
-		while ($backgroundPool->collect())
-			continue;
-	}
-	$backgroundPool->shutdown();
-} else {
-	UI\main();
-}
+UI\main();
 ?>
