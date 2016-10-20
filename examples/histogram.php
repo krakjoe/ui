@@ -7,11 +7,11 @@ use UI\Spin;
 use UI\ColorButton;
 use UI\Button;
 use UI\Area;
-use UI\DrawPath;
-use UI\DrawBrush;
-use UI\Draw;
-use UI\DrawStroke;
-use UI\DrawMatrix;
+use UI\Draw\Pen;
+use UI\Draw\Path;
+use UI\Draw\Brush;
+use UI\Draw\Stroke;
+use UI\Draw\Matrix;
 
 $window = new Window("libui Histogram Example", new Size(640, 480), true);
 
@@ -47,8 +47,8 @@ function getGraphPoints(array $dataSources, Size $size) : array {
 	return $points;
 }
 
-function getGraphPath(array $locations, Size $size, bool $extend = false) : DrawPath {
-	$path = new DrawPath(DRAWPATH::WINDING);
+function getGraphPath(array $locations, Size $size, bool $extend = false) : Path {
+	$path = new Path(PATH::WINDING);
 
 	foreach ($locations as $location) {
 		$path->lineTo($location);
@@ -70,26 +70,26 @@ function getGraphPath(array $locations, Size $size, bool $extend = false) : Draw
 
 $colorButton = new ColorButton();
 
-$white = new DrawBrush(DRAWBRUSH::SOLID, 1, 1, 1, 1);
-$black = new DrawBrush(DRAWBRUSH::SOLID, 0, 0, 0, 1);
+$white = new Brush(BRUSH::SOLID, 1, 1, 1, 1);
+$black = new Brush(BRUSH::SOLID, 0, 0, 0, 1);
 
 $histogram = new Area();
 
-$histogram->onDraw(function($area, $context, $areaSize, $clipPoint, $clipSize) use($white, $black, &$dataSources, $colorButton) {
-	$path = new DrawPath(DRAWPATH::WINDING);
+$histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) use($white, $black, &$dataSources, $colorButton) {
+	$path = new Path(PATH::WINDING);
 
 	$path
 		->addRectangle($clipPoint, $areaSize);
 
 	$path->end();
 
-	Draw::fill($context, $path, $white);
+	$pen->fill($path, $white);
 
 	$graphSize = new Size(
 		$areaSize->getWidth() - 40, 
 		$areaSize->getHeight() - 40);
 
-	$path = new DrawPath(DRAWPATH::WINDING);
+	$path = new Path(PATH::WINDING);
 
 	$zero = new Point(20, 20);
 
@@ -105,14 +105,14 @@ $histogram->onDraw(function($area, $context, $areaSize, $clipPoint, $clipSize) u
 	
 	$path->end();
 
-	$stroke = new DrawStroke(DRAWSTROKE::CAP_FLAT, DRAWSTROKE::JOIN_MITER, 2, 10);
+	$stroke = new Stroke(STROKE::CAP_FLAT, STROKE::JOIN_MITER, 2, 10);
 
-	Draw::stroke($context, $path, $black, $stroke);
+	$pen->stroke($path, $black, $stroke);
 
-	$matrix = new DrawMatrix();
+	$matrix = new Matrix();
 	$matrix->translate($zero);
 
-	Draw::transform($context, $matrix);
+	$pen->transform($matrix);
 
 	$points = 
 		getGraphPoints($dataSources, $graphSize);
@@ -121,14 +121,14 @@ $histogram->onDraw(function($area, $context, $areaSize, $clipPoint, $clipSize) u
 
 	$brush = $colorButton->getBrush();
 	
-	Draw::fill($context, $path, $brush);
+	$pen->fill($path, $brush);
 
 	$path = getGraphPath($points, $graphSize, false);
 
 	$brush->setAlpha(
 		$brush->getAlpha()/2);
 
-	Draw::stroke($context, $path, $brush, $stroke);
+	$pen->stroke($path, $brush, $stroke);
 });
 
 $histogram->onMouse(function($area, $areaPoint, $areaSize, $flags){
@@ -145,7 +145,7 @@ $redrawHistogram = function() use($histogram) {
 	$histogram->redraw();
 };
 
-$brush = new DrawBrush(DRAWBRUSH::SOLID);
+$brush = new Brush(BRUSH::SOLID);
 $brush->setAlpha(1);
 $brush->setRGB(0x8892BF); # this is the color of PHP, internally ...
 

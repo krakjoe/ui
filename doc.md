@@ -184,9 +184,9 @@ UI\ColorButton
 ```
 final class UI\ColorButton extends UI\Control {
 	public function setColor(int $r, int $r, int $b) : void;
-	public function setColorFromBrush(UI\DrawBrush $brush) : void;
+	public function setColorFromBrush(UI\Draw\Brush $brush) : void;
 	public function getColor() : array;
-	public function getBrush() : UI\DrawBrush;
+	public function getBrush() : UI\Draw\Brush;
 	public function onChange(callable $handler) : void;
 	
 	public function __construct(string $text);
@@ -439,16 +439,31 @@ final class UI\Area extends UI\Control {
 }
 ```
 
-```UI\Area::onDraw``` handler should be ```callable(UI\Area $area, UI\DrawContext $context, UI\Size $areaSize, UI\Point $clipPoint, UI\Size $clipSize)```
+```UI\Area::onDraw``` handler should be ```callable(UI\Area $area, UI\Draw\Pen $pen, UI\Size $areaSize, UI\Point $clipPoint, UI\Size $clipSize)```
 
 ```UI\Area::onMouse``` handler should be ```callable(UI\Area $area, UI\Point $areaPoint, UI\Size $areaSize, int $flags)```
 
-UI\DrawPath
+UI\Draw
+======
+*A drawing object ... I mean wtf am I supposed to put here ...*
+
+```
+final class UI\Draw {
+	public function fill(UI\Draw\Path $path, UI\Draw\Brush $brush) : void;
+	public function stroke(UI\Draw\Path $path, UI\Draw\Brush $brush, UI\Draw\Stroke $stroke) : void;
+	public function transform(UI\Draw\Matrix $matrix) : void;	
+	public function clip(UI\Draw\Path $path) : void;
+	public function save() : void;
+	public function restore() : void;
+}
+```
+
+UI\Draw\Path
 ==========
 *An object representing a uiDrawPath*
 
 ```
-final class UI\DrawPath {
+final class UI\Draw\Path {
 	public function newFigure(UI\Point $point) : void;
 	public function newFigureWithArc(UI\Point $point, double $radius, double $angle, double $sweep, double $negative) : void;
 	public function lineTo(UI\Point $point, double $radius, double $angle, double $sweep, double $negative) : void;
@@ -458,32 +473,24 @@ final class UI\DrawPath {
 	public function addRectangle(UI\Point $point, UI\Size $size) : void;
 	public function end() : void;
 
-	public function __construct(int $mode = UI\DRAWPATH::WINDING);
+	public function __construct(int $mode = UI\DRAW\PATH::WINDING);
 
 	const WINDING;
 	const ALTERANATE;
 }
 ```
 
-UI\DrawContext
-=============
-*An object representing a uiDrawContext*
-
-```
-final class UI\DrawContext
-```
-
-UI\DrawBrush
+UI\Draw\Brush
 ===========
 *An object representing a uiDrawBrush*
 
 ```
-final class UI\DrawBrush {
+final class UI\Draw\Brush {
 	public function getType() : int;
 	public function setRGB(int $color) : int;
 	public function setAlpha(double $alpha) : void;
 	public function getAlpha() : double;
-	public function 
+
 	public function __construct(int $type, double $r = 0, double $g = 0, double $b = 0, double $a = 0, double $X0 = 0, double $Y0 = 0, double $X1 = 0, double $Y1 = 0, double $radius = 0);
 
 	const SOLID;
@@ -493,12 +500,12 @@ final class UI\DrawBrush {
 }
 ```
 
-UI\DrawStroke
+UI\Draw\Stroke
 ============
 *An object representing uiDrawStrokeParams*
 
 ```
-final class UI\DrawStroke {
+final class UI\Draw\Stroke {
 	
 	public function __construct(int $cap, int $join, double $thickness, float $miterLimit);
 
@@ -512,33 +519,18 @@ final class UI\DrawStroke {
 }
 ```
 
-UI\DrawMatrix
+UI\Draw\Matrix
 ============
 *An object representing a uiDrawMatrix*
 
 ```
-final class UI\DrawMatrix {
+final class UI\Draw\Matrix {
 	public function translate(UI\Point $point) : void;
 	public function scale(UI\Point $center, UI\Point $point) : void;
 	public function rotate(UI\Point $point, double $amount) : void;
 	public function skew(UI\Point $point, UI\Point $amount) : void;
-	public function multiply(UI\DrawMatrix $matrix) : UI\DrawMatrix;
+	public function multiply(UI\Draw\Matrix $matrix) : UI\Draw\Matrix;
 	public function isInvertible() : bool;
 	public function invert() : void;
-}
-```
-
-UI\Draw
-======
-*Static drawing functions from ui*
-
-```
-final class UI\Draw {
-	public function fill(UI\DrawContext $context, UI\DrawPath $path, UI\DrawBrush $brush) : void;
-	public function stroke(UI\DrawContext $context, UI\DrawPath $path, UI\DrawBrush $brush, UI\DrawStroke $stroke) : void;
-	public function transform(UI\DrawContext $context, UI\DrawMatrix $matrix) : void;	
-	public function clip(UI\DrawContext $context, UI\DrawPath $path) : void;
-	public function save(UI\DrawContext $context) : void;
-	public function restore(UI\DrawContext $context) : void;
 }
 ```

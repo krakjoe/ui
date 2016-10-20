@@ -45,7 +45,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 4)
 	ZEND_ARG_TYPE_INFO(0, miterLimit, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawStroke DrawStroke::__construct(int cap, int join, double thickness, double miterLimit) */
+/* {{{ proto Stroke Stroke::__construct(int cap, int join, double thickness, double miterLimit) */
 PHP_METHOD(DrawStroke, __construct) 
 {
 	php_ui_stroke_t *stroke = php_ui_stroke_fetch(getThis());
@@ -69,11 +69,11 @@ const zend_function_entry php_ui_stroke_methods[] = {
 }; /* }}} */
 
 /* {{{ */
-PHP_MINIT_FUNCTION(UI_DrawStroke) 
+PHP_MINIT_FUNCTION(UI_Stroke) 
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawStroke", php_ui_stroke_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw", "Stroke", php_ui_stroke_methods);
 
 	uiDrawStroke_ce = zend_register_internal_class(&ce);
 	uiDrawStroke_ce->create_object = php_ui_stroke_create;

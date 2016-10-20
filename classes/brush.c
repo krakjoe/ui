@@ -193,7 +193,7 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawBrush", php_ui_brush_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw", "Brush", php_ui_brush_methods);
 
 	uiDrawBrush_ce = zend_register_internal_class(&ce);
 	uiDrawBrush_ce->create_object = php_ui_brush_create;

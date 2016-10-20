@@ -25,7 +25,7 @@
 #include <classes/point.h>
 #include <classes/size.h>
 #include <classes/area.h>
-#include <classes/context.h>
+#include <classes/pen.h>
 
 zend_object_handlers php_ui_area_handlers;
 
@@ -98,8 +98,7 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 	if (Z_TYPE(area->draw) != IS_UNDEF) {
 		zval rv;
-		zval ctrl, context, areaSize, clipPoint, clipSize;
-		php_ui_context_t *ctxt;
+		zval ctrl, pen, areaSize, clipPoint, clipSize;
 
 		zend_fcall_info fci = empty_fcall_info;
 		zend_fcall_info_cache fcc = empty_fcall_info_cache;
@@ -113,12 +112,12 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 		ZVAL_OBJ(&ctrl, &area->std);
 
-		php_ui_context_construct(&context, p->Context);
+		php_ui_pen_construct(&pen, p->Context);
 		php_ui_size_construct(&areaSize, p->AreaWidth, p->AreaHeight);
 		php_ui_point_construct(&clipPoint, p->ClipX, p->ClipY);
 		php_ui_size_construct(&clipSize, p->ClipWidth, p->ClipHeight);
 
-		zend_fcall_info_argn(&fci, 5, &ctrl, &context, &areaSize, &clipPoint, &clipSize);
+		zend_fcall_info_argn(&fci, 5, &ctrl, &pen, &areaSize, &clipPoint, &clipSize);
 
 		if (zend_call_function(&fci, &fcc) != SUCCESS) {
 			return;
@@ -130,7 +129,7 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 			zval_ptr_dtor(&rv);
 		}
 
-		zval_ptr_dtor(&context);
+		zval_ptr_dtor(&pen);
 		zval_ptr_dtor(&areaSize);
 		zval_ptr_dtor(&clipPoint);
 		zval_ptr_dtor(&clipSize);
@@ -146,7 +145,6 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 	if (Z_TYPE(area->mouse) != IS_UNDEF) {
 		zval rv;
 		zval ctrl, areaPoint, areaSize, flags;
-		php_ui_context_t *ctxt;
 		zend_long modifiers = e->Modifiers;
 
 		zend_fcall_info fci = empty_fcall_info;

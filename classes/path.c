@@ -248,7 +248,7 @@ PHP_MINIT_FUNCTION(UI_DrawPath)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawPath", php_ui_path_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw", "Path", php_ui_path_methods);
 
 	uiDrawPath_ce = zend_register_internal_class(&ce);
 	uiDrawPath_ce->create_object = php_ui_path_create;

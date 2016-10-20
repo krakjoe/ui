@@ -23,7 +23,6 @@
 
 #include <classes/point.h>
 #include <classes/matrix.h>
-#include <classes/context.h>
 
 zend_object_handlers php_ui_matrix_handlers;
 
@@ -213,7 +212,7 @@ PHP_MINIT_FUNCTION(UI_DrawMatrix)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "DrawMatrix", php_ui_matrix_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw", "Matrix", php_ui_matrix_methods);
 
 	uiDrawMatrix_ce = zend_register_internal_class(&ce);
 	uiDrawMatrix_ce->create_object = php_ui_matrix_create;
