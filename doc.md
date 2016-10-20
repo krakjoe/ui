@@ -440,6 +440,7 @@ final class UI\Area extends UI\Control {
 ```
 
 ```UI\Area::onDraw``` handler should be ```callable(UI\Area $area, UI\DrawContext $context, UI\Size $areaSize, UI\Point $clipPoint, UI\Size $clipSize)```
+
 ```UI\Area::onMouse``` handler should be ```callable(UI\Area $area, UI\Point $areaPoint, UI\Size $areaSize, int $flags)```
 
 UI\DrawPath
