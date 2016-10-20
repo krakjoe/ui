@@ -136,7 +136,17 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 	$pen->stroke($path, $brush, $stroke);
 });
 
-$redrawHistogram = function() use($histogram) {
+$colorBox = new Entry();
+
+$redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
+	$redrawColor = $colorButton->getColor();
+
+	$colorBox->setText(sprintf(
+		"0x%02X%02X%02X",
+			$redrawColor->getChannel(COLOR::RED) * 255,
+			$redrawColor->getChannel(COLOR::GREEN) * 255,
+			$redrawColor->getChannel(COLOR::BLUE) * 255));
+
 	$histogram->redraw();
 };
 
@@ -152,7 +162,7 @@ for ($i = 0; $i < 10; $i++) {
 
 $vBox->append($colorButton);
 
-$colorBox = new Entry();
+
 $colorBox->setText("0x000000");
 
 $colorBoxButton = new Button("Set Color");
