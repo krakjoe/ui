@@ -52,6 +52,8 @@ function getGraphPoints(array $dataSources, Size $size) : array {
 function getGraphPath(array $locations, Size $size, bool $extend = false) : Path {
 	$path = new Path(PATH::WINDING);
 
+	$path->newFigure(array_shift($locations));
+
 	foreach ($locations as $location) {
 		$path->lineTo($location);
 	}
