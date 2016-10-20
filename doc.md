@@ -183,7 +183,7 @@ UI\ColorButton
 
 ```
 final class UI\ColorButton extends UI\Control {
-	public function setColor(int $r, int $r, int $b) : void;
+	public function setColor(int $r, int $g, int $b) : void;
 	public function setColorFromBrush(UI\Draw\Brush $brush) : void;
 	public function getColor() : array;
 	public function getBrush() : UI\Draw\Brush;
