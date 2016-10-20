@@ -57,7 +57,7 @@ final class UI\Control {
 }
 ```
 
-UI\Control\Window
+UI\Window
 ========
 *An object representing a uiWindow*
 
