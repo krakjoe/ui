@@ -142,7 +142,7 @@ PHP_MINIT_FUNCTION(UI_Spin)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Spin", php_ui_spin_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Spin", php_ui_spin_methods);
 
 	uiSpin_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSpin_ce->create_object = php_ui_spin_create;

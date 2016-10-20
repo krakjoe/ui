@@ -1,26 +1,26 @@
 <?php
-use UI\Window;
 use UI\Size;
-use UI\Tab;
-use UI\Box;
-use UI\Group;
-use UI\Form;
-use UI\Button;
-use UI\Entry;
-use UI\Multi;
-use UI\Spin;
-use UI\Slider;
-use UI\Progress;
-use UI\Combo;
-use UI\EditableCombo;
-use UI\Radio;
-use UI\Grid;
-use UI\Picker;
-use UI\Check;
-use UI\Label;
-use UI\Separator;
-use UI\ColorButton;
 use UI\Menu;
+use UI\Window;
+use UI\Control\Tab;
+use UI\Control\Box;
+use UI\Control\Group;
+use UI\Control\Form;
+use UI\Control\Button;
+use UI\Control\Entry;
+use UI\Control\MultilineEntry;
+use UI\Control\Spin;
+use UI\Control\Slider;
+use UI\Control\Progress;
+use UI\Control\Combo;
+use UI\Control\EditableCombo;
+use UI\Control\Radio;
+use UI\Control\Grid;
+use UI\Control\Picker;
+use UI\Control\Check;
+use UI\Control\Label;
+use UI\Control\Separator;
+use UI\Control\ColorButton;
 
 $menu = new Menu("File");
 $quitButton = $menu->append("Quit");
@@ -62,8 +62,8 @@ $entryForm->setPadded(true);
 $entryForm->append("Entry", new Entry(ENTRY::NORMAL), false);
 $entryForm->append("Password Entry", new Entry(ENTRY::PASSWORD), false);
 $entryForm->append("Search Entry", new Entry(ENTRY::SEARCH), false);
-$entryForm->append("Multiline Entry", new Multi(MULTI::WRAP), true);
-$entryForm->append("Multiline Entry Without Wrapping", new Multi(MULTI::NOWRAP), true);
+$entryForm->append("Multiline Entry", new MultilineEntry(MultilineEntry::WRAP), true);
+$entryForm->append("Multiline Entry Without Wrapping", new MultilineEntry(MultilineEntry::NOWRAP), true);
 
 $entriesGroup->add($entryForm);
 

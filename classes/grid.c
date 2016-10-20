@@ -130,7 +130,7 @@ PHP_MINIT_FUNCTION(UI_Grid)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Grid", php_ui_grid_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Grid", php_ui_grid_methods);
 
 	uiGrid_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGrid_ce->create_object = php_ui_grid_create;

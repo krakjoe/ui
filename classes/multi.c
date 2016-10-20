@@ -209,7 +209,7 @@ PHP_MINIT_FUNCTION(UI_Multi)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Multi", php_ui_multi_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "MultilineEntry", php_ui_multi_methods);
 
 	uiMulti_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiMulti_ce->create_object = php_ui_multi_create;

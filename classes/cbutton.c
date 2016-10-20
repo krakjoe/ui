@@ -154,7 +154,7 @@ PHP_MINIT_FUNCTION(UI_ColorButton)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "ColorButton", php_ui_cbutton_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "ColorButton", php_ui_cbutton_methods);
 
 	uiColorButton_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiColorButton_ce->create_object = php_ui_cbutton_create;

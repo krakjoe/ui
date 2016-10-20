@@ -158,7 +158,7 @@ PHP_MINIT_FUNCTION(UI_Radio)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Radio", php_ui_radio_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Radio", php_ui_radio_methods);
 
 	uiRadio_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiRadio_ce->create_object = php_ui_radio_create;

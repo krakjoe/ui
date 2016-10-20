@@ -1,12 +1,12 @@
 <?php
-use UI\Window;
 use UI\Point;
 use UI\Size;
-use UI\Box;
-use UI\Spin;
-use UI\ColorButton;
-use UI\Button;
-use UI\Entry;
+use UI\Window;
+use UI\Control\Box;
+use UI\Control\Spin;
+use UI\Control\ColorButton;
+use UI\Control\Button;
+use UI\Control\Entry;
 use UI\Area;
 use UI\Draw\Pen;
 use UI\Draw\Path;

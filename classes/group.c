@@ -161,7 +161,7 @@ PHP_MINIT_FUNCTION(UI_Group)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Group", php_ui_group_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Group", php_ui_group_methods);
 
 	uiGroup_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGroup_ce->create_object = php_ui_group_create;

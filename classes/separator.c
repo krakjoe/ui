@@ -80,7 +80,7 @@ PHP_MINIT_FUNCTION(UI_Separator)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "Separator", php_ui_separator_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Separator", php_ui_separator_methods);
 
 	uiSeparator_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSeparator_ce->create_object = php_ui_separator_create;

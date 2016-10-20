@@ -157,7 +157,7 @@ PHP_MINIT_FUNCTION(UI_EditableCombo)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI", "EditableCombo", php_ui_ecombo_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "EditableCombo", php_ui_ecombo_methods);
 
 	uiEditableCombo_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiEditableCombo_ce->create_object = php_ui_ecombo_create;

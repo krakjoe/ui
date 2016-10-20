@@ -57,7 +57,7 @@ final class UI\Control {
 }
 ```
 
-UI\Window
+UI\Control\Window
 ========
 *An object representing a uiWindow*
 
@@ -84,12 +84,12 @@ final class UI\Window extends UI\Control {
 }
 ```
 
-UI\Form
+UI\Control\Form
 ======
 *An object representing a uiForm*
 
 ```
-final class UI\Form extends UI\Control {
+final class UI\Control\Form extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(string $label, UI\Control $control, bool $stretchy = false) : bool;
@@ -97,24 +97,24 @@ final class UI\Form extends UI\Control {
 }
 ```
 
-UI\Grid
+UI\Control\Grid
 =======
 *An object representing a uiGrid*
 
 ```
-final class UI\Grid extends UI\Control {
+final class UI\Control\Grid extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(UI\Control $control, int $left, int $top, int $xspan, int $yspan, bool $hexpand, int $haign, bool $vexpand, int $valign);
 }
 ```
 
-UI\Tab
+UI\Control\Tab
 ======
 *An object representing a uiTab*
 
 ```
-final class UI\Tab extends UI\Control {
+final class UI\Control\Tab extends UI\Control {
 	public function append(string $name, UI\Control $control) : void;
 	public function delete(int $index) : void;
 	public function pages() : int;
@@ -124,12 +124,12 @@ final class UI\Tab extends UI\Control {
 }
 ```
 
-UI\Box
+UI\Control\Box
 =====
 *An object representing a uiBox*
 
 ```
-final class UI\Box extends UI\Control {
+final class UI\Control\Box extends UI\Control {
 	public function getOrientation() : int;
 	public function append(UI\Control $control, bool $stretchy = false) : void;
 	public function delete(int $index) : void;
@@ -143,12 +143,12 @@ final class UI\Box extends UI\Control {
 }
 ```
 
-UI\Check
+UI\Control\Check
 =======
 *An object represnting a uiCheckbox*
 
 ```
-final class UI\Check extends UI\Control {
+final class UI\Control\Check extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setChecked(bool $checked) : void;
@@ -159,14 +159,14 @@ final class UI\Check extends UI\Control {
 }
 ```
 
-```UI\Check::onToggle``` handler should be ```callable(UI\Check $toggled)```
+```UI\Control\Check::onToggle``` handler should be ```callable(UI\Check $toggled)```
 
-UI\Button
+UI\Control\Button
 ========
 *An object representing a uiButton*
 
 ```
-final class UI\Button extends UI\Control {
+final class UI\Control\Button extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function onClick(callable $handler) : void;
@@ -175,14 +175,14 @@ final class UI\Button extends UI\Control {
 }
 ```
 
-```UI\Button::onClick``` handler should be ```callable(UI\Button $clicked)```
+```UI\Control\Button::onClick``` handler should be ```callable(UI\Button $clicked)```
 
-UI\ColorButton
+UI\Control\ColorButton
 =============
 *An object representing a uiColorButton*
 
 ```
-final class UI\ColorButton extends UI\Control {
+final class UI\Control\ColorButton extends UI\Control {
 	public function setColor(UI\Draw\Color color) : void;
 	public function getColor() : UI\Draw\Color;
 	public function onChange(callable $handler) : void;
@@ -191,14 +191,14 @@ final class UI\ColorButton extends UI\Control {
 }
 ```
 
-```UI\ColorButton::onChange``` handler should be ```callable(UI\ColorButton $changed)```
+```UI\Control\ColorButton::onChange``` handler should be ```callable(UI\ColorButton $changed)```
 
-UI\Label
+UI\Control\Label
 =======
 *An object representing a uiLabel*
 
 ```
-final class UI\Label extends UI\Control {
+final class UI\Control\Label extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 
@@ -206,12 +206,12 @@ final class UI\Label extends UI\Control {
 }
 ```
 
-UI\Entry
+UI\Control\Entry
 =======
 *An object representing a uiEntry*
 
 ```
-final class UI\Entry extends UI\Control {
+final class UI\Control\Entry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
@@ -226,9 +226,9 @@ final class UI\Entry extends UI\Control {
 }
 ```
 
-```UI\Entry::onChange``` handler should be ```callable(UI\Entry $changed)```
+```UI\Control\Entry::onChange``` handler should be ```callable(UI\Control\Entry $changed)```
 
-UI\Multi
+UI\Control\Multi
 =======
 *An object represneting a uiMultilineEntry*
 
@@ -248,14 +248,14 @@ final class UI\Multi extends UI\Control {
 }
 ```
 
-```UI\Multi::onChange``` handler should be ```callable(UI\Multi $changed)```
+```UI\Control\Multi::onChange``` handler should be ```callable(UI\Control\Multi $changed)```
 
-UI\Group
+UI\Control\Group
 =======
 *An object representing a uiGroup*
 
 ```
-final class UI\Group extends UI\Control {
+final class UI\Control\Group extends UI\Control {
 	public function setTitle(string $text) : void;
 	public function getTitle() : string;
 	public function setMargin(bool $margin) : void;
@@ -266,12 +266,12 @@ final class UI\Group extends UI\Control {
 }
 ```
 
-UI\Spin
+UI\Control\Spin
 ======
 *An object representing a uiSpinbox*
 
 ```
-final class UI\Spin extends UI\Control {
+final class UI\Control\Spin extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 	public function onChange(callable $handler) : void;
@@ -280,14 +280,14 @@ final class UI\Spin extends UI\Control {
 }
 ```
 
-```UI\Spin::onChange``` handler should be ```callable(UI\Spin $changed)```
+```UI\Control\Spin::onChange``` handler should be ```callable(UI\Control\Spin $changed)```
 
-UI\Slider
+UI\Control\Slider
 ========
 *An object representing a uiSlider*
 
 ```
-final class UI\Slider extends UI\Control {
+final class UI\Control\Slider extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 	public function onChange(callable $handler) : void;
@@ -296,38 +296,38 @@ final class UI\Slider extends UI\Control {
 }
 ```
 
-```UI\Slider::onChange``` handler should be ```callable(UI\Slider $changed)```
+```UI\Control\Slider::onChange``` handler should be ```callable(UI\Control\Slider $changed)```
 
-UI\Progress
+UI\Control\Progress
 ==========
 
 ```
-final class UI\Progress extends UI\Control {
+final class UI\Control\Progress extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 }
 ```
 
-UI\Separator
+UI\Control\Separator
 ===========
 *An object representing a uiSeparator*
 
 ```
-final class UI\Separator extends UI\Control {
+final class UI\Control\Separator extends UI\Control {
 
-	public function __construct(int $type == UI\SEPARATOR::HORIZONTAL);
+	public function __construct(int $type == SEPARATOR::HORIZONTAL);
 
 	const HORIZONTAL;
 	const VERTICAL;
 }
 ```
 
-UI\Combo
+UI\Control\Combo
 =======
 *An object representing a uiCombobox*
 
 ```
-final class UI\Combo extends UI\Control {
+final class UI\Control\Combo extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
@@ -335,15 +335,15 @@ final class UI\Combo extends UI\Control {
 }
 ```
 
-```UI\Combo::onSelected``` handler should be ```callable(UI\Combo $selected)```
+```UI\Control\Combo::onSelected``` handler should be ```callable(UI\Control\Combo $selected)```
 
 
-UI\EditableCombo
+UI\Control\EditableCombo
 ==============
 *An object representing a uiEditableCombobox*
 
 ```
-final class UI\EditableCombo extends UI\Control {
+final class UI\Control\EditableCombo extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function append(string $text) : void;
@@ -351,14 +351,14 @@ final class UI\EditableCombo extends UI\Control {
 }
 ```
 
-```UI\EditableCombo::onChange``` handler should be ```callable(UI\EditableCombo $changed)```
+```UI\Control\EditableCombo::onChange``` handler should be ```callable(UI\Control\EditableCombo $changed)```
 
-UI\Radio
+UI\Control\Radio
 =======
 *An object representing a uiRadioButton*
 
 ```
-final class UI\Radio extends UI\Control {
+final class UI\Control\Radio extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
@@ -366,14 +366,14 @@ final class UI\Radio extends UI\Control {
 }
 ```
 
-```UI\Radio::onSelected``` handler should be ```callable(UI\Radio $changed)```
+```UI\Control\Radio::onSelected``` handler should be ```callable(UI\Control\Radio $changed)```
 
-UI\Picker
+UI\Control\Picker
 ========
 *An object representing a uiDatePicker*
 
 ```
-final class UI\Picker extends UI\Control {
+final class UI\Control\Picker extends UI\Control {
 	public function __construct(int $type = UI\PICKER::DATE);
 
 	const DATE;
