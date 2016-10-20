@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_slider_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_slider_on_change_handler)(uiSlider *, void *);
-
 zend_object* php_ui_slider_create(zend_class_entry *ce) {
 	php_ui_slider_t *slider = 
 		(php_ui_slider_t*) ecalloc(1, sizeof(php_ui_slider_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&slider->handler);
 
 	zend_object_std_init(&slider->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_slider_create(zend_class_entry *ce) {
 void php_ui_slider_free(zend_object *o) {
 	php_ui_slider_t *slider = php_ui_slider_from(o);
 
-	if (Z_TYPE(slider->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&slider->handler);
+	if (slider->change.fci.size) {
+		if (Z_TYPE(slider->change.fci.function_name)) {
+			zval_ptr_dtor(&slider->change.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_slider_change_handler(uiSlider *m,  void *_slider) {
+	php_ui_slider_t *slider = (php_ui_slider_t*) _slider;
+
+	if (slider->change.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &slider->std);
+
+		slider->change.fci.retval = &rv;
+
+		zend_fcall_info_argn(&slider->change.fci, 1, &ctrl);
+
+		if (zend_call_function(&slider->change.fci, &slider->change.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&slider->change.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_slider_construct_info, 0, 0, 2)
@@ -72,7 +94,7 @@ PHP_METHOD(Slider, __construct)
 
 	slider->s = uiNewSlider((int) min, (int) max);
 
-	uiSliderOnChanged(slider->s, (php_ui_slider_on_change_handler) php_ui_event_handler, slider);
+	uiSliderOnChanged(slider->s, php_ui_slider_change_handler, slider);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_slider_set_value_info, 0, 0, 1)
@@ -115,17 +137,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Slider, onChange)
 {
 	php_ui_slider_t *slider = php_ui_slider_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(slider->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&slider->handler);
+	if (slider->change.fci.size) {
+		if (Z_TYPE(slider->change.fci.function_name)) {
+			zval_ptr_dtor(&slider->change.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&slider->handler, handler);
+	memcpy(&slider->change.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&slider->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(slider->change.fci.function_name)) {
+		Z_ADDREF(slider->change.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

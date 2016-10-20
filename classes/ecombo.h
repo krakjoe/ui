@@ -22,7 +22,10 @@ zend_class_entry *uiEditableCombo_ce;
 
 typedef struct _php_ui_ecombo_t {
 	uiEditableCombobox *c;
-	zval handler;
+	struct php_ui_ecombo_change_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} change;
 	zend_object std;
 } php_ui_ecombo_t;
 

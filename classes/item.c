@@ -26,40 +26,6 @@
 
 zend_object_handlers php_ui_item_handlers;
 
-void php_ui_item_handler(uiMenuItem *i, uiWindow *w,  void *_ev) {
-	php_ui_item_t *ev = (php_ui_item_t*) _ev;
-
-	if (Z_TYPE(ev->handler) != IS_UNDEF) {
-		zval rv;
-		zval window, item;
-
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-		if (zend_fcall_info_init(&ev->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
-			return;
-		}
-
-		ZVAL_OBJ(&item, &ev->std);
-		php_ui_window_construct(&window, w);
-		
-		ZVAL_UNDEF(&rv);
-
-		zend_fcall_info_argn(&fci, 2, &item, &window);
-		fci.retval = &rv;
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-
-		zend_fcall_info_args_clear(&fci, 1);
-	}
-} /* }}} */
-
 zend_object* php_ui_item_create(zend_class_entry *ce) {
 	php_ui_item_t *item = 
 		(php_ui_item_t*) ecalloc(1, sizeof(php_ui_item_t) + zend_object_properties_size(ce));
@@ -76,11 +42,42 @@ zend_object* php_ui_item_create(zend_class_entry *ce) {
 void php_ui_item_free(zend_object *o) {
 	php_ui_item_t *item = php_ui_item_from(o);
 
-	if (Z_TYPE(item->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&item->handler);
+	if (item->click.fci.size) {
+		if (Z_TYPE(item->click.fci.function_name)) {
+			zval_ptr_dtor(&item->click.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_item_click_handler(uiMenuItem *i, uiWindow *w,  void *_item) {
+	php_ui_item_t *item = (php_ui_item_t*) _item;
+
+	if (item->click.fci.size) {
+		zval rv;
+		zval window, ctrl;
+
+		ZVAL_OBJ(&ctrl, &item->std);
+		php_ui_window_construct(&window, w);
+		
+		ZVAL_UNDEF(&rv);
+
+		zend_fcall_info_argn(&item->click.fci, 2, &ctrl, &window);
+		item->click.fci.retval = &rv;
+
+		if (zend_call_function(&item->click.fci, &item->click.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&item->click.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+
+		zval_ptr_dtor(&window);
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_item_enable_info, 0, 0, 0)
@@ -157,19 +154,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(MenuItem, onClick)
 {
 	php_ui_item_t *item = php_ui_item_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(item->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&item->handler);
+	if (item->click.fci.size) {
+		if (Z_TYPE(item->click.fci.function_name)) {
+			zval_ptr_dtor(&item->click.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&item->handler, handler);
+	memcpy(&item->click.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&item->click.fcc, &fcc, sizeof(zend_fcall_info_cache));
 
-	uiMenuItemOnClicked(item->i, php_ui_item_handler, item);
+	if (Z_TYPE(item->click.fci.function_name)) {
+		Z_ADDREF(item->click.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

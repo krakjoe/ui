@@ -22,7 +22,10 @@ zend_class_entry *uiColorButton_ce;
 
 typedef struct _php_ui_cbutton_t {
 	uiColorButton *b;
-	zval handler;
+	struct php_ui_cbutton_click_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} change;
 	zend_object std;
 } php_ui_cbutton_t;
 

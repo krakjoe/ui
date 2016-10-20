@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_combo_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_combo_on_selected_handler)(uiCombobox *, void *);
-
 zend_object* php_ui_combo_create(zend_class_entry *ce) {
 	php_ui_combo_t *combo = 
 		(php_ui_combo_t*) ecalloc(1, sizeof(php_ui_combo_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&combo->handler);
 
 	zend_object_std_init(&combo->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_combo_create(zend_class_entry *ce) {
 void php_ui_combo_free(zend_object *o) {
 	php_ui_combo_t *combo = php_ui_combo_from(o);
 
-	if (Z_TYPE(combo->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&combo->handler);
+	if (combo->select.fci.size) {
+		if (Z_TYPE(combo->select.fci.function_name)) {
+			zval_ptr_dtor(&combo->select.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_combo_select_handler(uiCombobox *u, void *_combo) {
+	php_ui_combo_t *combo = (php_ui_combo_t*) _combo;
+
+	if (combo->select.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &combo->std);
+
+		combo->select.fci.retval = &rv;
+
+		zend_fcall_info_argn(&combo->select.fci, 1, &ctrl);
+
+		if (zend_call_function(&combo->select.fci, &combo->select.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&combo->select.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_construct_info, 0, 0, 0)
@@ -69,7 +91,7 @@ PHP_METHOD(Combo, __construct)
 
 	combo->c = uiNewCombobox();
 
-	uiComboboxOnSelected(combo->c, (php_ui_combo_on_selected_handler) php_ui_event_handler, combo);
+	uiComboboxOnSelected(combo->c, php_ui_combo_select_handler, combo);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_set_selected_info, 0, 0, 1)
@@ -130,17 +152,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Combo, onSelected)
 {
 	php_ui_combo_t *combo = php_ui_combo_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(combo->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&combo->handler);
+	if (combo->select.fci.size) {
+		if (Z_TYPE(combo->select.fci.function_name)) {
+			zval_ptr_dtor(&combo->select.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&combo->handler, handler);
+	memcpy(&combo->select.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&combo->select.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(combo->select.fci.function_name)) {
+		Z_ADDREF(combo->select.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

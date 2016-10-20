@@ -82,20 +82,26 @@ $numbersVbox->setPadded(true);
 
 $numbersGroup->add($numbersVbox);
 
-$spin = new Spin(0, 100);
+/*
+$spin = new Spin(0, 100); */
 $slider = new Slider(0, 100);
+
 $progress = new Progress();
+/*
 
 $spin->onChange(function() use ($slider, $spin, $progress) {
 	$slider->setValue($spin->getValue());
 	$progress->setValue($spin->getValue());
 });
+
+$numbersVbox->append($spin);
+
+*/
 $slider->onChange(function() use($slider, $spin, $progress) {
 	$spin->setValue($slider->getValue());
 	$progress->setValue($slider->getValue());
 });	
 
-$numbersVbox->append($spin);
 $numbersVbox->append($slider);
 $numbersVbox->append($progress);
 

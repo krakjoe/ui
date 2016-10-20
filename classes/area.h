@@ -22,9 +22,18 @@ zend_class_entry *uiArea_ce;
 
 typedef struct _php_ui_area_t {
 	uiArea *a;
-	zval draw;
-	zval mouse;
-	zval key;
+	struct php_ui_area_draw_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} draw;
+	struct php_ui_area_mouse_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} mouse;
+	struct php_ui_area_key_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} key;
 	uiAreaHandler h;
 	zend_object std;
 } php_ui_area_t;

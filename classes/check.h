@@ -23,7 +23,10 @@ zend_class_entry *uiCheck_ce;
 typedef struct _php_ui_check_t {
 	uiCheckbox *c;
 	zend_long orientation;
-	zval handler;
+	struct php_ui_check_toggle_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} toggle;
 	zend_object std;
 } php_ui_check_t;
 

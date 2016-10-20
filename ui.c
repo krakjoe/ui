@@ -68,44 +68,6 @@
 #include <classes/stroke.h>
 #include <classes/matrix.h>
 
-/* {{{ */
-typedef struct _php_ui_event_t {
-	uiControl *ctrl;
-	zval handler;
-	zend_object std;
-} php_ui_event_t;
-
-void php_ui_event_handler(void *u, void *_event) {
-	php_ui_event_t *event = (php_ui_event_t*) _event;
-
-	if (Z_TYPE(event->handler) != IS_UNDEF) {
-		zval rv;
-		zval arg;
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-		if (zend_fcall_info_init(&event->handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
-			return;
-		}
-
-		ZVAL_OBJ(&arg, &event->std);
-		ZVAL_UNDEF(&rv);
-
-		zend_fcall_info_argn(&fci, 1, &arg);
-		fci.retval = &rv;
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-
-		zend_fcall_info_args_clear(&fci, 1);
-	}
-} /* }}} */
-
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ui)

@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_check_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_check_on_toggle_handler)(uiCheckbox *, void *);
-
 zend_object* php_ui_check_create(zend_class_entry *ce) {
 	php_ui_check_t *check = 
 		(php_ui_check_t*) ecalloc(1, sizeof(php_ui_check_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&check->handler);
 
 	zend_object_std_init(&check->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_check_create(zend_class_entry *ce) {
 void php_ui_check_free(zend_object *o) {
 	php_ui_check_t *check = php_ui_check_from(o);
 
-	if (Z_TYPE(check->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&check->handler);
+	if (check->toggle.fci.size) {
+		if (Z_TYPE(check->toggle.fci.function_name)) {
+			zval_ptr_dtor(&check->toggle.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_check_toggle_handler(uiCheckbox *u, void *_check) {
+	php_ui_check_t *check = (php_ui_check_t*) _check;
+
+	if (check->toggle.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &check->std);
+
+		check->toggle.fci.retval = &rv;
+
+		zend_fcall_info_argn(&check->toggle.fci, 1, &ctrl);
+
+		if (zend_call_function(&check->toggle.fci, &check->toggle.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&check->toggle.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_check_construct_info, 0, 0, 1)
@@ -71,7 +93,7 @@ PHP_METHOD(Check, __construct)
 
 	check->c = uiNewCheckbox(ZSTR_VAL(text));
 
-	uiCheckboxOnToggled(check->c, (php_ui_check_on_toggle_handler) php_ui_event_handler, check);
+	uiCheckboxOnToggled(check->c, php_ui_check_toggle_handler, check);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_check_set_text_info, 0, 0, 1)
@@ -151,17 +173,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Check, onToggle)
 {
 	php_ui_check_t *check = php_ui_check_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(check->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&check->handler);
+	if (check->toggle.fci.size) {
+		if (Z_TYPE(check->toggle.fci.function_name)) {
+			zval_ptr_dtor(&check->toggle.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&check->handler, handler);
+	memcpy(&check->toggle.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&check->toggle.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(check->toggle.fci.function_name)) {
+		Z_ADDREF(check->toggle.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

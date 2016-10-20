@@ -22,7 +22,10 @@ zend_class_entry *uiItem_ce;
 
 typedef struct _php_ui_item_t {
 	uiMenuItem *i;
-	zval handler;
+	struct php_ui_item_click_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} click;
 	zend_object std;
 } php_ui_item_t;
 

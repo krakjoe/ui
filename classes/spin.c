@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_spin_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_spin_on_change_handler)(uiSpinbox *, void *);
-
 zend_object* php_ui_spin_create(zend_class_entry *ce) {
 	php_ui_spin_t *spin = 
 		(php_ui_spin_t*) ecalloc(1, sizeof(php_ui_spin_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&spin->handler);
 
 	zend_object_std_init(&spin->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_spin_create(zend_class_entry *ce) {
 void php_ui_spin_free(zend_object *o) {
 	php_ui_spin_t *spin = php_ui_spin_from(o);
 
-	if (Z_TYPE(spin->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&spin->handler);
+	if (spin->change.fci.size) {
+		if (Z_TYPE(spin->change.fci.function_name)) {
+			zval_ptr_dtor(&spin->change.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_spin_change_handler(uiSpinbox *m,  void *_spin) {
+	php_ui_spin_t *spin = (php_ui_spin_t*) _spin;
+
+	if (spin->change.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &spin->std);
+
+		spin->change.fci.retval = &rv;
+
+		zend_fcall_info_argn(&spin->change.fci, 1, &ctrl);
+
+		if (zend_call_function(&spin->change.fci, &spin->change.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&spin->change.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_construct_info, 0, 0, 2)
@@ -72,7 +94,7 @@ PHP_METHOD(Spin, __construct)
 
 	spin->s = uiNewSpinbox((int) min, (int) max);
 
-	uiSpinboxOnChanged(spin->s, (php_ui_spin_on_change_handler) php_ui_event_handler, spin);
+	uiSpinboxOnChanged(spin->s, php_ui_spin_change_handler, spin);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_set_value_info, 0, 0, 1)
@@ -115,17 +137,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Spin, onChange)
 {
 	php_ui_spin_t *spin = php_ui_spin_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(spin->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&spin->handler);
+	if (spin->change.fci.size) {
+		if (Z_TYPE(spin->change.fci.function_name)) {
+			zval_ptr_dtor(&spin->change.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&spin->handler, handler);
+	memcpy(&spin->change.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&spin->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(spin->change.fci.function_name)) {
+		Z_ADDREF(spin->change.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

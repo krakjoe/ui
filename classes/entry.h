@@ -23,7 +23,10 @@ zend_class_entry *uiEntry_ce;
 typedef struct _php_ui_entry_t {
 	uiEntry *e;
 	zend_long type;
-	zval handler;
+	struct php_ui_entry_change_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} change;
 	zend_object std;
 } php_ui_entry_t;
 

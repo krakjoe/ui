@@ -29,86 +29,18 @@
 
 zend_object_handlers php_ui_area_handlers;
 
-typedef struct php_ui_event_t {
-	void *e;
-	zend_object std;
-} php_ui_event_t;
-
-#define php_ui_event_fetch(o) ((php_ui_event_t*) ((char*) o - XtOffsetOf(php_ui_event_t, std)))
-
-static int php_ui_area_event(php_ui_area_t *_area, zval *handler, zend_class_entry *aclass, void *a) {
-	php_ui_area_t *area = (php_ui_area_t*) _area;
-	int ret = 0;
-
-	if (Z_TYPE_P(handler) != IS_UNDEF) {
-		zval rv;
-		zval arg;
-		zval param;
-
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-		
-		ZVAL_UNDEF(&rv);
-		ZVAL_UNDEF(&param);
-		ZVAL_OBJ(&arg, &area->std);
-		
-		if (zend_fcall_info_init(handler, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
-			return;
-		}
-
-		fci.retval = &rv;
-		zend_fcall_info_argn(&fci, 1, &arg);
-
-		if (aclass && a) {
-			php_ui_event_t *event;
-
-			object_init_ex(&param, aclass);
-
-			event = php_ui_event_fetch(&param);			
-			event->e = a;
-			
-			zend_fcall_info_argn(&fci, 2, &arg, &param);
-		} else {
-			zend_fcall_info_argn(&fci, 1, &arg);
-		}
-
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
-			return;
-		}
-
-		zend_fcall_info_args_clear(&fci, 1);
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			if (Z_TYPE(rv) == IS_LONG) {
-				ret = (int) zval_get_long(&rv);
-			}
-
-			zval_ptr_dtor(&rv);
-		}
-	}
-	
-	return ret;
-}
-
 static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawParams *p) {
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
-
+	
 	int ret = 0;
 
-	if (Z_TYPE(area->draw) != IS_UNDEF) {
+	if (area->draw.fci.size) {
 		zval rv;
 		zval ctrl, pen, areaSize, clipPoint, clipSize;
 
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-		if (zend_fcall_info_init(&area->draw, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
-			return;
-		}
-
 		ZVAL_UNDEF(&rv);
-		fci.retval = &rv;
+		area->draw.fci.retval = &rv;
 
 		ZVAL_OBJ(&ctrl, &area->std);
 
@@ -117,13 +49,13 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 		php_ui_point_construct(&clipPoint, p->ClipX, p->ClipY);
 		php_ui_size_construct(&clipSize, p->ClipWidth, p->ClipHeight);
 
-		zend_fcall_info_argn(&fci, 5, &ctrl, &pen, &areaSize, &clipPoint, &clipSize);
+		zend_fcall_info_argn(&area->draw.fci, 5, &ctrl, &pen, &areaSize, &clipPoint, &clipSize);
 
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+		if (zend_call_function(&area->draw.fci, &area->draw.fcc) != SUCCESS) {
 			return;
 		}
 
-		zend_fcall_info_args_clear(&fci, 1);
+		zend_fcall_info_args_clear(&area->draw.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -142,20 +74,14 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 
 	int ret = 0;
 
-	if (Z_TYPE(area->mouse) != IS_UNDEF) {
+	if (area->mouse.fci.size) {
 		zval rv;
 		zval ctrl, areaPoint, areaSize, flags;
 		zend_long modifiers = e->Modifiers;
 
-		zend_fcall_info fci = empty_fcall_info;
-		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-		if (zend_fcall_info_init(&area->mouse, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
-			return;
-		}
 
 		ZVAL_UNDEF(&rv);
-		fci.retval = &rv;
+		area->mouse.fci.retval = &rv;
 
 		ZVAL_OBJ(&ctrl, &area->std);
 
@@ -172,13 +98,13 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 
 		ZVAL_LONG(&flags, modifiers);
 
-		zend_fcall_info_argn(&fci, 4, &ctrl, &areaPoint, &areaSize, &flags);
+		zend_fcall_info_argn(&area->mouse.fci, 4, &ctrl, &areaPoint, &areaSize, &flags);
 
-		if (zend_call_function(&fci, &fcc) != SUCCESS) {
+		if (zend_call_function(&area->mouse.fci, &area->mouse.fcc) != SUCCESS) {
 			return;
 		}
 
-		zend_fcall_info_args_clear(&fci, 1);
+		zend_fcall_info_args_clear(&area->mouse.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -193,7 +119,31 @@ static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
 
-	return php_ui_area_event(area, &area->key, NULL, e);
+	int ret = 0;
+
+	if (area->key.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		area->mouse.fci.retval = &rv;
+
+		ZVAL_OBJ(&ctrl, &area->std);
+
+		zend_fcall_info_argn(&area->key.fci, 1, &ctrl);
+
+		if (zend_call_function(&area->key.fci, &area->mouse.fcc) != SUCCESS) {
+			return ret;
+		}
+
+		zend_fcall_info_args_clear(&area->key.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
+
+	return ret;
 }
 
 static void php_ui_area_crossed(uiAreaHandler *ah, uiArea *_area, int left) {}
@@ -216,26 +166,28 @@ zend_object* php_ui_area_create(zend_class_entry *ce) {
 	area->h.MouseCrossed = php_ui_area_crossed;
 	area->h.DragBroken = php_ui_area_drag;
 
-	ZVAL_UNDEF(&area->draw);
-	ZVAL_UNDEF(&area->mouse);
-	ZVAL_UNDEF(&area->key);
-
 	return &area->std;
 }
 
 void php_ui_area_free(zend_object *o) {
 	php_ui_area_t *area = php_ui_area_from(o);
 
-	if (Z_TYPE(area->draw) != IS_UNDEF) {
-		zval_ptr_dtor(&area->draw);
+	if (area->draw.fci.size) {
+		if (Z_TYPE(area->draw.fci.function_name)) {
+			zval_ptr_dtor(&area->draw.fci.function_name);
+		}
 	}
 
-	if (Z_TYPE(area->mouse) != IS_UNDEF) {
-		zval_ptr_dtor(&area->mouse);
+	if (area->mouse.fci.size) {
+		if (Z_TYPE(area->mouse.fci.function_name)) {
+			zval_ptr_dtor(&area->mouse.fci.function_name);
+		}
 	}
 
-	if (Z_TYPE(area->key) != IS_UNDEF) {
-		zval_ptr_dtor(&area->key);
+	if (area->key.fci.size) {
+		if (Z_TYPE(area->key.fci.function_name)) {
+			zval_ptr_dtor(&area->key.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
@@ -323,51 +275,75 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Area, onDraw)
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(area->draw) != IS_UNDEF) {
-		zval_ptr_dtor(&area->draw);
+	if (area->draw.fci.size) {
+		if (Z_TYPE(area->draw.fci.function_name)) {
+			zval_ptr_dtor(&area->draw.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&area->draw, handler);
+	memcpy(&area->draw.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&area->draw.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(area->draw.fci.function_name)) {
+		Z_ADDREF(area->draw.fci.function_name);
+	}	
 } /* }}} */
 
 /* {{{ proto void Area::onMouse(callable handler) */
 PHP_METHOD(Area, onMouse)
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(area->mouse) != IS_UNDEF) {
-		zval_ptr_dtor(&area->mouse);
+	if (area->mouse.fci.size) {
+		if (Z_TYPE(area->mouse.fci.function_name)) {
+			zval_ptr_dtor(&area->mouse.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&area->mouse, handler);
+	memcpy(&area->mouse.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&area->mouse.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(area->mouse.fci.function_name)) {
+		Z_ADDREF(area->mouse.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ proto void Area::onKey(callable handler) */
 PHP_METHOD(Area, onKey)
 {
 	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(area->key) != IS_UNDEF) {
-		zval_ptr_dtor(&area->key);
+	if (area->key.fci.size) {
+		if (Z_TYPE(area->key.fci.function_name)) {
+			zval_ptr_dtor(&area->key.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&area->key, handler);
+	memcpy(&area->key.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&area->key.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(area->key.fci.function_name)) {
+		Z_ADDREF(area->key.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */
@@ -392,7 +368,6 @@ PHP_MINIT_FUNCTION(UI_Area)
 
 	uiArea_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiArea_ce->create_object = php_ui_area_create;
-	uiArea_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("CTRL"), PHP_UI_AREA_CTRL);
 	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("ALT"), PHP_UI_AREA_ALT);

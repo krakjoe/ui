@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_ecombo_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_ecombo_on_change_handler)(uiEditableCombobox *, void *);
-
 zend_object* php_ui_ecombo_create(zend_class_entry *ce) {
 	php_ui_ecombo_t *ecombo = 
 		(php_ui_ecombo_t*) ecalloc(1, sizeof(php_ui_ecombo_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&ecombo->handler);
 
 	zend_object_std_init(&ecombo->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_ecombo_create(zend_class_entry *ce) {
 void php_ui_ecombo_free(zend_object *o) {
 	php_ui_ecombo_t *ecombo = php_ui_ecombo_from(o);
 
-	if (Z_TYPE(ecombo->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&ecombo->handler);
+	if (ecombo->change.fci.size) {
+		if (Z_TYPE(ecombo->change.fci.function_name)) {
+			zval_ptr_dtor(&ecombo->change.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_ecombo_change_handler(uiEditableCombobox *u, void *_ecombo) {
+	php_ui_ecombo_t *ecombo = (php_ui_ecombo_t*) _ecombo;
+
+	if (ecombo->change.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &ecombo->std);
+
+		ecombo->change.fci.retval = &rv;
+
+		zend_fcall_info_argn(&ecombo->change.fci, 1, &ctrl);
+
+		if (zend_call_function(&ecombo->change.fci, &ecombo->change.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&ecombo->change.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_ecombo_construct_info, 0, 0, 0)
@@ -69,7 +91,7 @@ PHP_METHOD(EditableCombo, __construct)
 
 	ecombo->c = uiNewEditableCombobox();
 
-	uiEditableComboboxOnChanged(ecombo->c, (php_ui_ecombo_on_change_handler) php_ui_event_handler, ecombo);
+	uiEditableComboboxOnChanged(ecombo->c, php_ui_ecombo_change_handler, ecombo);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_ecombo_set_text_info, 0, 0, 1)
@@ -129,17 +151,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(EditableCombo, onChange)
 {
 	php_ui_ecombo_t *ecombo = php_ui_ecombo_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(ecombo->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&ecombo->handler);
+	if (ecombo->change.fci.size) {
+		if (Z_TYPE(ecombo->change.fci.function_name)) {
+			zval_ptr_dtor(&ecombo->change.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&ecombo->handler, handler);
+	memcpy(&ecombo->change.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&ecombo->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(ecombo->change.fci.function_name)) {
+		Z_ADDREF(ecombo->change.fci.function_name);
+	}
 } /* }}} */
 
 /* {{{ */

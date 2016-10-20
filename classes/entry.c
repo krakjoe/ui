@@ -26,15 +26,9 @@
 
 zend_object_handlers php_ui_entry_handlers;
 
-extern void php_ui_event_handler(void *, void *);
-
-typedef void (*php_ui_entry_on_change_handler)(uiEntry *, void *);
-
 zend_object* php_ui_entry_create(zend_class_entry *ce) {
 	php_ui_entry_t *entry = 
 		(php_ui_entry_t*) ecalloc(1, sizeof(php_ui_entry_t) + zend_object_properties_size(ce));
-
-	ZVAL_UNDEF(&entry->handler);
 
 	zend_object_std_init(&entry->std, ce);
 
@@ -48,11 +42,39 @@ zend_object* php_ui_entry_create(zend_class_entry *ce) {
 void php_ui_entry_free(zend_object *o) {
 	php_ui_entry_t *entry = php_ui_entry_from(o);
 
-	if (Z_TYPE(entry->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&entry->handler);
+	if (entry->change.fci.size) {
+		if (Z_TYPE(entry->change.fci.function_name)) {
+			zval_ptr_dtor(&entry->change.fci.function_name);
+		}
 	}
 
 	zend_object_std_dtor(o);
+}
+
+void php_ui_entry_change_handler(uiEntry *u, void *_entry) {
+	php_ui_entry_t *entry = (php_ui_entry_t*) _entry;
+
+	if (entry->change.fci.size) {
+		zval rv;
+		zval ctrl;
+
+		ZVAL_UNDEF(&rv);
+		ZVAL_OBJ(&ctrl, &entry->std);
+
+		entry->change.fci.retval = &rv;
+
+		zend_fcall_info_argn(&entry->change.fci, 1, &ctrl);
+
+		if (zend_call_function(&entry->change.fci, &entry->change.fcc) != SUCCESS) {
+			return;
+		}
+
+		zend_fcall_info_args_clear(&entry->change.fci, 1);
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_construct_info, 0, 0, 0)
@@ -87,7 +109,7 @@ PHP_METHOD(Entry, __construct)
 			return;
 	}
 
-	uiEntryOnChanged(entry->e, (php_ui_entry_on_change_handler) php_ui_event_handler, entry);
+	uiEntryOnChanged(entry->e, php_ui_entry_change_handler, entry);
 
 	entry->type = type;
 } /* }}} */
@@ -133,17 +155,25 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Entry, onChange)
 {
 	php_ui_entry_t *entry = php_ui_entry_fetch(getThis());
-	zval *handler = NULL;
+	zend_fcall_info fci = empty_fcall_info;
+	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &handler) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
 		return;
 	}
 
-	if (Z_TYPE(entry->handler) != IS_UNDEF) {
-		zval_ptr_dtor(&entry->handler);
+	if (entry->change.fci.size) {
+		if (Z_TYPE(entry->change.fci.function_name)) {
+			zval_ptr_dtor(&entry->change.fci.function_name);
+		}
 	}
 
-	ZVAL_COPY(&entry->handler, handler);
+	memcpy(&entry->change.fci, &fci, sizeof(zend_fcall_info));
+	memcpy(&entry->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
+
+	if (Z_TYPE(entry->change.fci.function_name)) {
+		Z_ADDREF(entry->change.fci.function_name);
+	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_set_read_only_info, 0, 0, 1)
