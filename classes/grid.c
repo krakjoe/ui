@@ -86,7 +86,7 @@ PHP_METHOD(Grid, isPadded)
 	RETURN_BOOL(uiGridPadded(grid->g));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_append_info, 0, 0, 8)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_append_info, 0, 0, 9)
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
 	ZEND_ARG_TYPE_INFO(0, left, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, top, IS_LONG, 0)

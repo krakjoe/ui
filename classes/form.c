@@ -96,7 +96,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_form_append_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, stretchy, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Form::append(string label, Control control [, bool stretchy = 0]) */
+/* {{{ proto void Form::append(string label, Control control [, bool stretchy = false]) */
 PHP_METHOD(Form, append)
 {
 	php_ui_form_t *form = php_ui_form_fetch(getThis());

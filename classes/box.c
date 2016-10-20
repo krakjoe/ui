@@ -87,7 +87,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_box_append_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, stretchy, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Box::append(Control control [, bool stretchy = 0]) */
+/* {{{ proto void Box::append(Control control [, bool stretchy = false]) */
 PHP_METHOD(Box, append)
 {
 	php_ui_box_t *box = php_ui_box_fetch(getThis());

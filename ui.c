@@ -167,6 +167,8 @@ PHP_MINIT_FUNCTION(ui)
 	PHP_MINIT(UI_DrawMatrix)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Draw)(INIT_FUNC_ARGS_PASSTHRU);
 
+	php_ui_control_finalize();
+
 	return SUCCESS;
 }
 /* }}} */

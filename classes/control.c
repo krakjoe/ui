@@ -32,6 +32,10 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_parent_info, 0, 0, IS_OBJECT, "UI\\Control", 1)
 ZEND_END_ARG_INFO()
 
+void php_ui_control_finalize(void) {
+	uiControl_ce->ce_flags |= ZEND_ACC_FINAL;
+}
+
 /* {{{ proto Control Control::getParent(void) */
 PHP_METHOD(Control, getParent)
 {
@@ -214,4 +218,6 @@ PHP_MINIT_FUNCTION(UI_Control)
 
 	return SUCCESS;
 } /* }}} */
+
+
 #endif
