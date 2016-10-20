@@ -159,7 +159,7 @@ final class UI\Control\Check extends UI\Control {
 }
 ```
 
-```UI\Control\Check::onToggle``` handler should be ```callable(UI\Check $toggled)```
+```UI\Control\Check::onToggle``` handler should be ```callable(UI\Control\Check $toggled)```
 
 UI\Control\Button
 ========
@@ -175,7 +175,7 @@ final class UI\Control\Button extends UI\Control {
 }
 ```
 
-```UI\Control\Button::onClick``` handler should be ```callable(UI\Button $clicked)```
+```UI\Control\Button::onClick``` handler should be ```callable(UI\Control\Button $clicked)```
 
 UI\Control\ColorButton
 =============
@@ -191,7 +191,7 @@ final class UI\Control\ColorButton extends UI\Control {
 }
 ```
 
-```UI\Control\ColorButton::onChange``` handler should be ```callable(UI\ColorButton $changed)```
+```UI\Control\ColorButton::onChange``` handler should be ```callable(UI\Control\ColorButton $changed)```
 
 UI\Control\Label
 =======
@@ -228,12 +228,12 @@ final class UI\Control\Entry extends UI\Control {
 
 ```UI\Control\Entry::onChange``` handler should be ```callable(UI\Control\Entry $changed)```
 
-UI\Control\Multi
+UI\Control\MultilineEntry
 =======
 *An object represneting a uiMultilineEntry*
 
 ```
-final class UI\Multi extends UI\Control {
+final class UI\Control\MultilineEntry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
@@ -241,7 +241,7 @@ final class UI\Multi extends UI\Control {
 	public function append(string $text) : void;
 	public function onChange(callable $handler);
 
-	public function __construct(int $type = UI\MULTI::WRAP);
+	public function __construct(int $type = MultilineEntry::WRAP);
 
 	const NOWRAP;
 	const WRAP;
