@@ -15,8 +15,8 @@
   | Author: krakjoe                                                      |
   +----------------------------------------------------------------------+
 */
-#ifndef HAVE_PHP_UI_LABEL
-#define HAVE_PHP_UI_LABEL
+#ifndef HAVE_PHP_UI_POINT
+#define HAVE_PHP_UI_POINT
 #include <ui.h>
 
 #include "php.h"
