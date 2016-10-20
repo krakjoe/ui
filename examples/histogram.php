@@ -32,11 +32,8 @@ $hBox->append($vBox);
 $dataSources = [];
 
 function getGraphPoints(array $dataSources, Size $size) : array {
-	$width = $size->getWidth();
-	$height = $size->getHeight();
-
-	$xincr = $width / 9;
-	$yincr = $height / 100;
+	$xincr = $size->width / 9;
+	$yincr = $size->height / 100;
 
 	$points = [];
 
