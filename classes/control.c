@@ -89,7 +89,7 @@ PHP_METHOD(Control, getTopLevel)
 		return;
 	}
 
-	RETURN_LONG(uiControlTopLevel(ctrl));
+	RETURN_LONG(uiControlToplevel(ctrl));
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_visible_info, 0, 0, _IS_BOOL, NULL, 0)

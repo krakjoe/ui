@@ -172,7 +172,7 @@ PHP_METHOD(Entry, isReadOnly)
 		return;	
 	}
 
-	if (uiEntryReadonly(entry->e)) {
+	if (uiEntryReadOnly(entry->e)) {
 		RETURN_TRUE;
 	} else {
 		RETURN_FALSE;
