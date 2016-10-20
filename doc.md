@@ -514,7 +514,7 @@ final class UI\DrawStroke {
 
 UI\DrawMatrix
 ============
-*An object representing a uiDrawMatrixc*
+*An object representing a uiDrawMatrix*
 
 ```
 final class UI\DrawMatrix {
