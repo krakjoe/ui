@@ -146,10 +146,6 @@ static zval* php_ui_size_read(zval *object, zval *member, int type, void **cache
 		return &EG(uninitialized_zval);
 	}
 
-	if (Z_STRLEN_P(member) != 1) {
-		return &EG(uninitialized_zval);
-	}
-
 	if (type == BP_VAR_RW || type == BP_VAR_W) {
 		zend_throw_exception_ex(NULL, 0, 
 			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));

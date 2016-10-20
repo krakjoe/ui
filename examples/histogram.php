@@ -60,11 +60,11 @@ function getGraphPath(array $locations, Size $size, bool $extend = false) : Path
 
 	if ($extend) {
 		$path->lineTo(new Point(
-						$size->getWidth(), 
-						$size->getHeight()));
+						$size->width, 
+						$size->height));
 		$path->lineTo(new Point(
 						0, 
-						$size->getHeight()));
+						$size->height));
 		$path->closeFigure();
 	}
 
@@ -90,8 +90,8 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 	$pen->fill($path, $white);
 
 	$graphSize = new Size(
-		$areaSize->getWidth() - 40, 
-		$areaSize->getHeight() - 40);
+		$areaSize->width - 40, 
+		$areaSize->height - 40);
 
 	$path = new Path(PATH::WINDING);
 
@@ -101,11 +101,11 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 
 	$path->lineTo(new Point(
 		20, 
-		20 + $graphSize->getHeight()));
+		20 + $graphSize->height));
 
 	$path->lineTo(new Point(
-		20 + $graphSize->getWidth(), 
-		20 + $graphSize->getHeight()));
+		20 + $graphSize->width, 
+		20 + $graphSize->height));
 	
 	$path->end();
 
