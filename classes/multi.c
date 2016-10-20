@@ -173,7 +173,7 @@ PHP_METHOD(Multi, setReadOnly)
 		return;
 	}
 
-	uiMultilineEntryReadOnly(multi->e, readOnly);
+	uiMultilineEntrySetReadOnly(multi->e, readOnly);
 } /* }}} */
 
 /* {{{ proto void Multi::isReadOnly(void) */
