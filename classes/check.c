@@ -32,7 +32,7 @@ typedef void (*php_ui_check_on_toggle_handler)(uiCheckbox *, void *);
 
 zend_object* php_ui_check_create(zend_class_entry *ce) {
 	php_ui_check_t *check = 
-		(php_ui_check_t*) ecalloc(1, sizeof(php_ui_check_t));
+		(php_ui_check_t*) ecalloc(1, sizeof(php_ui_check_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&check->handler);
 

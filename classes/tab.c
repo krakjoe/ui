@@ -27,7 +27,7 @@
 zend_object_handlers php_ui_tab_handlers;
 
 zend_object* php_ui_tab_create(zend_class_entry *ce) {
-	php_ui_tab_t *tab = (php_ui_tab_t*) ecalloc(1, sizeof(php_ui_tab_t));
+	php_ui_tab_t *tab = (php_ui_tab_t*) ecalloc(1, sizeof(php_ui_tab_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&tab->std, ce);
 
@@ -64,15 +64,15 @@ PHP_METHOD(Tab, append)
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
 	zend_string *name = NULL;
 	zval *control = NULL;
-	php_ui_control_t *ctrl = NULL;
-	
+	uiControl *ctrl = NULL;
+
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO", &name, &control, uiControl_ce) != SUCCESS) {
 		return;
 	}
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabAppend(tab->t, ZSTR_VAL(name), uiControl(ctrl->c));
+	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl);
 }
 /* }}} */
 
@@ -121,7 +121,7 @@ PHP_METHOD(Tab, insertAt)
 	zend_string *name = NULL;
 	zend_bool before = 0;
 	zval *control = NULL;
-	php_ui_control_t *ctrl = NULL;
+	uiControl *ctrl = NULL;
 	
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO", &name, &before, &control, uiControl_ce) != SUCCESS) {
 		return;
@@ -129,7 +129,7 @@ PHP_METHOD(Tab, insertAt)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) before, uiControl(ctrl->c));
+	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) before, ctrl);
 }
 /* }}} */
 

@@ -32,7 +32,7 @@ typedef void (*php_ui_ecombo_on_change_handler)(uiEditableCombobox *, void *);
 
 zend_object* php_ui_ecombo_create(zend_class_entry *ce) {
 	php_ui_ecombo_t *ecombo = 
-		(php_ui_ecombo_t*) ecalloc(1, sizeof(php_ui_ecombo_t));
+		(php_ui_ecombo_t*) ecalloc(1, sizeof(php_ui_ecombo_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&ecombo->handler);
 

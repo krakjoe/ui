@@ -32,7 +32,7 @@ typedef void (*php_ui_multi_on_change_handler)(uiMultilineEntry *, void *);
 
 zend_object* php_ui_multi_create(zend_class_entry *ce) {
 	php_ui_multi_t *multi = 
-		(php_ui_multi_t*) ecalloc(1, sizeof(php_ui_multi_t));
+		(php_ui_multi_t*) ecalloc(1, sizeof(php_ui_multi_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&multi->handler);
 

@@ -22,8 +22,8 @@ zend_class_entry *uiBox_ce;
 
 typedef struct _php_ui_box_t {
 	uiBox *b;
-	zend_object std;
 	zend_long orientation;
+	zend_object std;
 } php_ui_box_t;
 
 #define php_ui_box_from(o) ((php_ui_box_t*) ((char*) o - XtOffsetOf(php_ui_box_t, std)))

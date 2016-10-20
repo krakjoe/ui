@@ -32,7 +32,7 @@ typedef void (*php_ui_slider_on_change_handler)(uiSlider *, void *);
 
 zend_object* php_ui_slider_create(zend_class_entry *ce) {
 	php_ui_slider_t *slider = 
-		(php_ui_slider_t*) ecalloc(1, sizeof(php_ui_slider_t));
+		(php_ui_slider_t*) ecalloc(1, sizeof(php_ui_slider_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&slider->handler);
 

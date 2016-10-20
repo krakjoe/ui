@@ -62,7 +62,7 @@ void php_ui_item_handler(uiMenuItem *i, uiWindow *w,  void *_ev) {
 
 zend_object* php_ui_item_create(zend_class_entry *ce) {
 	php_ui_item_t *item = 
-		(php_ui_item_t*) ecalloc(1, sizeof(php_ui_item_t));
+		(php_ui_item_t*) ecalloc(1, sizeof(php_ui_item_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&item->std, ce);
 

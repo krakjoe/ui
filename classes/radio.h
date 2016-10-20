@@ -22,8 +22,8 @@ zend_class_entry *uiRadio_ce;
 
 typedef struct _php_ui_radio_t {
 	uiRadioButtons *r;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_radio_t;
 
 #define php_ui_radio_from(o) ((php_ui_radio_t*) ((char*) o - XtOffsetOf(php_ui_radio_t, std)))

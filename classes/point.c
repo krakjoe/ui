@@ -41,7 +41,7 @@ zval *php_ui_point_construct(zval *point, double x, double y)
 
 zend_object* php_ui_point_create(zend_class_entry *ce) {
 	php_ui_point_t *point = 
-		(php_ui_point_t*) ecalloc(1, sizeof(php_ui_point_t));
+		(php_ui_point_t*) ecalloc(1, sizeof(php_ui_point_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&point->std, ce);
 

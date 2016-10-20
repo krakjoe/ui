@@ -28,7 +28,7 @@ zend_object_handlers php_ui_box_handlers;
 
 zend_object* php_ui_box_create(zend_class_entry *ce) {
 	php_ui_box_t *box = 
-		(php_ui_box_t*) ecalloc(1, sizeof(php_ui_box_t));
+		(php_ui_box_t*) ecalloc(1, sizeof(php_ui_box_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&box->std, ce);
 
@@ -93,7 +93,7 @@ PHP_METHOD(Box, append)
 	php_ui_box_t *box = php_ui_box_fetch(getThis());
 	zval *control = NULL;
 	zend_bool stretchy = 0;
-	php_ui_control_t *ctrl;
+	uiControl *ctrl;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O|b", &control, uiControl_ce, &stretchy) != SUCCESS) {
 		return;
@@ -101,7 +101,7 @@ PHP_METHOD(Box, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiBoxAppend(box->b, uiControl(ctrl->c), stretchy);
+	uiBoxAppend(box->b, ctrl, stretchy);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_box_delete_info, 0, 0, 1)

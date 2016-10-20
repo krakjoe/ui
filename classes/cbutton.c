@@ -33,7 +33,7 @@ typedef void (*php_ui_cbutton_on_change_handler)(uiColorButton *, void *);
 
 zend_object* php_ui_cbutton_create(zend_class_entry *ce) {
 	php_ui_cbutton_t *cbutton = 
-		(php_ui_cbutton_t*) ecalloc(1, sizeof(php_ui_cbutton_t));
+		(php_ui_cbutton_t*) ecalloc(1, sizeof(php_ui_cbutton_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&cbutton->handler);
 

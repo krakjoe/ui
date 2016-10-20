@@ -28,7 +28,7 @@ zend_object_handlers php_ui_separator_handlers;
 
 zend_object* php_ui_separator_create(zend_class_entry *ce) {
 	php_ui_separator_t *separator = 
-		(php_ui_separator_t*) ecalloc(1, sizeof(php_ui_separator_t));
+		(php_ui_separator_t*) ecalloc(1, sizeof(php_ui_separator_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&separator->std, ce);
 

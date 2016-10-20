@@ -40,7 +40,7 @@ zval *php_ui_window_construct(zval *object, uiWindow *w) {
 }
 
 zend_object* php_ui_window_create(zend_class_entry *ce) {
-	php_ui_window_t *w = (php_ui_window_t*) ecalloc(1, sizeof(php_ui_window_t));
+	php_ui_window_t *w = (php_ui_window_t*) ecalloc(1, sizeof(php_ui_window_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&w->std, ce);
 
@@ -329,7 +329,7 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Window, add)
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	php_ui_control_t *ctrl;
+	uiControl *ctrl;
 
 	zval *control = NULL;
 
@@ -339,7 +339,7 @@ PHP_METHOD(Window, add)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiWindowSetChild(win->w, uiControl(ctrl->c));
+	uiWindowSetChild(win->w, ctrl);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_box_info, 0, 0, 2)

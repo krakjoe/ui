@@ -22,17 +22,17 @@ zend_class_entry *uiArea_ce;
 
 typedef struct _php_ui_area_t {
 	uiArea *a;
-	zend_object std;
 	zval draw;
 	zval mouse;
 	zval key;
 	uiAreaHandler h;
+	zend_object std;
 } php_ui_area_t;
 
 #define php_ui_area_from(o) ((php_ui_area_t*) ((char*) (o) - XtOffsetOf(php_ui_area_t, std)))
 #define php_ui_area_fetch(z) php_ui_area_from(Z_OBJ_P(z))
 
-#define PHP_UI_AREA_HANDLER_OFFSET ((sizeof(zval) * 3) + sizeof(zend_object) + sizeof(void*))
+#define PHP_UI_AREA_HANDLER_OFFSET ((sizeof(zval) * 3) + sizeof(void*))
 
 #define PHP_UI_AREA_CTRL	1<<0
 #define PHP_UI_AREA_ALT		1<<1

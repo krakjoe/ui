@@ -28,7 +28,7 @@ zend_object_handlers php_ui_group_handlers;
 
 zend_object* php_ui_group_create(zend_class_entry *ce) {
 	php_ui_group_t *group = 
-		(php_ui_group_t*) ecalloc(1, sizeof(php_ui_group_t));
+		(php_ui_group_t*) ecalloc(1, sizeof(php_ui_group_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&group->std, ce);
 
@@ -134,7 +134,7 @@ PHP_METHOD(Group, add)
 {
 	php_ui_group_t *group = php_ui_group_fetch(getThis());
 	zval *control = NULL;
-	php_ui_control_t *ctrl;
+	uiControl *ctrl;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &control, uiControl_ce) != SUCCESS) {
 		return;
@@ -142,7 +142,7 @@ PHP_METHOD(Group, add)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiGroupSetChild(group->g, uiControl(ctrl->c));
+	uiGroupSetChild(group->g, ctrl);
 } /* }}} */
 
 /* {{{ */

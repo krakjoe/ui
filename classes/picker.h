@@ -22,8 +22,8 @@ zend_class_entry *uiPicker_ce;
 
 typedef struct _php_ui_picker_t {
 	uiDateTimePicker *p;
-	zend_object std;
 	zend_long type;
+	zend_object std;
 } php_ui_picker_t;
 
 #define php_ui_picker_from(o) ((php_ui_picker_t*) ((char*) o - XtOffsetOf(php_ui_picker_t, std)))

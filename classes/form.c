@@ -28,7 +28,7 @@ zend_object_handlers php_ui_form_handlers;
 
 zend_object* php_ui_form_create(zend_class_entry *ce) {
 	php_ui_form_t *form = 
-		(php_ui_form_t*) ecalloc(1, sizeof(php_ui_form_t));
+		(php_ui_form_t*) ecalloc(1, sizeof(php_ui_form_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&form->std, ce);
 
@@ -103,7 +103,7 @@ PHP_METHOD(Form, append)
 	zend_string *label = NULL;
 	zval *control = NULL;
 	zend_bool stretchy = 0;
-	php_ui_control_t *ctrl;
+	uiControl *ctrl;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO|b", &label, &control, uiControl_ce, &stretchy) != SUCCESS) {
 		return;
@@ -111,7 +111,7 @@ PHP_METHOD(Form, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiFormAppend(form->f, ZSTR_VAL(label), uiControl(ctrl->c), stretchy);
+	uiFormAppend(form->f, ZSTR_VAL(label), ctrl, stretchy);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_delete_info, 0, 0, 1)

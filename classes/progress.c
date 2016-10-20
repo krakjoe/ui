@@ -28,7 +28,7 @@ zend_object_handlers php_ui_progress_handlers;
 
 zend_object* php_ui_progress_create(zend_class_entry *ce) {
 	php_ui_progress_t *progress = 
-		(php_ui_progress_t*) ecalloc(1, sizeof(php_ui_progress_t));
+		(php_ui_progress_t*) ecalloc(1, sizeof(php_ui_progress_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&progress->std, ce);
 

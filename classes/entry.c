@@ -32,7 +32,7 @@ typedef void (*php_ui_entry_on_change_handler)(uiEntry *, void *);
 
 zend_object* php_ui_entry_create(zend_class_entry *ce) {
 	php_ui_entry_t *entry = 
-		(php_ui_entry_t*) ecalloc(1, sizeof(php_ui_entry_t));
+		(php_ui_entry_t*) ecalloc(1, sizeof(php_ui_entry_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&entry->handler);
 

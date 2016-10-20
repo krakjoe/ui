@@ -32,7 +32,7 @@ typedef void (*php_ui_combo_on_selected_handler)(uiCombobox *, void *);
 
 zend_object* php_ui_combo_create(zend_class_entry *ce) {
 	php_ui_combo_t *combo = 
-		(php_ui_combo_t*) ecalloc(1, sizeof(php_ui_combo_t));
+		(php_ui_combo_t*) ecalloc(1, sizeof(php_ui_combo_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&combo->handler);
 

@@ -22,8 +22,8 @@ zend_class_entry *uiColorButton_ce;
 
 typedef struct _php_ui_cbutton_t {
 	uiColorButton *b;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_cbutton_t;
 
 #define php_ui_cbutton_from(o) ((php_ui_cbutton_t*) ((char*) o - XtOffsetOf(php_ui_cbutton_t, std)))

@@ -41,7 +41,7 @@ zval *php_ui_size_construct(zval *size, double width, double height)
 
 zend_object* php_ui_size_create(zend_class_entry *ce) {
 	php_ui_size_t *size = 
-		(php_ui_size_t*) ecalloc(1, sizeof(php_ui_size_t));
+		(php_ui_size_t*) ecalloc(1, sizeof(php_ui_size_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&size->std, ce);
 
@@ -232,6 +232,7 @@ PHP_MINIT_FUNCTION(UI_Size)
 	php_ui_size_handlers.get_property_ptr_ptr = php_ui_size_noref;
 	php_ui_size_handlers.write_property = php_ui_size_write;
 	php_ui_size_handlers.get_debug_info = php_ui_size_debug;
+
 	return SUCCESS;
 } /* }}} */
 #endif

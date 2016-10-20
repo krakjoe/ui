@@ -22,8 +22,8 @@ zend_class_entry *uiItem_ce;
 
 typedef struct _php_ui_item_t {
 	uiMenuItem *i;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_item_t;
 
 #define php_ui_item_from(o) ((php_ui_item_t*) ((char*) o - XtOffsetOf(php_ui_item_t, std)))

@@ -22,8 +22,8 @@ zend_class_entry *uiSlider_ce;
 
 typedef struct _php_ui_slider_t {
 	uiSlider *s;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_slider_t;
 
 #define php_ui_slider_from(o) ((php_ui_slider_t*) ((char*) o - XtOffsetOf(php_ui_slider_t, std)))

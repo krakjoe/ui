@@ -103,7 +103,7 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 		zend_fcall_info fci = empty_fcall_info;
 		zend_fcall_info_cache fcc = empty_fcall_info_cache;
-		
+
 		if (zend_fcall_info_init(&area->draw, IS_CALLABLE_CHECK_SILENT, &fci, &fcc, NULL, NULL) != SUCCESS) {
 			return;
 		}
@@ -203,7 +203,7 @@ static void php_ui_area_drag(uiAreaHandler *ah, uiArea *a) {}
 
 zend_object* php_ui_area_create(zend_class_entry *ce) {
 	php_ui_area_t *area = 
-		(php_ui_area_t*) ecalloc(1, sizeof(php_ui_area_t));
+		(php_ui_area_t*) ecalloc(1, sizeof(php_ui_area_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&area->std, ce);
 

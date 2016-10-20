@@ -22,9 +22,9 @@ zend_class_entry *uiCheck_ce;
 
 typedef struct _php_ui_check_t {
 	uiCheckbox *c;
-	zend_object std;
 	zend_long orientation;
 	zval handler;
+	zend_object std;
 } php_ui_check_t;
 
 #define php_ui_check_from(o) ((php_ui_check_t*) ((char*) o - XtOffsetOf(php_ui_check_t, std)))

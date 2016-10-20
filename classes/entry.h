@@ -22,9 +22,9 @@ zend_class_entry *uiEntry_ce;
 
 typedef struct _php_ui_entry_t {
 	uiEntry *e;
-	zend_object std;
 	zend_long type;
 	zval handler;
+	zend_object std;
 } php_ui_entry_t;
 
 #define php_ui_entry_from(o) ((php_ui_entry_t*) ((char*) o - XtOffsetOf(php_ui_entry_t, std)))

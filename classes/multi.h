@@ -22,9 +22,9 @@ zend_class_entry *uiMulti_ce;
 
 typedef struct _php_ui_multi_t {
 	uiMultilineEntry *e;
-	zend_object std;
 	zend_long type;
 	zval handler;
+	zend_object std;
 } php_ui_multi_t;
 
 #define php_ui_multi_from(o) ((php_ui_multi_t*) ((char*) o - XtOffsetOf(php_ui_multi_t, std)))

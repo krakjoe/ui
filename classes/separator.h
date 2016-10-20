@@ -22,8 +22,8 @@ zend_class_entry *uiSeparator_ce;
 
 typedef struct _php_ui_separator_t {
 	uiSeparator *s;
-	zend_object std;
 	zend_long type;
+	zend_object std;
 } php_ui_separator_t;
 
 #define php_ui_separator_from(o) ((php_ui_separator_t*) ((char*) o - XtOffsetOf(php_ui_separator_t, std)))

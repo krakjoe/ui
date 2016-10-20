@@ -22,8 +22,8 @@ zend_class_entry *uiSpin_ce;
 
 typedef struct _php_ui_spin_t {
 	uiSpinbox *s;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_spin_t;
 
 #define php_ui_spin_from(o) ((php_ui_spin_t*) ((char*) o - XtOffsetOf(php_ui_spin_t, std)))

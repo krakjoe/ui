@@ -32,7 +32,7 @@ typedef void (*php_ui_button_on_click_handler)(uiButton *, void *);
 
 zend_object* php_ui_button_create(zend_class_entry *ce) {
 	php_ui_button_t *button = 
-		(php_ui_button_t*) ecalloc(1, sizeof(php_ui_button_t));
+		(php_ui_button_t*) ecalloc(1, sizeof(php_ui_button_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&button->handler);
 

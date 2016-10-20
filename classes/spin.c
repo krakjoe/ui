@@ -32,7 +32,7 @@ typedef void (*php_ui_spin_on_change_handler)(uiSpinbox *, void *);
 
 zend_object* php_ui_spin_create(zend_class_entry *ce) {
 	php_ui_spin_t *spin = 
-		(php_ui_spin_t*) ecalloc(1, sizeof(php_ui_spin_t));
+		(php_ui_spin_t*) ecalloc(1, sizeof(php_ui_spin_t) + zend_object_properties_size(ce));
 
 	ZVAL_UNDEF(&spin->handler);
 

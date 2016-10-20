@@ -29,7 +29,7 @@ zend_object_handlers php_ui_matrix_handlers;
 
 zend_object* php_ui_matrix_create(zend_class_entry *ce) {
 	php_ui_matrix_t *matrix = 
-		(php_ui_matrix_t*) ecalloc(1, sizeof(php_ui_matrix_t));
+		(php_ui_matrix_t*) ecalloc(1, sizeof(php_ui_matrix_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&matrix->std, ce);
 

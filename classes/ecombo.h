@@ -22,8 +22,8 @@ zend_class_entry *uiEditableCombo_ce;
 
 typedef struct _php_ui_ecombo_t {
 	uiEditableCombobox *c;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_ecombo_t;
 
 #define php_ui_ecombo_from(o) ((php_ui_ecombo_t*) ((char*) o - XtOffsetOf(php_ui_ecombo_t, std)))
