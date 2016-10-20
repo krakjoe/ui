@@ -443,12 +443,12 @@ final class UI\Area extends UI\Control {
 
 ```UI\Area::onMouse``` handler should be ```callable(UI\Area $area, UI\Point $areaPoint, UI\Size $areaSize, int $flags)```
 
-UI\Draw
-======
-*A drawing object ... I mean wtf am I supposed to put here ...*
+UI\Draw\Pen
+==========
+*A drawing object*
 
 ```
-final class UI\Draw {
+final class UI\Draw\Pen {
 	public function fill(UI\Draw\Path $path, UI\Draw\Brush $brush) : void;
 	public function stroke(UI\Draw\Path $path, UI\Draw\Brush $brush, UI\Draw\Stroke $stroke) : void;
 	public function transform(UI\Draw\Matrix $matrix) : void;	
