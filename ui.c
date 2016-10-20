@@ -71,8 +71,8 @@
 /* {{{ */
 typedef struct _php_ui_event_t {
 	uiControl *ctrl;
-	zend_object std;
 	zval handler;
+	zend_object std;
 } php_ui_event_t;
 
 void php_ui_event_handler(void *u, void *_event) {
