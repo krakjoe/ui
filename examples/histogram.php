@@ -137,6 +137,7 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 });
 
 $colorBox = new Entry();
+$colorBox->setText("0x8892BF");
 
 $redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
 	$redrawColor = $colorButton->getColor();
@@ -161,9 +162,6 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 $vBox->append($colorButton);
-
-
-$colorBox->setText("0x000000");
 
 $colorBoxButton = new Button("Set Color");
 $colorBoxButton->onClick(function() use($colorBox, $colorButton, $redrawHistogram) {
