@@ -41,7 +41,7 @@ typedef struct _php_ui_area_t {
 #define PHP_UI_AREA_UP		1<<4
 #define PHP_UI_AREA_DOWN	1<<5
 
-#define php_ui_area_from_handler(h) (php_ui_area_t*) ((char *) (h) - PHP_UI_AREA_HANDLER_OFFSET)
+#define php_ui_area_from_handler(a) (php_ui_area_t*) ((char *) (a) - XtOffsetOf(php_ui_area_t, h))
 
 PHP_MINIT_FUNCTION(UI_Area);
 #endif
