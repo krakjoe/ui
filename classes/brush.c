@@ -57,10 +57,11 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, X0, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, Y0, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, X1, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, Y1, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, radius, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawBrush DrawBrush::__construct(int type, double r, double r, double b, double a [, double X0, double, Y0, double X1, double Y1, double radius]) */
+/* {{{ proto DrawBrush DrawBrush::__construct(int type [, double r, double r, double b, double a , double X0, double, Y0, double X1, double Y1, double radius]) */
 PHP_METHOD(DrawBrush, __construct) 
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());

@@ -38,7 +38,7 @@ zend_object* php_ui_stroke_create(zend_class_entry *ce) {
 	return &stroke->std;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 4)
 	ZEND_ARG_TYPE_INFO(0, cap, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, join, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, thickness, IS_DOUBLE, 0)
