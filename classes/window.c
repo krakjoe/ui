@@ -447,6 +447,7 @@ PHP_MINIT_FUNCTION(UI_Window)
 
 	uiWindow_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiWindow_ce->create_object = php_ui_window_create;
+	uiWindow_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

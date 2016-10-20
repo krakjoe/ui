@@ -161,6 +161,7 @@ PHP_MINIT_FUNCTION(UI_EditableCombo)
 
 	uiEditableCombo_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiEditableCombo_ce->create_object = php_ui_ecombo_create;
+	uiEditableCombo_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_ecombo_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

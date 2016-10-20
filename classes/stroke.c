@@ -69,7 +69,7 @@ const zend_function_entry php_ui_stroke_methods[] = {
 }; /* }}} */
 
 /* {{{ */
-PHP_MINIT_FUNCTION(UI_Stroke) 
+PHP_MINIT_FUNCTION(UI_DrawStroke) 
 {
 	zend_class_entry ce;
 
@@ -77,6 +77,7 @@ PHP_MINIT_FUNCTION(UI_Stroke)
 
 	uiDrawStroke_ce = zend_register_internal_class(&ce);
 	uiDrawStroke_ce->create_object = php_ui_stroke_create;
+	uiDrawStroke_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("CAP_FLAT"), PHP_UI_STROKE_CAP_FLAT);
 	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("CAP_ROUND"), PHP_UI_STROKE_CAP_ROUND);

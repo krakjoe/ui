@@ -9,6 +9,7 @@ use UI\Button;
 use UI\Area;
 use UI\Draw\Pen;
 use UI\Draw\Path;
+use UI\Draw\Color;
 use UI\Draw\Brush;
 use UI\Draw\Stroke;
 use UI\Draw\Matrix;
@@ -70,8 +71,8 @@ function getGraphPath(array $locations, Size $size, bool $extend = false) : Path
 
 $colorButton = new ColorButton();
 
-$white = new Brush(BRUSH::SOLID, 1, 1, 1, 1);
-$black = new Brush(BRUSH::SOLID, 0, 0, 0, 1);
+$white = new Brush(BRUSH::SOLID, new Color(0xFFFFFF, 1));
+$black = new Brush(BRUSH::SOLID, new Color(0x000000, 1));
 
 $histogram = new Area();
 
@@ -119,14 +120,17 @@ $histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoi
 
 	$path = getGraphPath($points, $graphSize, true);
 
-	$brush = $colorButton->getBrush();
-	
+	$brush = new Brush(BRUSH::SOLID, $colorButton->getColor());
+
 	$pen->fill($path, $brush);
 
 	$path = getGraphPath($points, $graphSize, false);
 
-	$brush->setAlpha(
-		$brush->getAlpha()/2);
+	$strokeColor = $brush->getColor();
+	$strokeColor
+		->setChannel(COLOR::ALPHA, 
+			$strokeColor->getChannel(COLOR::ALPHA)/2);
+	$brush->setColor($strokeColor);
 
 	$pen->stroke($path, $brush, $stroke);
 });
@@ -145,11 +149,7 @@ $redrawHistogram = function() use($histogram) {
 	$histogram->redraw();
 };
 
-$brush = new Brush(BRUSH::SOLID);
-$brush->setAlpha(1);
-$brush->setRGB(0x8892BF); # this is the color of PHP, internally ...
-
-$colorButton->setColorFromBrush($brush);
+$colorButton->setColor(new Color(0x8892BF, 1));
 $colorButton->onChange($redrawHistogram);
 
 for ($i = 0; $i < 10; $i++) {

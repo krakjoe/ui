@@ -216,6 +216,7 @@ PHP_MINIT_FUNCTION(UI_DrawMatrix)
 
 	uiDrawMatrix_ce = zend_register_internal_class(&ce);
 	uiDrawMatrix_ce->create_object = php_ui_matrix_create;
+	uiDrawMatrix_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_matrix_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

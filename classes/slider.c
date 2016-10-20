@@ -146,6 +146,7 @@ PHP_MINIT_FUNCTION(UI_Slider)
 
 	uiSlider_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSlider_ce->create_object = php_ui_slider_create;
+	uiSlider_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_slider_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

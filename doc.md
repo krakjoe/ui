@@ -183,10 +183,8 @@ UI\ColorButton
 
 ```
 final class UI\ColorButton extends UI\Control {
-	public function setColor(int $r, int $g, int $b) : void;
-	public function setColorFromBrush(UI\Draw\Brush $brush) : void;
-	public function getColor() : array;
-	public function getBrush() : UI\Draw\Brush;
+	public function setColor(UI\Draw\Color color) : void;
+	public function getColor() : UI\Draw\Color;
 	public function onChange(callable $handler) : void;
 	
 	public function __construct(string $text);
@@ -480,6 +478,24 @@ final class UI\Draw\Path {
 }
 ```
 
+UI\Draw\Color
+============
+*An object representing RGBA colors*
+
+```
+final class UI\Draw\Color {
+	public function setChannel(int $channel, double $value) : void;
+	public function getChannel(int $channel) : double;
+
+	public function __construct(int $rgb [, double $alpha]); 
+
+	const RED;
+	const GREEN;
+	const BLUE;
+	const ALPHA;
+}
+```
+
 UI\Draw\Brush
 ===========
 *An object representing a uiDrawBrush*
@@ -487,11 +503,11 @@ UI\Draw\Brush
 ```
 final class UI\Draw\Brush {
 	public function getType() : int;
-	public function setRGB(int $color) : int;
-	public function setAlpha(double $alpha) : void;
-	public function getAlpha() : double;
+	public function setType(int $type) : void;
+	public function getColor() : UI\Draw\Color;
+	public function setColor(UI\Draw\Color $color) : void;
 
-	public function __construct(int $type, double $r = 0, double $g = 0, double $b = 0, double $a = 0, double $X0 = 0, double $Y0 = 0, double $X1 = 0, double $Y1 = 0, double $radius = 0);
+	public function __construct(int $type, UI\Draw\Color $color, double $X0 = 0, double $Y0 = 0, double $X1 = 0, double $Y1 = 0, double $radius = 0);
 
 	const SOLID;
 	const LGRADIENT;

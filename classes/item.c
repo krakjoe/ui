@@ -191,6 +191,7 @@ PHP_MINIT_FUNCTION(UI_MenuItem)
 
 	uiItem_ce = zend_register_internal_class(&ce);
 	uiItem_ce->create_object = php_ui_item_create;
+	uiItem_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_item_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

@@ -103,6 +103,7 @@ PHP_MINIT_FUNCTION(UI_Progress)
 
 	uiProgress_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiProgress_ce->create_object = php_ui_progress_create;
+	uiProgress_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_progress_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

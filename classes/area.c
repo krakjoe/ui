@@ -392,7 +392,8 @@ PHP_MINIT_FUNCTION(UI_Area)
 
 	uiArea_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiArea_ce->create_object = php_ui_area_create;
-	
+	uiArea_ce->ce_flags |= ZEND_ACC_FINAL;
+
 	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("CTRL"), PHP_UI_AREA_CTRL);
 	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("ALT"), PHP_UI_AREA_ALT);
 	zend_declare_class_constant_long(uiArea_ce, ZEND_STRL("SHIFT"), PHP_UI_AREA_SHIFT);

@@ -162,6 +162,7 @@ PHP_MINIT_FUNCTION(UI_Radio)
 
 	uiRadio_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiRadio_ce->create_object = php_ui_radio_create;
+	uiRadio_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_radio_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

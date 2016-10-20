@@ -177,6 +177,7 @@ PHP_MINIT_FUNCTION(UI_Box)
 
 	uiBox_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiBox_ce->create_object = php_ui_box_create;
+	uiBox_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_box_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

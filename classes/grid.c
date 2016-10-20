@@ -134,6 +134,7 @@ PHP_MINIT_FUNCTION(UI_Grid)
 
 	uiGrid_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGrid_ce->create_object = php_ui_grid_create;
+	uiGrid_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("FILL"), uiAlignFill);
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("START"), uiAlignStart);

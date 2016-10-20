@@ -199,6 +199,7 @@ PHP_MINIT_FUNCTION(UI_Entry)
 
 	uiEntry_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiEntry_ce->create_object = php_ui_entry_create;
+	uiEntry_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_entry_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

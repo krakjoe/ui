@@ -252,7 +252,8 @@ PHP_MINIT_FUNCTION(UI_DrawPath)
 
 	uiDrawPath_ce = zend_register_internal_class(&ce);
 	uiDrawPath_ce->create_object = php_ui_path_create;
-
+	uiDrawPath_ce->ce_flags |= ZEND_ACC_FINAL;
+	
 	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("WINDING"), PHP_UI_PATH_WINDING);
 	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("ALTERNATE"), PHP_UI_PATH_ALTERNATE);
 

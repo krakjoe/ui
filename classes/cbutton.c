@@ -23,7 +23,7 @@
 
 #include <classes/control.h>
 #include <classes/cbutton.h>
-#include <classes/brush.h>
+#include <classes/color.h>
 
 zend_object_handlers php_ui_cbutton_handlers;
 
@@ -74,73 +74,34 @@ PHP_METHOD(ColorButton, __construct)
 	uiColorButtonOnChanged(cbutton->b, (php_ui_cbutton_on_change_handler) php_ui_event_handler, cbutton);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_set_color_info, 0, 0, 3)
-	ZEND_ARG_TYPE_INFO(0, r, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, g, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, b, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, a, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_set_color_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void ColorButton::setColor(double r, double g, double b, double a) */
+/* {{{ proto void ColorButton::setColor(UI\Draw\Color color) */
 PHP_METHOD(ColorButton, setColor)
 {
 	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
-	double r = 0, g = 0, b = 0, a = 0;
-	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dddd", &r, &g, &b, &a) != SUCCESS) {
-		return;
-	}
+	zval *color = NULL;
+	php_ui_color_t *c;
 
-	uiColorButtonSetColor(cbutton->b, r, g, b, a);
-} /* }}} */
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_set_color_from_brush_info, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, brush, UI\\Draw\\Brush, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto void ColorButton::setColorFromBrush(UI\Draw\Brush brush) */
-PHP_METHOD(ColorButton, setColorFromBrush)
-{
-	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
-	zval *brush = NULL;
-	php_ui_brush_t *b;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &brush, uiDrawBrush_ce) != SUCCESS) {
-		return;
-	}
-
-	b = php_ui_brush_fetch(brush);
-
-	uiColorButtonSetColor(cbutton->b, b->b.R, b->b.G, b->b.B, b->b.A);
-} /* }}} */ 
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_cbutton_get_brush_info, 0, 0, IS_OBJECT, "UI\\Draw\\Brush", 1)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto UI\Draw\Brush ColorButton::getBrush(void) */
-PHP_METHOD(ColorButton, getBrush)
-{
-	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
-	php_ui_brush_t *brush;
-
-	if (zend_parse_parameters_none() != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &color, uiDrawColor_ce) != SUCCESS) {
 		return;
 	}
 	
-	object_init_ex(return_value, uiDrawBrush_ce);
+	c = php_ui_color_fetch(color);
 
-	brush = php_ui_brush_fetch(return_value);
-	brush->b.Type = uiDrawBrushTypeSolid;
-	uiColorButtonColor(cbutton->b, &brush->b.R, &brush->b.G, &brush->b.B, &brush->b.A);
+	uiColorButtonSetColor(cbutton->b, c->r, c->g, c->b, c->a);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_cbutton_get_color_info, 0, 0, IS_ARRAY, NULL, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_cbutton_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto array ColorButton::getColor(void) */
+/* {{{ proto UI\Draw\Color ColorButton::getColor(void) */
 PHP_METHOD(ColorButton, getColor)
 {
 	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
+	php_ui_color_t *color;
 	double r = 0, g = 0, b = 0, a = 0;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
@@ -149,12 +110,13 @@ PHP_METHOD(ColorButton, getColor)
 
 	uiColorButtonColor(cbutton->b, &r, &g, &b, &a);
 
-	array_init(return_value);
-
-	add_next_index_double(return_value, r);
-	add_next_index_double(return_value, g);
-	add_next_index_double(return_value, b);
-	add_next_index_double(return_value, a);
+	object_init_ex(return_value, uiDrawColor_ce);
+	
+	color = php_ui_color_fetch(return_value);
+	color->r = r;
+	color->g = g;
+	color->b = b;
+	color->a = a;
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_on_change_info, 0, 0, 1)
@@ -182,9 +144,7 @@ PHP_METHOD(ColorButton, onChange)
 const zend_function_entry php_ui_cbutton_methods[] = {
 	PHP_ME(ColorButton, __construct,          php_ui_cbutton_construct_info,              ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, setColor,	          php_ui_cbutton_set_color_info,              ZEND_ACC_PUBLIC)
-	PHP_ME(ColorButton, setColorFromBrush,	  php_ui_cbutton_set_color_from_brush_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, getColor,	          php_ui_cbutton_get_color_info,              ZEND_ACC_PUBLIC)
-	PHP_ME(ColorButton, getBrush,	          php_ui_cbutton_get_brush_info,              ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, onChange,             php_ui_cbutton_on_change_info,              ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
@@ -198,6 +158,7 @@ PHP_MINIT_FUNCTION(UI_ColorButton)
 
 	uiColorButton_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiColorButton_ce->create_object = php_ui_cbutton_create;
+	uiColorButton_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_cbutton_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

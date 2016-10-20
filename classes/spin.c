@@ -146,6 +146,7 @@ PHP_MINIT_FUNCTION(UI_Spin)
 
 	uiSpin_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSpin_ce->create_object = php_ui_spin_create;
+	uiSpin_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_spin_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

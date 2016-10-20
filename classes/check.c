@@ -184,6 +184,7 @@ PHP_MINIT_FUNCTION(UI_Check)
 
 	uiCheck_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiCheck_ce->create_object = php_ui_check_create;
+	uiCheck_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_check_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

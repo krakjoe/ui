@@ -213,6 +213,7 @@ PHP_MINIT_FUNCTION(UI_Multi)
 
 	uiMulti_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiMulti_ce->create_object = php_ui_multi_create;
+	uiMulti_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_multi_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
