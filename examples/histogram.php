@@ -1,4 +1,5 @@
 <?php
+use UI\App;
 use UI\Point;
 use UI\Size;
 use UI\Window;
@@ -15,7 +16,9 @@ use UI\Draw\Brush;
 use UI\Draw\Stroke;
 use UI\Draw\Matrix;
 
-$window = new Window("libui Histogram Example", new Size(640, 480), true);
+$app = new App();
+
+$window = new Window($app, "libui Histogram Example", new Size(640, 480), true);
 
 $window->setMargin(true);
 
@@ -220,5 +223,5 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-UI\main();
+$app->run();
 ?>

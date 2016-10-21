@@ -24,9 +24,12 @@
 #include <classes/control.h>
 #include <classes/point.h>
 #include <classes/size.h>
+#include <classes/app.h>
 #include <classes/window.h>
 
 zend_object_handlers php_ui_window_handlers;
+
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 zval *php_ui_window_construct(zval *object, uiWindow *w) {
 	php_ui_window_t *win;
@@ -48,39 +51,58 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 
 	w->std.handlers = &php_ui_window_handlers;
 
+	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
+
 	return &w->std;
 }
 
-int php_ui_window_closing(uiWindow *w, void *arg) {
-	uiQuit();
+int php_ui_window_closing_handler(uiWindow *w, void *arg) {
+	php_ui_window_t *window = (php_ui_window_t *) arg;
+	zval rv;
+	int result = 1;
 
-	return 1;
+	if (!window->closing.fci.size) {
+		uiQuit();
+
+		return 1;
+	}
+
+	ZVAL_UNDEF(&rv);
+
+	window->closing.fci.retval = &rv;
+
+	if (zend_call_function(&window->closing.fci, &window->closing.fcc) != SUCCESS) {
+		return 1;
+	}
+
+	if (Z_TYPE(rv) != IS_UNDEF) {
+		result = 
+			(int) zval_get_long(&rv);
+		zval_ptr_dtor(&rv);
+	}
+
+	return result;
 }
 
-int php_ui_window_quit(void *arg) {
-	uiWindow *w = uiWindow(arg);
-
-	uiControlDestroy(uiControl(w));
-
-	return 1;
-}
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
+	ZEND_ARG_OBJ_INFO(0, app, UI\\App, 0)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 	ZEND_ARG_TYPE_INFO(0, menu, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Window Window::__construct(string title, Size size, bool menu) */
+/* {{{ proto Window Window::__construct(App app, string title, Size size, bool menu) */
 PHP_METHOD(Window, __construct) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
+	php_ui_app_t *a;
+	zval *app = NULL;
 	zend_string *title = NULL;
 	zval *size = NULL;
 	php_ui_size_t *s;
 	zend_bool menu = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO|b", &title, &size, uiSize_ce, &menu) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OSO|b", &app, uiApp_ce, &title, &size, uiSize_ce, &menu) != SUCCESS) {
 		return;
 	}
 
@@ -88,8 +110,9 @@ PHP_METHOD(Window, __construct)
 
 	win->w = uiNewWindow(ZSTR_VAL(title), (int) s->width, (int) s->height, menu);
 
-	uiWindowOnClosing(win->w, php_ui_window_closing, NULL);
-	uiOnShouldQuit(php_ui_window_quit, win->w);
+	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
+
+	php_ui_app_window(app, getThis());
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
@@ -414,6 +437,11 @@ PHP_METHOD(Window, save)
 	RETURN_STRING(save);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_closing_info, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Window, onClosing) {}
+
 /* {{{ */
 const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, __construct,    php_ui_window_construct_info,       ZEND_ACC_PUBLIC)
@@ -435,6 +463,7 @@ const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, error,          php_ui_window_box_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, open,           php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
 	PHP_ME(Window, save,           php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
+	PHP_ME(Window, onClosing,      php_ui_window_closing_info,         ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 

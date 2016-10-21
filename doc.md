@@ -38,6 +38,19 @@ final class UI\Size {
 }
 ```
 
+UI\App
+======
+*An object representing the libui context*
+
+```
+class UI\App {
+	public function run(bool $loop = false, bool $block = false);
+	public function quit();
+
+	protected function onShouldQuit(array $windows) : void;
+}
+```
+
 UI\Control
 =========
 *An object representing a uiControl*
@@ -79,6 +92,8 @@ class UI\Window extends UI\Control {
 	public function add(UI\Control $control) : void;
 	public function msg(string $title, string $message) : void;
 	public function error(string $title, string $message) : void;
+
+	public function onClosing() : void;
 
 	public function __construct(string $title, UI\Size $size, boolean $menu);
 }

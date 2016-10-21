@@ -36,6 +36,7 @@
 #include <classes/point.h>
 #include <classes/size.h>
 
+#include <classes/app.h>
 #include <classes/control.h>
 #include <classes/window.h>
 #include <classes/tab.h>
@@ -90,28 +91,11 @@ void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend
  */
 PHP_MINIT_FUNCTION(ui)
 {
-	const char *initError = NULL;
-
-	uiInitOptions options;
-
 #ifdef HAVE_UI_X_THREADS
 	XInitThreads();
 #endif
 
-	memset(&options, 0, sizeof(uiInitOptions));
-
-	initError = uiInit(&options);
-
-	if (initError) {
-		zend_error(E_ERROR,
-			"Cannot initialize libui: %s", initError);
-		uiFreeInitError(initError);
-
-		return FAILURE;
-	}
-
-	uiMainSteps();
-
+	PHP_MINIT(UI_App)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Point)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Size)(INIT_FUNC_ARGS_PASSTHRU);
 
@@ -192,40 +176,6 @@ PHP_MINFO_FUNCTION(ui)
 }
 /* }}} */
 
-/* {{{ */
-PHP_FUNCTION(main)
-{
-	uiMain();
-} /* }}} */
-
-/* {{{ */
-PHP_FUNCTION(quit)
-{
-	uiQuit();
-} /* }}} */
-
-/* {{{ */
-PHP_FUNCTION(mainStep)
-{
-	zend_bool block = 0;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|b", &block) != SUCCESS) {
-		return;
-	}
-	
-	uiMainStep(block);
-} /* }}} */
-
-/* {{{ */
-PHP_FUNCTION(mainSteps)
-{
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-	
-	uiMainSteps();
-} /* }}} */
-
 /* {{{ nothing happening here ... ignore this ... */
 typedef struct _php_ui_object_t {
 	void *p;
@@ -278,10 +228,6 @@ int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *
 /* {{{ ui_functions[]
  */
 const zend_function_entry ui_functions[] = {
-	ZEND_NS_FE("UI", main, NULL)	
-	ZEND_NS_FE("UI", mainStep, NULL)	
-	ZEND_NS_FE("UI", mainSteps, NULL)
-	ZEND_NS_FE("UI", quit, NULL)
 	PHP_FE_END
 };
 /* }}} */

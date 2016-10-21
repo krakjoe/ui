@@ -15,24 +15,25 @@
   | Author: krakjoe                                                      |
   +----------------------------------------------------------------------+
 */
-#ifndef HAVE_PHP_UI_WINDOW_H
-#define HAVE_PHP_UI_WINDOW_H
+#ifndef HAVE_PHP_UI_APP_H
+#define HAVE_PHP_UI_APP_H
 
-zend_class_entry *uiWindow_ce;
+zend_class_entry *uiApp_ce;
 
-typedef struct _php_ui_window_t {
-	uiWindow *w;
-	struct php_ui_window_closing_t {
+typedef struct _php_ui_app_t {
+	uiInitOptions options;
+	HashTable windows;
+	struct php_ui_app_quit_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
-	} closing;
+	} quit;
 	zend_object std;
-} php_ui_window_t;
+} php_ui_app_t;
 
-#define php_ui_window_from(o) ((php_ui_window_t*) ((char*) o - XtOffsetOf(php_ui_window_t, std)))
-#define php_ui_window_fetch(z) php_ui_window_from(Z_OBJ_P(z))
+#define php_ui_app_from(o) ((php_ui_app_t*) ((char*) o - XtOffsetOf(php_ui_app_t, std)))
+#define php_ui_app_fetch(z) php_ui_app_from(Z_OBJ_P(z))
 
-zval *php_ui_window_construct(zval *object, uiWindow *w);
+void php_ui_app_window(zval *app, zval *window);
 
-PHP_MINIT_FUNCTION(UI_Window);
+PHP_MINIT_FUNCTION(UI_App);
 #endif

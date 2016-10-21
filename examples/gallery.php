@@ -1,5 +1,6 @@
 <?php
 use UI\Size;
+use UI\App;
 use UI\Menu;
 use UI\MenuItem;
 use UI\Window;
@@ -23,16 +24,9 @@ use UI\Control\Label;
 use UI\Control\Separator;
 use UI\Control\ColorButton;
 
-class QuitButton extends MenuItem {
-	public function onClick() {
-		UI\quit();
-	}
-}
+$app = new App();
 
-$menu = new Menu("File");
-$quitButton = $menu->append("Quit", QuitButton::class);
-
-$window = new UI\Window("libui Control Gallery", new Size(640, 480), true);
+$window = new Window($app, "libui Control Gallery", new Size(640, 480), true);
 $window->setMargin(true);
 
 $tab = new Tab();
@@ -297,5 +291,5 @@ $tab->setMargin(2, true);
 
 $window->show();
 
-UI\main();
+$app->run();
 ?>
