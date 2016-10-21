@@ -387,7 +387,7 @@ UI\Control\Picker
 
 ```
 class UI\Control\Picker extends UI\Control {
-	public function __construct(int $type = UI\PICKER::DATE);
+	public function __construct(int $type = Picker::Date);
 
 	const Date;
 	const Time;
