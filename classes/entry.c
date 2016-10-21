@@ -199,9 +199,9 @@ PHP_MINIT_FUNCTION(UI_Entry)
 
 	php_ui_entry_handlers.offset = XtOffsetOf(php_ui_entry_t, std);
 
-	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("NORMAL"), PHP_UI_ENTRY_NORMAL);
-	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("PASSWORD"), PHP_UI_ENTRY_PASSWORD);
-	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("SEARCH"), PHP_UI_ENTRY_SEARCH);
+	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("Normal"), PHP_UI_ENTRY_NORMAL);
+	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("Password"), PHP_UI_ENTRY_PASSWORD);
+	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("Search"), PHP_UI_ENTRY_SEARCH);
 
 	return SUCCESS;
 } /* }}} */

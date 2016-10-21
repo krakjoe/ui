@@ -213,8 +213,8 @@ PHP_MINIT_FUNCTION(UI_Multi)
 
 	php_ui_multi_handlers.offset = XtOffsetOf(php_ui_multi_t, std);
 
-	zend_declare_class_constant_long(uiMulti_ce, ZEND_STRL("WRAP"), PHP_UI_MULTI_WRAP);
-	zend_declare_class_constant_long(uiMulti_ce, ZEND_STRL("NOWRAP"), PHP_UI_MULTI_NOWRAP);
+	zend_declare_class_constant_long(uiMulti_ce, ZEND_STRL("Wrap"), PHP_UI_MULTI_WRAP);
+	zend_declare_class_constant_long(uiMulti_ce, ZEND_STRL("NoWrap"), PHP_UI_MULTI_NOWRAP);
 
 	return SUCCESS;
 } /* }}} */

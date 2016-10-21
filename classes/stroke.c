@@ -45,7 +45,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 4)
 	ZEND_ARG_TYPE_INFO(0, miterLimit, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Stroke Stroke::__construct(int cap, int join, double thickness, double miterLimit) */
+/* {{{ proto Stroke UI\Draw\Stroke::__construct(int cap, int join, double thickness, double miterLimit) */
 PHP_METHOD(DrawStroke, __construct) 
 {
 	php_ui_stroke_t *stroke = php_ui_stroke_fetch(getThis());
@@ -78,16 +78,31 @@ PHP_MINIT_FUNCTION(UI_DrawStroke)
 	uiDrawStroke_ce = zend_register_internal_class(&ce);
 	uiDrawStroke_ce->create_object = php_ui_stroke_create;
 
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("CAP_FLAT"), PHP_UI_STROKE_CAP_FLAT);
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("CAP_ROUND"), PHP_UI_STROKE_CAP_ROUND);
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("CAP_SQUARE"), PHP_UI_STROKE_CAP_SQUARE);
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("JOIN_MITER"), PHP_UI_STROKE_JOIN_MITER);
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("JOIN_ROUND"), PHP_UI_STROKE_JOIN_ROUND);
-	zend_declare_class_constant_long(uiDrawStroke_ce, ZEND_STRL("JOIN_BEVEL"), PHP_UI_STROKE_JOIN_BEVEL);
-
 	memcpy(&php_ui_stroke_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_stroke_handlers.offset = XtOffsetOf(php_ui_stroke_t, std);
+
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw\\Line", "Cap", NULL);
+	
+	uiDrawLineCap_ce = zend_register_internal_class(&ce);
+	uiDrawLineCap_ce->ce_flags |= ZEND_ACC_FINAL;
+
+#define php_ui_register_cap(c, n) zend_declare_class_constant_long(c, ZEND_STRL(#n), uiDrawLineCap##n)
+	php_ui_register_cap(uiDrawLineCap_ce, Flat);
+	php_ui_register_cap(uiDrawLineCap_ce, Round);
+	php_ui_register_cap(uiDrawLineCap_ce, Square);
+#undef php_ui_register_cap
+
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw\\Line", "Join", NULL);
+
+	uiDrawLineJoin_ce = zend_register_internal_class(&ce);
+	uiDrawLineJoin_ce->ce_flags |= ZEND_ACC_FINAL;
+
+#define php_ui_register_join(c, n) zend_declare_class_constant_long(c, ZEND_STRL(#n), uiDrawLineJoin##n)
+	php_ui_register_join(uiDrawLineJoin_ce, Miter);
+	php_ui_register_join(uiDrawLineJoin_ce, Round);
+	php_ui_register_join(uiDrawLineJoin_ce, Bevel);
+#undef php_ui_register_join
 
 	return SUCCESS;
 } /* }}} */

@@ -121,15 +121,15 @@ PHP_MINIT_FUNCTION(UI_Grid)
 	uiGrid_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGrid_ce->create_object = php_ui_grid_create;
 
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("FILL"), uiAlignFill);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("START"), uiAlignStart);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("CENTER"), uiAlignCenter);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("END"), uiAlignEnd);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Fill"), uiAlignFill);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Start"), uiAlignStart);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Center"), uiAlignCenter);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("End"), uiAlignEnd);
 	
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("LEADING"), uiAtLeading);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("TOP"), uiAtTop);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("TRAILING"), uiAtTrailing);
-	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("BOTTOM"), uiAtBottom);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Leading"), uiAtLeading);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Top"), uiAtTop);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Trailing"), uiAtTrailing);
+	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Bottom"), uiAtBottom);
 
 	memcpy(&php_ui_grid_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

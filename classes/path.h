@@ -28,8 +28,5 @@ typedef struct _php_ui_path_t {
 #define php_ui_path_from(o) ((php_ui_path_t*) ((char*) o - XtOffsetOf(php_ui_path_t, std)))
 #define php_ui_path_fetch(z) php_ui_path_from(Z_OBJ_P(z))
 
-#define PHP_UI_PATH_WINDING 1
-#define PHP_UI_PATH_ALTERNATE 2
-
 PHP_MINIT_FUNCTION(UI_DrawPath);
 #endif

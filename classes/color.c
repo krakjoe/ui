@@ -151,10 +151,10 @@ PHP_MINIT_FUNCTION(UI_DrawColor)
 	uiDrawColor_ce = zend_register_internal_class(&ce);
 	uiDrawColor_ce->create_object = php_ui_color_create;
 
-	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("RED"), PHP_UI_COLOR_RED);
-	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("GREEN"), PHP_UI_COLOR_GREEN);
-	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("BLUE"), PHP_UI_COLOR_BLUE);
-	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("ALPHA"), PHP_UI_COLOR_ALPHA);
+	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Red"), PHP_UI_COLOR_RED);
+	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Green"), PHP_UI_COLOR_GREEN);
+	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Blue"), PHP_UI_COLOR_BLUE);
+	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Alpha"), PHP_UI_COLOR_ALPHA);
 
 	memcpy(&php_ui_color_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

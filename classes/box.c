@@ -182,8 +182,8 @@ PHP_MINIT_FUNCTION(UI_Box)
 
 	php_ui_box_handlers.offset = XtOffsetOf(php_ui_box_t, std);
 
-	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("VERTICAL"), PHP_UI_BOX_VERTICAL);
-	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("HORIZONTAL"), PHP_UI_BOX_HORIZONTAL);
+	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Vertical"), PHP_UI_BOX_VERTICAL);
+	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Horizontal"), PHP_UI_BOX_HORIZONTAL);
 
 	return SUCCESS;
 } /* }}} */

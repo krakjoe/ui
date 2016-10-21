@@ -93,9 +93,9 @@ PHP_MINIT_FUNCTION(UI_Picker)
 
 	php_ui_picker_handlers.offset = XtOffsetOf(php_ui_picker_t, std);
 
-	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("DATE"),     PHP_UI_PICKER_DATE);
-	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("TIME"),     PHP_UI_PICKER_TIME);
-	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("DATETIME"), PHP_UI_PICKER_DATETIME);
+	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("Date"),     PHP_UI_PICKER_DATE);
+	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("Time"),     PHP_UI_PICKER_TIME);
+	zend_declare_class_constant_long(uiPicker_ce, ZEND_STRL("DateTime"), PHP_UI_PICKER_DATETIME);
 
 	return SUCCESS;
 } /* }}} */

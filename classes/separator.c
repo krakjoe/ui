@@ -89,8 +89,8 @@ PHP_MINIT_FUNCTION(UI_Separator)
 
 	php_ui_separator_handlers.offset = XtOffsetOf(php_ui_separator_t, std);
 
-	zend_declare_class_constant_long(uiSeparator_ce, ZEND_STRL("HORIZONTAL"), PHP_UI_SEPARATOR_HORIZONTAL);
-	zend_declare_class_constant_long(uiSeparator_ce, ZEND_STRL("VERTICAL"), PHP_UI_SEPARATOR_VERTICAL);
+	zend_declare_class_constant_long(uiSeparator_ce, ZEND_STRL("Horizontal"), PHP_UI_SEPARATOR_HORIZONTAL);
+	zend_declare_class_constant_long(uiSeparator_ce, ZEND_STRL("Vertical"), PHP_UI_SEPARATOR_VERTICAL);
 
 	return SUCCESS;
 } /* }}} */

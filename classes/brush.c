@@ -198,10 +198,10 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 	uiDrawBrush_ce = zend_register_internal_class(&ce);
 	uiDrawBrush_ce->create_object = php_ui_brush_create;
 
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("SOLID"), PHP_UI_BRUSH_SOLID);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("LGRADIENT"), PHP_UI_BRUSH_LINEAR_GRADIENT);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("RGRADIENT"), PHP_UI_BRUSH_RADIAL_GRADIENT);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("IMAGE"), PHP_UI_BRUSH_IMAGE);
+	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("Solid"), PHP_UI_BRUSH_SOLID);
+	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("LinearGradient"), PHP_UI_BRUSH_LINEAR_GRADIENT);
+	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("RadialGradient"), PHP_UI_BRUSH_RADIAL_GRADIENT);
+	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("Image"), PHP_UI_BRUSH_IMAGE);
 
 	memcpy(&php_ui_brush_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

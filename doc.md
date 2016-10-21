@@ -121,6 +121,16 @@ class UI\Control\Grid extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(UI\Control $control, int $left, int $top, int $xspan, int $yspan, bool $hexpand, int $haign, bool $vexpand, int $valign);
+
+	const Fill;
+	const Start;
+	const Center;
+	const End;
+
+	const Leading;
+	const Trailing;
+	const Top;
+	const Bottom;
 }
 ```
 
@@ -151,10 +161,10 @@ class UI\Control\Box extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 
-	public function __construct(int $orientation = UI\BOX::HORIZONTAL);
+	public function __construct(int $orientation = Box::Horizontal);
 
-	const VERTICAL;
-	const HORIZONTAL;
+	const Vertical;
+	const Horizontal;
 }
 ```
 
@@ -229,11 +239,11 @@ class UI\Control\Entry extends UI\Control {
 
 	protected function onChange() : void;
 
-	public function __construct(int $type = UI\ENTRY::NORMAL);
+	public function __construct(int $type = Entry::Normal);
 
-	const NORMAL;
-	const PASSWORD;
-	const SEARCH;
+	const Normal;
+	const Password;
+	const Search;
 }
 ```
 
@@ -251,10 +261,10 @@ class UI\Control\MultilineEntry extends UI\Control {
 
 	protected function onChange();
 
-	public function __construct(int $type = MultilineEntry::WRAP);
+	public function __construct(int $type = MultilineEntry::Wrap);
 
-	const NOWRAP;
-	const WRAP;
+	const NoWrap;
+	const Wrap;
 }
 ```
 
@@ -321,10 +331,10 @@ UI\Control\Separator
 ```
 class UI\Control\Separator extends UI\Control {
 
-	public function __construct(int $type == SEPARATOR::HORIZONTAL);
+	public function __construct(int $type == Separator::Horizontal);
 
-	const HORIZONTAL;
-	const VERTICAL;
+	const Horizontal;
+	const Vertical;
 }
 ```
 
@@ -379,9 +389,9 @@ UI\Control\Picker
 class UI\Control\Picker extends UI\Control {
 	public function __construct(int $type = UI\PICKER::DATE);
 
-	const DATE;
-	const TIME;
-	const DATETIME;
+	const Date;
+	const Time;
+	const DateTime;
 }
 ```
 
@@ -431,12 +441,12 @@ class UI\Area extends UI\Control {
 	protected function onMouse(UI\Point $areaPoint, UI\Size $areaSize, int $flags) : void;
 	protected function onKey(string key, int ext, int modifiers) : void;	
 
-	const CTRL;
-	const ALT;
-	const SHIFT;
-	const SUPER;
-	const UP;
-	const DOWN;
+	const Ctrl;
+	const Alt;
+	const Shift;
+	const Super;
+	const Up;
+	const Down;
 }
 ```
 
@@ -471,10 +481,10 @@ class UI\Draw\Path {
 	public function addRectangle(UI\Point $point, UI\Size $size) : void;
 	public function end() : void;
 
-	public function __construct(int $mode = UI\DRAW\PATH::WINDING);
+	public function __construct(int $mode = Path::Winding);
 
-	const WINDING;
-	const ALTERANATE;
+	const Winding;
+	const Alternate;
 }
 ```
 
@@ -489,10 +499,10 @@ class UI\Draw\Color {
 
 	public function __construct(int $rgb [, double $alpha]); 
 
-	const RED;
-	const GREEN;
-	const BLUE;
-	const ALPHA;
+	const Red;
+	const Green;
+	const Blue;
+	const Alpha;
 }
 ```
 
@@ -507,12 +517,19 @@ class UI\Draw\Brush {
 	public function getColor() : UI\Draw\Color;
 	public function setColor(UI\Draw\Color $color) : void;
 
-	public function __construct(int $type, UI\Draw\Color $color, double $X0 = 0, double $Y0 = 0, double $X1 = 0, double $Y1 = 0, double $radius = 0);
+	public function __construct(int $type [
+		UI\Draw\Color $color, 
+		double $X0 = 0, 
+		double $Y0 = 0, 
+		double $X1 = 0, 
+		double $Y1 = 0, 
+		double $radius = 0
+	]);
 
-	const SOLID;
-	const LGRADIENT;
-	const RGRADIENT;
-	const IMAGE;
+	const Solid;
+	const LinearGradient;
+	const RadialGradient;
+	const Image;
 }
 ```
 
@@ -522,16 +539,31 @@ UI\Draw\Stroke
 
 ```
 class UI\Draw\Stroke {
-	
 	public function __construct(int $cap, int $join, double $thickness, float $miterLimit);
+}
+```
 
-	const CAP_FLAT;
-	const CAP_ROUND;
-	const CAP_SQUARE;
-	
-	const JOIN_MITER;
-	const JOIN_ROUND;
-	const JOIN_BEVEL;
+UI\Draw\Line\Cap
+===============
+*An enum representing uiDrawLineCap*
+
+```
+final class UI\Draw\Line\Cap {
+	const Flat;
+	const Round;
+	const Square;
+}
+```
+
+UI\Draw\Line\Join
+===============
+*An enum representing uiDrawLineJoin*
+
+```
+final class UI\Draw\Line\Join {
+	const Miter;
+	const Round;
+	const Bevel;
 }
 ```
 

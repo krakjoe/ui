@@ -19,6 +19,8 @@
 #define HAVE_PHP_UI_STROKE_H
 
 zend_class_entry *uiDrawStroke_ce;
+zend_class_entry *uiDrawLineCap_ce;
+zend_class_entry *uiDrawLineJoin_ce;
 
 typedef struct _php_ui_stroke_t {
 	uiDrawStrokeParams s;
@@ -27,14 +29,6 @@ typedef struct _php_ui_stroke_t {
 
 #define php_ui_stroke_from(o) ((php_ui_stroke_t*) ((char*) o - XtOffsetOf(php_ui_stroke_t, std)))
 #define php_ui_stroke_fetch(z) php_ui_stroke_from(Z_OBJ_P(z))
-
-#define PHP_UI_STROKE_CAP_FLAT uiDrawLineCapFlat
-#define PHP_UI_STROKE_CAP_ROUND uiDrawLineCapRound
-#define PHP_UI_STROKE_CAP_SQUARE uiDrawLineCapSquare
-
-#define PHP_UI_STROKE_JOIN_MITER uiDrawLineJoinMiter
-#define PHP_UI_STROKE_JOIN_ROUND uiDrawLineJoinRound
-#define PHP_UI_STROKE_JOIN_BEVEL uiDrawLineJoinBevel
 
 PHP_MINIT_FUNCTION(UI_DrawStroke);
 #endif
