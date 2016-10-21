@@ -30,6 +30,7 @@
 zend_object_handlers php_ui_window_handlers;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern void php_ui_app_window(zval *_app, zval *window);
 
 zval *php_ui_window_construct(zval *object, uiWindow *w) {
 	php_ui_window_t *win;
