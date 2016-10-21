@@ -16,7 +16,7 @@ Requirements
 ===========
 
   - PHP 7
-  - [libui](https://github.com/andlabs/libui) (tested with 86c4485578d6d58aff6528b27558bc1ccc6aadbe)
+  - [libui](https://github.com/andlabs/libui) (use current master)
   - Windows/MacOSX/Linux (GTK-3)
   - patience
   - patience
