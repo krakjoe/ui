@@ -30,7 +30,6 @@
 zend_object_handlers php_ui_window_handlers;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
-extern void php_ui_app_window(zval *_app, zval *window);
 
 zval *php_ui_window_construct(zval *object, uiWindow *w) {
 	php_ui_window_t *win;
@@ -112,7 +111,14 @@ PHP_METHOD(Window, __construct)
 
 	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
 
-	php_ui_app_window(app, getThis());
+	{
+		php_ui_app_t *a = php_ui_app_fetch(app);
+
+		if (zend_hash_next_index_insert(&a->windows, getThis())) {
+			Z_ADDREF_P(getThis());
+		}
+	}
+	
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
