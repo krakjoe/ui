@@ -38,9 +38,7 @@ function getGraphPoints(array $dataSources, Size $size) : array {
 	$points = [];
 
 	foreach ($dataSources as $i => $source) {
-		$points[$i] = new Point(
-						$xincr * $i, 
-						$yincr * (100 - $source->getValue()));
+		$points[$i] = new Point($xincr * $i, $yincr * (100 - $source->getValue()));
 	}
 
 	return $points;
@@ -56,67 +54,47 @@ function getGraphPath(array $locations, Size $size, bool $extend = false) : Path
 	}
 
 	if ($extend) {
-		$path->lineTo(new Point(
-						$size->width, 
-						$size->height));
-		$path->lineTo(new Point(
-						0, 
-						$size->height));
+		$path->lineTo(new Point($size->width, $size->height));
+		$path->lineTo(new Point(0, $size->height));
 		$path->closeFigure();
 	}
 
 	$path->end();
+
 	return $path;
 }
 
 $colorButton = new ColorButton();
 
-$white = new Brush(BRUSH::SOLID, new Color(0xFFFFFF, 1));
-$black = new Brush(BRUSH::SOLID, new Color(0x000000, 1));
-
 $histogram = new Area();
 
-$histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) use($white, $black, &$dataSources, $colorButton) {
+$histogram->onDraw(function(Area $area, Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) use(&$dataSources, $colorButton) {
 	$path = new Path(PATH::WINDING);
-
-	$path
-		->addRectangle($clipPoint, $areaSize);
-
+	$path->addRectangle($clipPoint, $areaSize);
 	$path->end();
 
-	$pen->fill($path, $white);
-
-	$graphSize = new Size(
-		$areaSize->width - 40, 
-		$areaSize->height - 40);
-
-	$path = new Path(PATH::WINDING);
+	$pen->fill($path, new Brush(BRUSH::SOLID, new Color(0xFFFFFF, 1)));
+	
+	$graphSize = new Size($areaSize->width - 40, $areaSize->height - 40);
 
 	$zero = new Point(20, 20);
 
+	$path = new Path(PATH::WINDING);
 	$path->newFigure($zero);
-
-	$path->lineTo(new Point(
-		20, 
-		20 + $graphSize->height));
-
-	$path->lineTo(new Point(
-		20 + $graphSize->width, 
-		20 + $graphSize->height));
-	
+	$path->lineTo(new Point(20, 20 + $graphSize->height));
+	$path->lineTo(new Point(20 + $graphSize->width, 20 + $graphSize->height));	
 	$path->end();
 
 	$stroke = new Stroke(STROKE::CAP_FLAT, STROKE::JOIN_MITER, 2, 10);
 
-	$pen->stroke($path, $black, $stroke);
+	$pen->stroke($path, new Brush(BRUSH::SOLID, new Color(0x000000, 1)), $stroke);
 
 	$matrix = new Matrix();
 	$matrix->translate($zero);
 
 	$pen->transform($matrix);
 
-	$points = 
-		getGraphPoints($dataSources, $graphSize);
+	$points = getGraphPoints($dataSources, $graphSize);
 
 	$path = getGraphPath($points, $graphSize, true);
 
