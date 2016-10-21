@@ -21,7 +21,6 @@
 zend_class_entry *uiApp_ce;
 
 typedef struct _php_ui_app_t {
-	uiInitOptions options;
 	HashTable windows;
 	struct php_ui_app_quit_t {
 		zend_fcall_info fci;

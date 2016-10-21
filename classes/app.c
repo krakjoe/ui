@@ -74,24 +74,6 @@ zend_object* php_ui_app_create(zend_class_entry *ce) {
 
 	zend_hash_init(&app->windows, 8, NULL, ZVAL_PTR_DTOR, 0);
 
-	{
-		const char *initError = NULL;
-
-		memset(&app->options, 0, sizeof(uiInitOptions));
-
-		initError = uiInit(&app->options);
-
-		if (initError) {
-			zend_error(E_ERROR,
-				"Cannot initialize libui: %s", initError);
-			uiFreeInitError(initError);
-
-			return NULL;
-		}
-
-		uiMainSteps();
-	}
-
 	uiOnShouldQuit(php_ui_app_should_quit_handler, app);
 
 	php_ui_set_call(&app->std, ZEND_STRL("onshouldquit"), &app->quit.fci, &app->quit.fcc);
