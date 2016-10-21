@@ -96,7 +96,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Window, __construct) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	php_ui_app_t *a;
 	zval *app = NULL;
 	zend_string *title = NULL;
 	zval *size = NULL;

@@ -9,7 +9,7 @@ if (PHP_UI != "no") {
 		EXTENSION("ui", "ui.c", PHP_UI_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 /I" + configure_module_dirname);
 		ADD_SOURCES(
                 "ext/ui/classes",
-                "box.c form.c grid.c app.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c  window.c point.c size.c area.c pen.c path.c color.c brush.c stroke.c matrix.c",
+                "window.c box.c form.c grid.c app.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c point.c size.c area.c pen.c path.c color.c brush.c stroke.c matrix.c",
                 "ui"
         );
 	} else {
