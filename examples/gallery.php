@@ -68,6 +68,7 @@ $entryForm->append("Multiline Entry Without Wrapping", new MultilineEntry(Multil
 $entriesGroup->add($entryForm);
 
 $tab->append("Basic Controls", $basicControlsVbox);
+$tab->setMargin(0, true);
 
 $numbersHbox = new Box(BOX::HORIZONTAL);
 $numbersHbox->setPadded(true);
@@ -134,6 +135,7 @@ $radio->append("Radio Button 3");
 $otherBox->append($radio);
 
 $tab->append("Numbers and Lists", $numbersHbox);
+$tab->setMargin(1, true);
 
 $dataHbox = new Box(BOX::HORIZONTAL);
 $dataHbox->setPadded(true);
@@ -219,9 +221,6 @@ $messageGrid->append($errorButton, 1, 0, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
 
 $tab->append("Data Choosers", $dataHbox);
-
-$tab->setMargin(0, true);
-$tab->setMargin(1, true);
 $tab->setMargin(2, true);
 
 $window->show();
