@@ -29,6 +29,8 @@
 
 zend_object_handlers php_ui_area_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawParams *p) {
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
@@ -37,19 +39,17 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 	if (area->draw.fci.size) {
 		zval rv;
-		zval ctrl, pen, areaSize, clipPoint, clipSize;
+		zval pen, areaSize, clipPoint, clipSize;
 
 		ZVAL_UNDEF(&rv);
 		area->draw.fci.retval = &rv;
-
-		ZVAL_OBJ(&ctrl, &area->std);
 
 		php_ui_pen_construct(&pen, p->Context);
 		php_ui_size_construct(&areaSize, p->AreaWidth, p->AreaHeight);
 		php_ui_point_construct(&clipPoint, p->ClipX, p->ClipY);
 		php_ui_size_construct(&clipSize, p->ClipWidth, p->ClipHeight);
 
-		zend_fcall_info_argn(&area->draw.fci, 5, &ctrl, &pen, &areaSize, &clipPoint, &clipSize);
+		zend_fcall_info_argn(&area->draw.fci, 4, &pen, &areaSize, &clipPoint, &clipSize);
 
 		if (zend_call_function(&area->draw.fci, &area->draw.fcc) != SUCCESS) {
 			return;
@@ -76,14 +76,11 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 
 	if (area->mouse.fci.size) {
 		zval rv;
-		zval ctrl, areaPoint, areaSize, flags;
+		zval areaPoint, areaSize, flags;
 		zend_long modifiers = e->Modifiers;
-
 
 		ZVAL_UNDEF(&rv);
 		area->mouse.fci.retval = &rv;
-
-		ZVAL_OBJ(&ctrl, &area->std);
 
 		php_ui_point_construct(&areaPoint, e->X, e->Y);
 		php_ui_size_construct(&areaSize, e->AreaWidth, e->AreaHeight);
@@ -98,7 +95,7 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 
 		ZVAL_LONG(&flags, modifiers);
 
-		zend_fcall_info_argn(&area->mouse.fci, 4, &ctrl, &areaPoint, &areaSize, &flags);
+		zend_fcall_info_argn(&area->mouse.fci, 3, &areaPoint, &areaSize, &flags);
 
 		if (zend_call_function(&area->mouse.fci, &area->mouse.fcc) != SUCCESS) {
 			return;
@@ -123,16 +120,26 @@ static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent
 
 	if (area->key.fci.size) {
 		zval rv;
-		zval ctrl;
+		zval key, ext, flags;
+		zend_long modifiers = e->Modifiers;
 
 		ZVAL_UNDEF(&rv);
 		area->mouse.fci.retval = &rv;
 
-		ZVAL_OBJ(&ctrl, &area->std);
+		ZVAL_NEW_STR(&key, zend_string_init(&e->Key, sizeof(char), 0));
+		ZVAL_LONG(&ext, e->ExtKey);
 
-		zend_fcall_info_argn(&area->key.fci, 1, &ctrl);
+		if (e->Up) {
+			modifiers |= PHP_UI_AREA_UP;
+		} else {
+			modifiers |= PHP_UI_AREA_DOWN;
+		}
 
-		if (zend_call_function(&area->key.fci, &area->mouse.fcc) != SUCCESS) {
+		ZVAL_LONG(&flags, modifiers);
+
+		zend_fcall_info_argn(&area->key.fci, 3, &key, &ext, &flags);
+
+		if (zend_call_function(&area->key.fci, &area->key.fcc) != SUCCESS) {
 			return ret;
 		}
 
@@ -166,47 +173,14 @@ zend_object* php_ui_area_create(zend_class_entry *ce) {
 	area->h.MouseCrossed = php_ui_area_crossed;
 	area->h.DragBroken = php_ui_area_drag;
 
+	area->a = uiNewArea(&area->h);
+
+	php_ui_set_call(&area->std, ZEND_STRL("ondraw"), &area->draw.fci, &area->draw.fcc);
+	php_ui_set_call(&area->std, ZEND_STRL("onmouse"), &area->mouse.fci, &area->mouse.fcc);
+	php_ui_set_call(&area->std, ZEND_STRL("onkey"), &area->key.fci, &area->key.fcc);
+
 	return &area->std;
 }
-
-void php_ui_area_free(zend_object *o) {
-	php_ui_area_t *area = php_ui_area_from(o);
-
-	if (area->draw.fci.size) {
-		if (Z_TYPE(area->draw.fci.function_name)) {
-			zval_ptr_dtor(&area->draw.fci.function_name);
-		}
-	}
-
-	if (area->mouse.fci.size) {
-		if (Z_TYPE(area->mouse.fci.function_name)) {
-			zval_ptr_dtor(&area->mouse.fci.function_name);
-		}
-	}
-
-	if (area->key.fci.size) {
-		if (Z_TYPE(area->key.fci.function_name)) {
-			zval_ptr_dtor(&area->key.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_area_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Area Area::__construct(void) */
-PHP_METHOD(Area, __construct) 
-{
-	php_ui_area_t *area = php_ui_area_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	area->a = uiNewArea(&area->h);
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_area_redraw_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -266,96 +240,52 @@ PHP_METHOD(Area, scrollTo)
 	uiAreaScrollTo(area->a, p->x, p->y, s->width, s->height);
 } /* }}} */
 
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_area_callable_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_on_draw_info, 0, 0, 4)
+	ZEND_ARG_OBJ_INFO(0, pen, UI\\Draw\\Pen, 0)
+	ZEND_ARG_OBJ_INFO(0, areaSize, UI\\Size, 0)
+	ZEND_ARG_OBJ_INFO(0, clipPoint, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, clipSize, UI\\Size, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Area::onDraw(callable handler) */
+/* {{{ proto void Area::onDraw(UI\Draw\Pen pen, UI\Size areaSize, UI\Point clipPoint, UI\Size clipSize) */
 PHP_METHOD(Area, onDraw)
 {
-	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (area->draw.fci.size) {
-		if (Z_TYPE(area->draw.fci.function_name)) {
-			zval_ptr_dtor(&area->draw.fci.function_name);
-		}
-	}
-
-	memcpy(&area->draw.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&area->draw.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(area->draw.fci.function_name)) {
-		Z_ADDREF(area->draw.fci.function_name);
-	}	
+	
 } /* }}} */
 
-/* {{{ proto void Area::onMouse(callable handler) */
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_on_mouse_info, 0, 0, 3)
+	ZEND_ARG_OBJ_INFO(0, areaPoint, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, areaSize, UI\\Size, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Area::onMouse(UI\Point areaPoint, UI\Size areaSize, int flags) */
 PHP_METHOD(Area, onMouse)
 {
-	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (area->mouse.fci.size) {
-		if (Z_TYPE(area->mouse.fci.function_name)) {
-			zval_ptr_dtor(&area->mouse.fci.function_name);
-		}
-	}
-
-	memcpy(&area->mouse.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&area->mouse.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(area->mouse.fci.function_name)) {
-		Z_ADDREF(area->mouse.fci.function_name);
-	}
 } /* }}} */
 
-/* {{{ proto void Area::onKey(callable handler) */
+ZEND_BEGIN_ARG_INFO_EX(php_ui_area_on_key_info, 0, 0, 3)
+	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, ext, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void Area::onKey(string key, int ext, int flags) */
 PHP_METHOD(Area, onKey)
 {
-	php_ui_area_t *area = php_ui_area_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (area->key.fci.size) {
-		if (Z_TYPE(area->key.fci.function_name)) {
-			zval_ptr_dtor(&area->key.fci.function_name);
-		}
-	}
-
-	memcpy(&area->key.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&area->key.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(area->key.fci.function_name)) {
-		Z_ADDREF(area->key.fci.function_name);
-	}
+	
 } /* }}} */
 
 /* {{{ */
 const zend_function_entry php_ui_area_methods[] = {
-	PHP_ME(Area, __construct,  php_ui_area_construct_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Area, redraw,       php_ui_area_redraw_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Area, setSize,      php_ui_area_set_size_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Area, scrollTo,     php_ui_area_scroll_to_info,  ZEND_ACC_PUBLIC)
 
-	PHP_ME(Area, onDraw,       php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(Area, onMouse,      php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(Area, onKey,        php_ui_area_callable_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(Area, onDraw,       php_ui_area_on_draw_info,   ZEND_ACC_PROTECTED)
+	PHP_ME(Area, onMouse,      php_ui_area_on_mouse_info,   ZEND_ACC_PROTECTED)
+	PHP_ME(Area, onKey,        php_ui_area_on_key_info,   ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -379,7 +309,6 @@ PHP_MINIT_FUNCTION(UI_Area)
 	memcpy(&php_ui_area_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_area_handlers.offset = XtOffsetOf(php_ui_area_t, std);
-	php_ui_area_handlers.free_obj = php_ui_area_free;
 	
 	return SUCCESS;
 } /* }}} */

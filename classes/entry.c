@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_entry_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 zend_object* php_ui_entry_create(zend_class_entry *ce) {
 	php_ui_entry_t *entry = 
 		(php_ui_entry_t*) ecalloc(1, sizeof(php_ui_entry_t) + zend_object_properties_size(ce));
@@ -36,19 +38,9 @@ zend_object* php_ui_entry_create(zend_class_entry *ce) {
 
 	entry->std.handlers = &php_ui_entry_handlers;
 
+	php_ui_set_call(&entry->std, ZEND_STRL("onchange"), &entry->change.fci, &entry->change.fcc);
+
 	return &entry->std;
-}
-
-void php_ui_entry_free(zend_object *o) {
-	php_ui_entry_t *entry = php_ui_entry_from(o);
-
-	if (entry->change.fci.size) {
-		if (Z_TYPE(entry->change.fci.function_name)) {
-			zval_ptr_dtor(&entry->change.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
 }
 
 void php_ui_entry_change_handler(uiEntry *u, void *_entry) {
@@ -56,20 +48,14 @@ void php_ui_entry_change_handler(uiEntry *u, void *_entry) {
 
 	if (entry->change.fci.size) {
 		zval rv;
-		zval ctrl;
 
 		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &entry->std);
 
 		entry->change.fci.retval = &rv;
-
-		zend_fcall_info_argn(&entry->change.fci, 1, &ctrl);
 
 		if (zend_call_function(&entry->change.fci, &entry->change.fcc) != SUCCESS) {
 			return;
 		}
-
-		zend_fcall_info_args_clear(&entry->change.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -147,33 +133,12 @@ PHP_METHOD(Entry, getText)
 	RETURN_STRING(uiEntryText(entry->e));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_on_change_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_on_change_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Entry::onChange(callable handler) */
+/* {{{ proto void Entry::onChange() */
 PHP_METHOD(Entry, onChange)
 {
-	php_ui_entry_t *entry = php_ui_entry_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (entry->change.fci.size) {
-		if (Z_TYPE(entry->change.fci.function_name)) {
-			zval_ptr_dtor(&entry->change.fci.function_name);
-		}
-	}
-
-	memcpy(&entry->change.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&entry->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(entry->change.fci.function_name)) {
-		Z_ADDREF(entry->change.fci.function_name);
-	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_set_read_only_info, 0, 0, 1)
@@ -214,9 +179,9 @@ const zend_function_entry php_ui_entry_methods[] = {
 	PHP_ME(Entry, __construct, php_ui_entry_construct_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Entry, setText,     php_ui_entry_set_text_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Entry, getText,     php_ui_entry_get_text_info,      ZEND_ACC_PUBLIC)
-	PHP_ME(Entry, onChange,    php_ui_entry_on_change_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Entry, setReadOnly, php_ui_entry_set_read_only_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Entry, isReadOnly,  NULL,                            ZEND_ACC_PUBLIC)
+	PHP_ME(Entry, onChange,    php_ui_entry_on_change_info,     ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -229,11 +194,9 @@ PHP_MINIT_FUNCTION(UI_Entry)
 
 	uiEntry_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiEntry_ce->create_object = php_ui_entry_create;
-	uiEntry_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_entry_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	php_ui_entry_handlers.free_obj = php_ui_entry_free;
 	php_ui_entry_handlers.offset = XtOffsetOf(php_ui_entry_t, std);
 
 	zend_declare_class_constant_long(uiEntry_ce, ZEND_STRL("NORMAL"), PHP_UI_ENTRY_NORMAL);

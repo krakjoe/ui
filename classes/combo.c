@@ -26,6 +26,28 @@
 
 zend_object_handlers php_ui_combo_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
+void php_ui_combo_select_handler(uiCombobox *u, void *_combo) {
+	php_ui_combo_t *combo = (php_ui_combo_t*) _combo;
+
+	if (combo->select.fci.size) {
+		zval rv;
+
+		ZVAL_UNDEF(&rv);
+
+		combo->select.fci.retval = &rv;
+
+		if (zend_call_function(&combo->select.fci, &combo->select.fcc) != SUCCESS) {
+			return;
+		}
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
+}
+
 zend_object* php_ui_combo_create(zend_class_entry *ce) {
 	php_ui_combo_t *combo = 
 		(php_ui_combo_t*) ecalloc(1, sizeof(php_ui_combo_t) + zend_object_properties_size(ce));
@@ -36,63 +58,14 @@ zend_object* php_ui_combo_create(zend_class_entry *ce) {
 
 	combo->std.handlers = &php_ui_combo_handlers;
 
-	return &combo->std;
-}
-
-void php_ui_combo_free(zend_object *o) {
-	php_ui_combo_t *combo = php_ui_combo_from(o);
-
-	if (combo->select.fci.size) {
-		if (Z_TYPE(combo->select.fci.function_name)) {
-			zval_ptr_dtor(&combo->select.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
-}
-
-void php_ui_combo_select_handler(uiCombobox *u, void *_combo) {
-	php_ui_combo_t *combo = (php_ui_combo_t*) _combo;
-
-	if (combo->select.fci.size) {
-		zval rv;
-		zval ctrl;
-
-		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &combo->std);
-
-		combo->select.fci.retval = &rv;
-
-		zend_fcall_info_argn(&combo->select.fci, 1, &ctrl);
-
-		if (zend_call_function(&combo->select.fci, &combo->select.fcc) != SUCCESS) {
-			return;
-		}
-
-		zend_fcall_info_args_clear(&combo->select.fci, 1);
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-	}
-}
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Combo Combo::__construct(string text) */
-PHP_METHOD(Combo, __construct) 
-{
-	php_ui_combo_t *combo = php_ui_combo_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
 	combo->c = uiNewCombobox();
 
 	uiComboboxOnSelected(combo->c, php_ui_combo_select_handler, combo);
-} /* }}} */
+
+	php_ui_set_call(&combo->std, ZEND_STRL("onselected"), &combo->select.fci, &combo->select.fcc);
+
+	return &combo->std;
+}
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_set_selected_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, text, IS_LONG, 0)
@@ -144,42 +117,21 @@ PHP_METHOD(Combo, append)
 	uiComboboxAppend(combo->c, ZSTR_VAL(text));
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_on_selected_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_combo_on_selected_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Combo::onSelected(callable handler) */
+/* {{{ proto void Combo::onSelected() */
 PHP_METHOD(Combo, onSelected)
 {
-	php_ui_combo_t *combo = php_ui_combo_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (combo->select.fci.size) {
-		if (Z_TYPE(combo->select.fci.function_name)) {
-			zval_ptr_dtor(&combo->select.fci.function_name);
-		}
-	}
-
-	memcpy(&combo->select.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&combo->select.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(combo->select.fci.function_name)) {
-		Z_ADDREF(combo->select.fci.function_name);
-	}
+	
 } /* }}} */
 
 /* {{{ */
 const zend_function_entry php_ui_combo_methods[] = {
-	PHP_ME(Combo, __construct, php_ui_combo_construct_info,       ZEND_ACC_PUBLIC)
 	PHP_ME(Combo, setSelected, php_ui_combo_set_selected_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Combo, getSelected, php_ui_combo_get_selected_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Combo, append,      php_ui_combo_append_info,          ZEND_ACC_PUBLIC)
-	PHP_ME(Combo, onSelected,  php_ui_combo_on_selected_info,     ZEND_ACC_PUBLIC)
+	PHP_ME(Combo, onSelected,  php_ui_combo_on_selected_info,     ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -192,11 +144,9 @@ PHP_MINIT_FUNCTION(UI_Combo)
 
 	uiCombo_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiCombo_ce->create_object = php_ui_combo_create;
-	uiCombo_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_combo_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
-	php_ui_combo_handlers.free_obj = php_ui_combo_free;
 	php_ui_combo_handlers.offset = XtOffsetOf(php_ui_combo_t, std);
 
 	return SUCCESS;

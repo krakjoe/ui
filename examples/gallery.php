@@ -1,6 +1,7 @@
 <?php
 use UI\Size;
 use UI\Menu;
+use UI\MenuItem;
 use UI\Window;
 use UI\Control\Tab;
 use UI\Control\Box;
@@ -22,13 +23,14 @@ use UI\Control\Label;
 use UI\Control\Separator;
 use UI\Control\ColorButton;
 
-$menu = new Menu("File");
-$quitButton = $menu->append("Quit");
+class QuitButton extends MenuItem {
+	public function onClick() {
+		UI\quit();
+	}
+}
 
-$quitButton->onClick(function($item, $window){
-	/* will cause UI\main to return */
-	UI\quit();
-});
+$menu = new Menu("File");
+$quitButton = $menu->append("Quit", QuitButton::class);
 
 $window = new UI\Window("libui Control Gallery", new Size(640, 480), true);
 $window->setMargin(true);
@@ -83,23 +85,52 @@ $numbersVbox->setPadded(true);
 
 $numbersGroup->add($numbersVbox);
 
-
-$spin = new Spin(0, 100);
-$slider = new Slider(0, 100);
-
 $progress = new Progress();
 
-$spin->onChange(function() use ($slider, $spin, $progress) {
-	$slider->setValue($spin->getValue());
-	$progress->setValue($spin->getValue());
-});
+$spin = new class(0, 100) extends Spin {
+
+	public function setSlider(Slider $slider) {
+		$this->slider = $slider;
+	}
+
+	public function setProgress(Progress $progress) {
+		$this->progress = $progress;	
+	}
+
+	protected function onChange() {
+		$this->slider->setValue($this->getValue());
+		$this->progress->setValue($this->getValue());
+	}
+
+	private $slider;
+	private $progress;
+};
+$spin->setProgress($progress);
+
+$slider = new class(0, 100) extends Slider {
+	public function setSpin(Spin $spin) {
+		$this->spin = $spin;
+	}
+
+	public function setProgress(Progress $progress) {
+		$this->progress = $progress;
+	}
+
+	protected function onChange() {
+		$this->spin->setValue($this->getValue());
+		$this->progress->setValue($this->getValue());
+	}
+
+	private $spin;
+	private $progress;
+};
+
+$slider->setProgress($progress);
+
+$slider->setSpin($spin);
+$spin->setSlider($slider);
 
 $numbersVbox->append($spin);
-
-$slider->onChange(function() use($slider, $spin, $progress) {
-	$spin->setValue($slider->getValue());
-	$progress->setValue($slider->getValue());
-});	
 
 $numbersVbox->append($slider);
 $numbersVbox->append($progress);
@@ -160,38 +191,59 @@ $filesGrid = new Grid();
 $filesGrid->setPadded(true);
 $filesVbox->append($filesGrid);
 
-$openButton = new Button("Open File");
 $openEntry  = new Entry();
 $openEntry->setReadOnly(true);
 
-$openButton->onClick(function() use($openEntry, $window) {
-	$openFile = $window->open();
+$openButton = new class("Open File", $openEntry, $window) extends Button {
+	public function __construct(string $text, Entry $entry, Window $window) {
+		$this->entry = $entry;
+		$this->window = $window;
 
-	if (!$openFile) {
-		return;
+		parent::__construct($text);
+	}
+	
+	protected function onClick() {
+		$openFile = $this->window->open();
+
+		if (!$openFile) {
+			return;
+		}
+
+		$this->entry->setText($openFile);
 	}
 
-	$openEntry->setText($openFile);
-});
+	private $entry;
+	private $window;
+};
 
 $filesGrid->append($openButton, 0, 0, 1, 1, 
 	false, GRID::FILL, false, GRID::FILL);
 $filesGrid->append($openEntry, 1, 0, 1, 1, 
 	true, GRID::FILL, false, GRID::FILL);
 
-$saveButton = new Button("Save File");
 $saveEntry = new Entry();
 $saveEntry->setReadOnly(true);
+$saveButton = new class("Save File", $saveEntry, $window) extends Button {
+	public function __construct(string $text, Entry $entry, Window $window) {
+		$this->entry = $entry;
+		$this->window = $window;
 
-$saveButton->onClick(function() use($saveEntry, $window) {
-	$saveFile = $window->save();
+		parent::__construct($text);
+	}
+	
+	protected function onClick() {
+		$saveFile = $this->window->save();
 
-	if (!$saveFile) {
-		return;
+		if (!$saveFile) {
+			return;
+		}
+
+		$this->entry->setText($saveFile);
 	}
 
-	$saveEntry->setText($saveFile);
-});
+	private $entry;
+	private $window;
+};
 
 $filesGrid->append($saveButton, 0, 1, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
@@ -203,20 +255,40 @@ $messageGrid->setPadded(true);
 $filesGrid->append($messageGrid, 0, 2, 2, 1,
 	false, GRID::CENTER, false, GRID::START);
 
-$messageButton = new Button("Message Box");
-$messageButton->onClick(function() use($window) {
-	$window->msg(
-		"This is a normal message box", 
-		"More detailed information can be shown here.");
-});
+$messageButton = new class("Msg Box", $window) extends Button {
+	public function __construct(string $text, Window $window) {
+		$this->window = $window;
+
+		parent::__construct($text);
+	}
+	
+	public function onClick() {
+		$this->window->msg(
+			"This is a normal message box", 
+			"More detailed information can be shown here.");
+	}
+
+	private $window;
+};
 $messageGrid->append($messageButton, 0, 0, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
-$errorButton = new Button("Error Box");
-$errorButton->onClick(function() use($window) {
-	$window->error(
-		"This message box describes an error",
-		"More detailed information can be shown here.");
-});
+
+$errorButton = new class("Error Box", $window) extends Button {
+	public function __construct(string $text, Window $window) {
+		$this->window = $window;
+
+		parent::__construct($text);
+	}
+	
+	public function onClick() {
+		$this->window->error(
+			"This message box describes an error",
+			"More detailed information can be shown here.");
+	}
+
+	private $window;
+};
+
 $messageGrid->append($errorButton, 1, 0, 1, 1,
 	false, GRID::FILL, false, GRID::FILL);
 

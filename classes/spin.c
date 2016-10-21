@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_spin_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 zend_object* php_ui_spin_create(zend_class_entry *ce) {
 	php_ui_spin_t *spin = 
 		(php_ui_spin_t*) ecalloc(1, sizeof(php_ui_spin_t) + zend_object_properties_size(ce));
@@ -36,19 +38,9 @@ zend_object* php_ui_spin_create(zend_class_entry *ce) {
 
 	spin->std.handlers = &php_ui_spin_handlers;
 
+	php_ui_set_call(&spin->std, ZEND_STRL("onchange"), &spin->change.fci, &spin->change.fcc);
+
 	return &spin->std;
-}
-
-void php_ui_spin_free(zend_object *o) {
-	php_ui_spin_t *spin = php_ui_spin_from(o);
-
-	if (spin->change.fci.size) {
-		if (Z_TYPE(spin->change.fci.function_name)) {
-			zval_ptr_dtor(&spin->change.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
 }
 
 void php_ui_spin_change_handler(uiSpinbox *m,  void *_spin) {
@@ -56,20 +48,14 @@ void php_ui_spin_change_handler(uiSpinbox *m,  void *_spin) {
 
 	if (spin->change.fci.size) {
 		zval rv;
-		zval ctrl;
 
 		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &spin->std);
 
 		spin->change.fci.retval = &rv;
-
-		zend_fcall_info_argn(&spin->change.fci, 1, &ctrl);
 
 		if (zend_call_function(&spin->change.fci, &spin->change.fcc) != SUCCESS) {
 			return;
 		}
-
-		zend_fcall_info_args_clear(&spin->change.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -129,33 +115,12 @@ PHP_METHOD(Spin, getValue)
 	RETURN_LONG(uiSpinboxValue(spin->s));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_on_change_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_spin_on_change_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Spin::onChange(callable handler) */
+/* {{{ proto void Spin::onChange() */
 PHP_METHOD(Spin, onChange)
 {
-	php_ui_spin_t *spin = php_ui_spin_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (spin->change.fci.size) {
-		if (Z_TYPE(spin->change.fci.function_name)) {
-			zval_ptr_dtor(&spin->change.fci.function_name);
-		}
-	}
-
-	memcpy(&spin->change.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&spin->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(spin->change.fci.function_name)) {
-		Z_ADDREF(spin->change.fci.function_name);
-	}
 } /* }}} */
 
 /* {{{ */
@@ -163,7 +128,7 @@ const zend_function_entry php_ui_spin_methods[] = {
 	PHP_ME(Spin, __construct, php_ui_spin_construct_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Spin, setValue,    php_ui_spin_set_value_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Spin, getValue,    php_ui_spin_get_value_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(Spin, onChange,    php_ui_spin_on_change_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(Spin, onChange,    php_ui_spin_on_change_info,  ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -176,11 +141,9 @@ PHP_MINIT_FUNCTION(UI_Spin)
 
 	uiSpin_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSpin_ce->create_object = php_ui_spin_create;
-	uiSpin_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_spin_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
-	php_ui_spin_handlers.free_obj = php_ui_spin_free;
 	php_ui_spin_handlers.offset = XtOffsetOf(php_ui_spin_t, std);
 
 	return SUCCESS;

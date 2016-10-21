@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_multi_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 zend_object* php_ui_multi_create(zend_class_entry *ce) {
 	php_ui_multi_t *multi = 
 		(php_ui_multi_t*) ecalloc(1, sizeof(php_ui_multi_t) + zend_object_properties_size(ce));
@@ -36,19 +38,9 @@ zend_object* php_ui_multi_create(zend_class_entry *ce) {
 
 	multi->std.handlers = &php_ui_multi_handlers;
 
+	php_ui_set_call(&multi->std, ZEND_STRL("onchange"), &multi->change.fci, &multi->change.fcc);
+
 	return &multi->std;
-}
-
-void php_ui_multi_free(zend_object *o) {
-	php_ui_multi_t *multi = php_ui_multi_from(o);
-
-	if (multi->change.fci.size) {
-		if (Z_TYPE(multi->change.fci.function_name)) {
-			zval_ptr_dtor(&multi->change.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
 }
 
 void php_ui_multi_change_handler(uiMultilineEntry *m,  void *_multi) {
@@ -56,20 +48,14 @@ void php_ui_multi_change_handler(uiMultilineEntry *m,  void *_multi) {
 
 	if (multi->change.fci.size) {
 		zval rv;
-		zval ctrl;
 
 		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &multi->std);
 
 		multi->change.fci.retval = &rv;
-
-		zend_fcall_info_argn(&multi->change.fci, 1, &ctrl);
 
 		if (zend_call_function(&multi->change.fci, &multi->change.fcc) != SUCCESS) {
 			return;
 		}
-
-		zend_fcall_info_args_clear(&multi->change.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -160,33 +146,12 @@ PHP_METHOD(Multi, append)
 	uiMultilineEntryAppend(multi->e, ZSTR_VAL(text));
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_multi_on_change_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_multi_on_change_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 /* {{{ proto void Multi::onChange(callable handler) */
 PHP_METHOD(Multi, onChange)
 {
-	php_ui_multi_t *multi = php_ui_multi_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (multi->change.fci.size) {
-		if (Z_TYPE(multi->change.fci.function_name)) {
-			zval_ptr_dtor(&multi->change.fci.function_name);
-		}
-	}
-
-	memcpy(&multi->change.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&multi->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(multi->change.fci.function_name)) {
-		Z_ADDREF(multi->change.fci.function_name);
-	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_multi_set_read_only_info, 0, 0, 1)
@@ -228,9 +193,9 @@ const zend_function_entry php_ui_multi_methods[] = {
 	PHP_ME(Multi, setText,     php_ui_multi_set_text_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Multi, getText,     php_ui_multi_get_text_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Multi, append,      php_ui_multi_append_info,        ZEND_ACC_PUBLIC)
-	PHP_ME(Multi, onChange,    php_ui_multi_on_change_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Multi, setReadOnly, php_ui_multi_set_read_only_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Multi, isReadOnly,  NULL,                            ZEND_ACC_PUBLIC)
+	PHP_ME(Multi, onChange,    php_ui_multi_on_change_info,     ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -243,11 +208,9 @@ PHP_MINIT_FUNCTION(UI_Multi)
 
 	uiMulti_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiMulti_ce->create_object = php_ui_multi_create;
-	uiMulti_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_multi_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	php_ui_multi_handlers.free_obj = php_ui_multi_free;
 	php_ui_multi_handlers.offset = XtOffsetOf(php_ui_multi_t, std);
 
 	zend_declare_class_constant_long(uiMulti_ce, ZEND_STRL("WRAP"), PHP_UI_MULTI_WRAP);

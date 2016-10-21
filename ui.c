@@ -68,6 +68,24 @@
 #include <classes/stroke.h>
 #include <classes/matrix.h>
 
+void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
+	zend_function *function = zend_hash_str_find_ptr(&object->ce->function_table, name, nlength);
+
+	if (!function || function->type == ZEND_INTERNAL_FUNCTION) {
+		return;
+	}
+
+	fci->size = sizeof(zend_fcall_info);
+	fci->object = object;
+	fci->no_separation = 1;
+
+	fcc->initialized = 1;
+	fcc->object = object;
+	fcc->function_handler = function;
+	fcc->calling_scope = object->ce;
+	fcc->called_scope = object->ce;
+}
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ui)

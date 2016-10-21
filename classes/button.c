@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_button_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 zend_object* php_ui_button_create(zend_class_entry *ce) {
 	php_ui_button_t *button = 
 		(php_ui_button_t*) ecalloc(1, sizeof(php_ui_button_t) + zend_object_properties_size(ce));
@@ -36,19 +38,9 @@ zend_object* php_ui_button_create(zend_class_entry *ce) {
 
 	button->std.handlers = &php_ui_button_handlers;
 
+	php_ui_set_call(&button->std, ZEND_STRL("onclick"), &button->click.fci, &button->click.fcc);
+
 	return &button->std;
-}
-
-void php_ui_button_free(zend_object *o) {
-	php_ui_button_t *button = php_ui_button_from(o);
-
-	if (button->click.fci.size) {
-		if (Z_TYPE(button->click.fci.function_name)) {
-			zval_ptr_dtor(&button->click.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
 }
 
 void php_ui_button_click_handler(uiButton *u, void *_button) {
@@ -56,20 +48,14 @@ void php_ui_button_click_handler(uiButton *u, void *_button) {
 
 	if (button->click.fci.size) {
 		zval rv;
-		zval ctrl;
 
 		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &button->std);
 
 		button->click.fci.retval = &rv;
-
-		zend_fcall_info_argn(&button->click.fci, 1, &ctrl);
 
 		if (zend_call_function(&button->click.fci, &button->click.fcc) != SUCCESS) {
 			return;
 		}
-
-		zend_fcall_info_args_clear(&button->click.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -129,33 +115,13 @@ PHP_METHOD(Button, getText)
 	RETURN_STRING(uiButtonText(button->b));	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_button_on_click_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_button_on_click_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Button::onClick(callable handler) */
+/* {{{ proto void Button::onClick() */
 PHP_METHOD(Button, onClick)
 {
-	php_ui_button_t *button = php_ui_button_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (button->click.fci.size) {
-		if (Z_TYPE(button->click.fci.function_name)) {
-			zval_ptr_dtor(&button->click.fci.function_name);
-		}
-	}
-
-	memcpy(&button->click.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&button->click.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(button->click.fci.function_name)) {
-		Z_ADDREF(button->click.fci.function_name);
-	}	
 } /* }}} */
 
 /* {{{ */
@@ -163,7 +129,7 @@ const zend_function_entry php_ui_button_methods[] = {
 	PHP_ME(Button, __construct, php_ui_button_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Button, setText,	    php_ui_button_set_text_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Button, getText,	    php_ui_button_get_text_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(Button, onClick,	    php_ui_button_on_click_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(Button, onClick,	    php_ui_button_on_click_info,  ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -176,11 +142,9 @@ PHP_MINIT_FUNCTION(UI_Button)
 
 	uiButton_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiButton_ce->create_object = php_ui_button_create;
-	uiButton_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_button_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	php_ui_button_handlers.free_obj = php_ui_button_free;
 	php_ui_button_handlers.offset = XtOffsetOf(php_ui_button_t, std);
 
 	return SUCCESS;

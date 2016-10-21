@@ -148,50 +148,45 @@ UI\Control\Check
 *An object represnting a uiCheckbox*
 
 ```
-final class UI\Control\Check extends UI\Control {
+class UI\Control\Check extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setChecked(bool $checked) : void;
 	public function isChecked() : bool;
-	public function onToggle(callable $handler) : void;
+
+	protected function onToggle() : void;
 
 	public function __construct(string $text);
 }
 ```
-
-```UI\Control\Check::onToggle``` handler should be ```callable(UI\Control\Check $toggled)```
 
 UI\Control\Button
 ========
 *An object representing a uiButton*
 
 ```
-final class UI\Control\Button extends UI\Control {
+class UI\Control\Button extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
-	public function onClick(callable $handler) : void;
+
+	protected function onClick() : void;
 
 	public function __construct(string $text);
 }
 ```
-
-```UI\Control\Button::onClick``` handler should be ```callable(UI\Control\Button $clicked)```
 
 UI\Control\ColorButton
 =============
 *An object representing a uiColorButton*
 
 ```
-final class UI\Control\ColorButton extends UI\Control {
+class UI\Control\ColorButton extends UI\Control {
 	public function setColor(UI\Draw\Color color) : void;
 	public function getColor() : UI\Draw\Color;
-	public function onChange(callable $handler) : void;
-	
-	public function __construct(string $text);
+
+	protected function onChange() : void;
 }
 ```
-
-```UI\Control\ColorButton::onChange``` handler should be ```callable(UI\Control\ColorButton $changed)```
 
 UI\Control\Label
 =======
@@ -211,12 +206,13 @@ UI\Control\Entry
 *An object representing a uiEntry*
 
 ```
-final class UI\Control\Entry extends UI\Control {
+class UI\Control\Entry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
 	public function isReadOnly() : bool;
-	public function onChange(callable $handler);
+
+	protected function onChange() : void;
 
 	public function __construct(int $type = UI\ENTRY::NORMAL);
 
@@ -226,20 +222,19 @@ final class UI\Control\Entry extends UI\Control {
 }
 ```
 
-```UI\Control\Entry::onChange``` handler should be ```callable(UI\Control\Entry $changed)```
-
 UI\Control\MultilineEntry
 =======
 *An object represneting a uiMultilineEntry*
 
 ```
-final class UI\Control\MultilineEntry extends UI\Control {
+class UI\Control\MultilineEntry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
 	public function isReadOnly() : bool;
 	public function append(string $text) : void;
-	public function onChange(callable $handler);
+
+	protected function onChange();
 
 	public function __construct(int $type = MultilineEntry::WRAP);
 
@@ -247,8 +242,6 @@ final class UI\Control\MultilineEntry extends UI\Control {
 	const WRAP;
 }
 ```
-
-```UI\Control\Multi::onChange``` handler should be ```callable(UI\Control\Multi $changed)```
 
 UI\Control\Group
 =======
@@ -271,32 +264,30 @@ UI\Control\Spin
 *An object representing a uiSpinbox*
 
 ```
-final class UI\Control\Spin extends UI\Control {
+class UI\Control\Spin extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
-	public function onChange(callable $handler) : void;
+
+	protected function onChange() : void;
 
 	public function __construct(int $min, int $max);
 }
 ```
-
-```UI\Control\Spin::onChange``` handler should be ```callable(UI\Control\Spin $changed)```
 
 UI\Control\Slider
 ========
 *An object representing a uiSlider*
 
 ```
-final class UI\Control\Slider extends UI\Control {
+class UI\Control\Slider extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
-	public function onChange(callable $handler) : void;
+
+	protected function onChange() : void;
 
 	public function __construct(int $min, int $max);
 }
 ```
-
-```UI\Control\Slider::onChange``` handler should be ```callable(UI\Control\Slider $changed)```
 
 UI\Control\Progress
 ==========
@@ -327,15 +318,14 @@ UI\Control\Combo
 *An object representing a uiCombobox*
 
 ```
-final class UI\Control\Combo extends UI\Control {
+class UI\Control\Combo extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
-	public function onSelected(callable $handler) : void;
+
+	protected function onSelected() : void;
 }
 ```
-
-```UI\Control\Combo::onSelected``` handler should be ```callable(UI\Control\Combo $selected)```
 
 
 UI\Control\EditableCombo
@@ -343,30 +333,28 @@ UI\Control\EditableCombo
 *An object representing a uiEditableCombobox*
 
 ```
-final class UI\Control\EditableCombo extends UI\Control {
+class UI\Control\EditableCombo extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function append(string $text) : void;
-	public function onChange(callable $handler) : void;
+
+	protected function onChange() : void;
 }
 ```
-
-```UI\Control\EditableCombo::onChange``` handler should be ```callable(UI\Control\EditableCombo $changed)```
 
 UI\Control\Radio
 =======
 *An object representing a uiRadioButton*
 
 ```
-final class UI\Control\Radio extends UI\Control {
+class UI\Control\Radio extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
-	public function onSelected(callable $handler) : void;
+
+	protected function onSelected() : void;
 }
 ```
-
-```UI\Control\Radio::onSelected``` handler should be ```callable(UI\Control\Radio $changed)```
 
 UI\Control\Picker
 ========
@@ -388,11 +376,11 @@ UI\Menu
 
 ```
 final class UI\Menu {
-	public function append(string $name) : UI\MenuItem;
-	public function appendCheck(string $name) : UI\MenuItem;
-	public function appendQuit() : UI\MenuItem;
-	public function appendPreferences() : UI\MenuItem;
-	public function appendAbout() : UI\MenuItem;
+	public function append(string $name [, string $type = MenuItem::class]) : UI\MenuItem;
+	public function appendCheck(string $name [, string $type = MenuItem::class]) : UI\MenuItem;
+	public function appendQuit([string $type = MenuItem::class]) : UI\MenuItem;
+	public function appendPreferences([string $type = MenuItem::class]) : UI\MenuItem;
+	public function appendAbout([string $type = MenuItem::class]) : UI\MenuItem;
 	public function appendSeparator() : void;
 
 	public function __construct(string $name);
@@ -404,29 +392,29 @@ UI\MenuItem
 *An object representing a uiMenuItem*
 
 ```
-final class UI\MenuItem {
+class UI\MenuItem {
 	public function enable() : void;
 	public function disable() : void;
 	public function isChecked() : bool;
 	public function setChecked(bool $checked) : void;
-	public function onClick(callable $handler) : void;
+
+	protected function onClick(Window $window) : void;
 }
 ```
-
-```UI\MenuItem::onClick``` handler should be ```callable(UI\MenuItem $clicked)```
 
 UI\Area
 =======
 *An object representing a uiArea*
 
 ```
-final class UI\Area extends UI\Control {
+class UI\Area extends UI\Control {
 	public function redraw() : void;
 	public function setSize(UI\Size $size) : void;
 	public function scrollTo(UI\Point $point, UI\Size $size) : void;
-	public function onDraw(callable $handler) : void;
-	public function onMouse(callable $handler) : void;
-	public function onKey(callable $handler) : void;	
+
+	protected function onDraw(UI\Draw\Pen $pen, UI\Size $areaSize, UI\Point $clipPoint, UI\Size $clipSize) : void;
+	protected function onMouse(UI\Point $areaPoint, UI\Size $areaSize, int $flags) : void;
+	protected function onKey(string key, int ext, int modifiers) : void;	
 
 	const CTRL;
 	const ALT;
@@ -436,10 +424,6 @@ final class UI\Area extends UI\Control {
 	const DOWN;
 }
 ```
-
-```UI\Area::onDraw``` handler should be ```callable(UI\Area $area, UI\Draw\Pen $pen, UI\Size $areaSize, UI\Point $clipPoint, UI\Size $clipSize)```
-
-```UI\Area::onMouse``` handler should be ```callable(UI\Area $area, UI\Point $areaPoint, UI\Size $areaSize, int $flags)```
 
 UI\Draw\Pen
 ==========

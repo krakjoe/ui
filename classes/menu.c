@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_menu_handlers;
 
+extern void php_ui_item_click_handler(uiMenuItem *i, uiWindow *w,  void *_item);
+
 zend_object* php_ui_menu_create(zend_class_entry *ce) {
 	php_ui_menu_t *menu = 
 		(php_ui_menu_t*) ecalloc(1, sizeof(php_ui_menu_t) + zend_object_properties_size(ce));
@@ -58,38 +60,53 @@ PHP_METHOD(Menu, __construct)
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 1)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Menu Menu::append(string name) */
+/* {{{ proto Menu Menu::append(string name [, string type = MenuItem::class]) */
 PHP_METHOD(Menu, append) 
 {
 	php_ui_menu_t *menu = php_ui_menu_fetch(getThis());
 	zend_string *name = NULL;
+	zend_class_entry *type = uiItem_ce;
 	php_ui_item_t *item = NULL;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "S", &name) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "S|C", &name, &type) != SUCCESS) {
 		return;
 	}
 
-	object_init_ex(return_value, uiItem_ce);
+	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
+		/* throw */
+		return;
+	}
+
+	object_init_ex(return_value, type);
 
 	item = php_ui_item_fetch(return_value);
 
 	item->i = uiMenuAppendItem(menu->m, ZSTR_VAL(name));
+
+	uiMenuItemOnClicked(item->i, php_ui_item_click_handler, item);
 } /* }}} */
 
-/* {{{ proto Menu Menu::appendCheck(string name) */
+/* {{{ proto Menu Menu::appendCheck(string name [, string type = MenuItem::class]) */
 PHP_METHOD(Menu, appendCheck) 
 {
 	php_ui_menu_t *menu = php_ui_menu_fetch(getThis());
 	zend_string *name = NULL;
+	zend_class_entry *type = uiItem_ce;
 	php_ui_item_t *item = NULL;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "S", &name) != SUCCESS) {
 		return;
 	}
 
-	object_init_ex(return_value, uiItem_ce);
+	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
+		/* throw */
+		return;
+	}
+
+	object_init_ex(return_value, type);
 
 	item = php_ui_item_fetch(return_value);
 
@@ -97,53 +114,72 @@ PHP_METHOD(Menu, appendCheck)
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_anon_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 0)
+	ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Menu Menu::appendQuit(void) */
+/* {{{ proto Menu Menu::appendQuit([string type = MenuItem::class]) */
 PHP_METHOD(Menu, appendQuit) 
 {
 	php_ui_menu_t *menu = php_ui_menu_fetch(getThis());
 	php_ui_item_t *item = NULL;
+	zend_class_entry *type = uiItem_ce;
 
-	if (zend_parse_parameters_none() != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|C", &type) != SUCCESS) {
 		return;
 	}
 
-	object_init_ex(return_value, uiItem_ce);
+	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
+		/* throw */
+		return;
+	}
+
+	object_init_ex(return_value, type);
 
 	item = php_ui_item_fetch(return_value);
 
 	item->i = uiMenuAppendQuitItem(menu->m);
 } /* }}} */
 
-/* {{{ proto Menu Menu::appendPreferences(void) */
+/* {{{ proto Menu Menu::appendPreferences([string type = MenuItem::class]) */
 PHP_METHOD(Menu, appendPreferences) 
 {
 	php_ui_menu_t *menu = php_ui_menu_fetch(getThis());
 	php_ui_item_t *item = NULL;
+	zend_class_entry *type = uiItem_ce;
 
-	if (zend_parse_parameters_none() != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|C", &type) != SUCCESS) {
 		return;
 	}
 
-	object_init_ex(return_value, uiItem_ce);
+	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
+		/* throw */
+		return;
+	}
+
+	object_init_ex(return_value, type);
 
 	item = php_ui_item_fetch(return_value);
 
 	item->i = uiMenuAppendPreferencesItem(menu->m);
 } /* }}} */
 
-/* {{{ proto Menu Menu::appendAbout(void) */
+/* {{{ proto Menu Menu::appendAbout([string type = MenuItem::class]) */
 PHP_METHOD(Menu, appendAbout) 
 {
 	php_ui_menu_t *menu = php_ui_menu_fetch(getThis());
 	php_ui_item_t *item = NULL;
+	zend_class_entry *type = uiItem_ce;
 
-	if (zend_parse_parameters_none() != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|C", &type) != SUCCESS) {
 		return;
 	}
 
-	object_init_ex(return_value, uiItem_ce);
+	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
+		/* throw */
+		return;
+	}
+
+	object_init_ex(return_value, type);
 
 	item = php_ui_item_fetch(return_value);
 

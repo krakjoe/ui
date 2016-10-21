@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_check_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 zend_object* php_ui_check_create(zend_class_entry *ce) {
 	php_ui_check_t *check = 
 		(php_ui_check_t*) ecalloc(1, sizeof(php_ui_check_t) + zend_object_properties_size(ce));
@@ -36,19 +38,9 @@ zend_object* php_ui_check_create(zend_class_entry *ce) {
 
 	check->std.handlers = &php_ui_check_handlers;
 
+	php_ui_set_call(&check->std, ZEND_STRL("ontoggle"), &check->toggle.fci, &check->toggle.fcc);
+
 	return &check->std;
-}
-
-void php_ui_check_free(zend_object *o) {
-	php_ui_check_t *check = php_ui_check_from(o);
-
-	if (check->toggle.fci.size) {
-		if (Z_TYPE(check->toggle.fci.function_name)) {
-			zval_ptr_dtor(&check->toggle.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
 }
 
 void php_ui_check_toggle_handler(uiCheckbox *u, void *_check) {
@@ -56,20 +48,14 @@ void php_ui_check_toggle_handler(uiCheckbox *u, void *_check) {
 
 	if (check->toggle.fci.size) {
 		zval rv;
-		zval ctrl;
 
 		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &check->std);
 
 		check->toggle.fci.retval = &rv;
-
-		zend_fcall_info_argn(&check->toggle.fci, 1, &ctrl);
 
 		if (zend_call_function(&check->toggle.fci, &check->toggle.fcc) != SUCCESS) {
 			return;
 		}
-
-		zend_fcall_info_args_clear(&check->toggle.fci, 1);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -165,33 +151,13 @@ PHP_METHOD(Check, isChecked)
 	}
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_check_on_toggle_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_check_on_toggle_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Check::onToggle(callable handler) */
+/* {{{ proto void Check::onToggle() */
 PHP_METHOD(Check, onToggle)
 {
-	php_ui_check_t *check = php_ui_check_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (check->toggle.fci.size) {
-		if (Z_TYPE(check->toggle.fci.function_name)) {
-			zval_ptr_dtor(&check->toggle.fci.function_name);
-		}
-	}
-
-	memcpy(&check->toggle.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&check->toggle.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(check->toggle.fci.function_name)) {
-		Z_ADDREF(check->toggle.fci.function_name);
-	}
 } /* }}} */
 
 /* {{{ */
@@ -201,7 +167,7 @@ const zend_function_entry php_ui_check_methods[] = {
 	PHP_ME(Check, getText,     php_ui_check_get_text_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Check, setChecked,  php_ui_check_set_checked_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Check, isChecked,   php_ui_check_is_checked_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(Check, onToggle,    php_ui_check_on_toggle_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(Check, onToggle,    php_ui_check_on_toggle_info,   ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -214,11 +180,9 @@ PHP_MINIT_FUNCTION(UI_Check)
 
 	uiCheck_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiCheck_ce->create_object = php_ui_check_create;
-	uiCheck_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_check_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	php_ui_check_handlers.free_obj = php_ui_check_free;
 	php_ui_check_handlers.offset = XtOffsetOf(php_ui_check_t, std);
 
 	return SUCCESS;

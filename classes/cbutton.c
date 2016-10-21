@@ -27,6 +27,28 @@
 
 zend_object_handlers php_ui_cbutton_handlers;
 
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
+void php_ui_cbutton_change_handler(uiColorButton *u, void *_button) {
+	php_ui_cbutton_t *button = (php_ui_cbutton_t*) _button;
+
+	if (button->change.fci.size) {
+		zval rv;
+
+		ZVAL_UNDEF(&rv);
+
+		button->change.fci.retval = &rv;
+
+		if (zend_call_function(&button->change.fci, &button->change.fcc) != SUCCESS) {
+			return;
+		}
+
+		if (Z_TYPE(rv) != IS_UNDEF) {
+			zval_ptr_dtor(&rv);
+		}
+	}
+}
+
 zend_object* php_ui_cbutton_create(zend_class_entry *ce) {
 	php_ui_cbutton_t *cbutton = 
 		(php_ui_cbutton_t*) ecalloc(1, sizeof(php_ui_cbutton_t) + zend_object_properties_size(ce));
@@ -37,64 +59,14 @@ zend_object* php_ui_cbutton_create(zend_class_entry *ce) {
 
 	cbutton->std.handlers = &php_ui_cbutton_handlers;
 
-	return &cbutton->std;
-}
-
-void php_ui_cbutton_free(zend_object *o) {
-	php_ui_cbutton_t *cbutton = php_ui_cbutton_from(o);
-
-	if (cbutton->change.fci.size) {
-		if (Z_TYPE(cbutton->change.fci.function_name)) {
-			zval_ptr_dtor(&cbutton->change.fci.function_name);
-		}
-	}
-
-	zend_object_std_dtor(o);
-}
-
-void php_ui_cbutton_change_handler(uiColorButton *u, void *_button) {
-	php_ui_cbutton_t *button = (php_ui_cbutton_t*) _button;
-
-	if (button->change.fci.size) {
-		zval rv;
-		zval ctrl;
-
-		ZVAL_UNDEF(&rv);
-		ZVAL_OBJ(&ctrl, &button->std);
-
-		button->change.fci.retval = &rv;
-
-		zend_fcall_info_argn(&button->change.fci, 1, &ctrl);
-
-		if (zend_call_function(&button->change.fci, &button->change.fcc) != SUCCESS) {
-			return;
-		}
-
-		zend_fcall_info_args_clear(&button->change.fci, 1);
-
-		if (Z_TYPE(rv) != IS_UNDEF) {
-			zval_ptr_dtor(&rv);
-		}
-	}
-}
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_construct_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto ColorButton ColorButton::__construct() */
-PHP_METHOD(ColorButton, __construct) 
-{
-	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
 	cbutton->b = uiNewColorButton();
 
+	php_ui_set_call(&cbutton->std, ZEND_STRL("onchange"), &cbutton->change.fci, &cbutton->change.fcc);
+
 	uiColorButtonOnChanged(cbutton->b, php_ui_cbutton_change_handler, cbutton);
-} /* }}} */
+
+	return &cbutton->std;
+}
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_set_color_info, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
@@ -141,41 +113,19 @@ PHP_METHOD(ColorButton, getColor)
 	color->a = a;
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_on_change_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, handler, IS_CALLABLE, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_on_change_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void ColorButton::onChange(callable handler) */
+/* {{{ proto void ColorButton::onChange(c) */
 PHP_METHOD(ColorButton, onChange)
 {
-	php_ui_cbutton_t *button = php_ui_cbutton_fetch(getThis());
-	zend_fcall_info fci = empty_fcall_info;
-	zend_fcall_info_cache fcc = empty_fcall_info_cache;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "f", &fci, &fcc) != SUCCESS) {
-		return;
-	}
-
-	if (button->change.fci.size) {
-		if (Z_TYPE(button->change.fci.function_name)) {
-			zval_ptr_dtor(&button->change.fci.function_name);
-		}
-	}
-
-	memcpy(&button->change.fci, &fci, sizeof(zend_fcall_info));
-	memcpy(&button->change.fcc, &fcc, sizeof(zend_fcall_info_cache));
-
-	if (Z_TYPE(button->change.fci.function_name)) {
-		Z_ADDREF(button->change.fci.function_name);
-	}
 } /* }}} */
 
 /* {{{ */
 const zend_function_entry php_ui_cbutton_methods[] = {
-	PHP_ME(ColorButton, __construct,          php_ui_cbutton_construct_info,              ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, setColor,	          php_ui_cbutton_set_color_info,              ZEND_ACC_PUBLIC)
 	PHP_ME(ColorButton, getColor,	          php_ui_cbutton_get_color_info,              ZEND_ACC_PUBLIC)
-	PHP_ME(ColorButton, onChange,             php_ui_cbutton_on_change_info,              ZEND_ACC_PUBLIC)
+	PHP_ME(ColorButton, onChange,             php_ui_cbutton_on_change_info,              ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 
@@ -188,11 +138,9 @@ PHP_MINIT_FUNCTION(UI_ColorButton)
 
 	uiColorButton_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiColorButton_ce->create_object = php_ui_cbutton_create;
-	uiColorButton_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_cbutton_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	php_ui_cbutton_handlers.free_obj = php_ui_cbutton_free;
 	php_ui_cbutton_handlers.offset = XtOffsetOf(php_ui_cbutton_t, std);
 
 	return SUCCESS;
