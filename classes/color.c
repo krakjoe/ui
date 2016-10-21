@@ -150,7 +150,6 @@ PHP_MINIT_FUNCTION(UI_DrawColor)
 
 	uiDrawColor_ce = zend_register_internal_class(&ce);
 	uiDrawColor_ce->create_object = php_ui_color_create;
-	uiDrawColor_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("RED"), PHP_UI_COLOR_RED);
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("GREEN"), PHP_UI_COLOR_GREEN);

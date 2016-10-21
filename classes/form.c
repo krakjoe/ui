@@ -36,23 +36,10 @@ zend_object* php_ui_form_create(zend_class_entry *ce) {
 
 	form->std.handlers = &php_ui_form_handlers;
 
+	form->f = uiNewForm();
+
 	return &form->std;
 }
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_form_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Form Form::__construct() */
-PHP_METHOD(Form, __construct) 
-{
-	php_ui_form_t *form = php_ui_form_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	form->f = uiNewForm();
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_set_padded_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, padded, _IS_BOOL, 0)
@@ -133,7 +120,6 @@ PHP_METHOD(Form, delete)
 
 /* {{{ */
 const zend_function_entry php_ui_form_methods[] = {
-	PHP_ME(Form, __construct, php_ui_form_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Form, setPadded,   php_ui_form_set_padded_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Form, isPadded,    php_ui_form_is_padded_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Form, append,      php_ui_form_append_info,     ZEND_ACC_PUBLIC)
@@ -150,7 +136,6 @@ PHP_MINIT_FUNCTION(UI_Form)
 
 	uiForm_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiForm_ce->create_object = php_ui_form_create;
-	uiForm_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_form_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

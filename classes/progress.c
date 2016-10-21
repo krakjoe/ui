@@ -36,23 +36,10 @@ zend_object* php_ui_progress_create(zend_class_entry *ce) {
 
 	progress->std.handlers = &php_ui_progress_handlers;
 
+	progress->p = uiNewProgressBar();
+
 	return &progress->std;
 }
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_progress_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Progress Progress::__construct() */
-PHP_METHOD(Progress, __construct) 
-{
-	php_ui_progress_t *progress = php_ui_progress_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	progress->p = uiNewProgressBar();
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_progress_set_value_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, value, IS_LONG, 0)
@@ -88,7 +75,6 @@ PHP_METHOD(Progress, getValue)
 
 /* {{{ */
 const zend_function_entry php_ui_progress_methods[] = {
-	PHP_ME(Progress, __construct, php_ui_progress_construct_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Progress, setValue,    php_ui_progress_set_value_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Progress, getValue,    php_ui_progress_get_value_info,  ZEND_ACC_PUBLIC)
 	PHP_FE_END
@@ -103,7 +89,6 @@ PHP_MINIT_FUNCTION(UI_Progress)
 
 	uiProgress_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiProgress_ce->create_object = php_ui_progress_create;
-	uiProgress_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_progress_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

@@ -62,7 +62,7 @@ UI\Window
 *An object representing a uiWindow*
 
 ```
-final class UI\Window extends UI\Control {
+class UI\Window extends UI\Control {
 	public function setTitle(string $title) : void;
 	public function getTitle() : string;
 	public function setSize(UI\Size $size) : void;
@@ -89,7 +89,7 @@ UI\Control\Form
 *An object representing a uiForm*
 
 ```
-final class UI\Control\Form extends UI\Control {
+class UI\Control\Form extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(string $label, UI\Control $control, bool $stretchy = false) : bool;
@@ -102,7 +102,7 @@ UI\Control\Grid
 *An object representing a uiGrid*
 
 ```
-final class UI\Control\Grid extends UI\Control {
+class UI\Control\Grid extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(UI\Control $control, int $left, int $top, int $xspan, int $yspan, bool $hexpand, int $haign, bool $vexpand, int $valign);
@@ -114,7 +114,7 @@ UI\Control\Tab
 *An object representing a uiTab*
 
 ```
-final class UI\Control\Tab extends UI\Control {
+class UI\Control\Tab extends UI\Control {
 	public function append(string $name, UI\Control $control) : void;
 	public function delete(int $index) : void;
 	public function pages() : int;
@@ -129,7 +129,7 @@ UI\Control\Box
 *An object representing a uiBox*
 
 ```
-final class UI\Control\Box extends UI\Control {
+class UI\Control\Box extends UI\Control {
 	public function getOrientation() : int;
 	public function append(UI\Control $control, bool $stretchy = false) : void;
 	public function delete(int $index) : void;
@@ -193,7 +193,7 @@ UI\Control\Label
 *An object representing a uiLabel*
 
 ```
-final class UI\Control\Label extends UI\Control {
+class UI\Control\Label extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 
@@ -248,7 +248,7 @@ UI\Control\Group
 *An object representing a uiGroup*
 
 ```
-final class UI\Control\Group extends UI\Control {
+class UI\Control\Group extends UI\Control {
 	public function setTitle(string $text) : void;
 	public function getTitle() : string;
 	public function setMargin(bool $margin) : void;
@@ -293,7 +293,7 @@ UI\Control\Progress
 ==========
 
 ```
-final class UI\Control\Progress extends UI\Control {
+class UI\Control\Progress extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 }
@@ -304,7 +304,7 @@ UI\Control\Separator
 *An object representing a uiSeparator*
 
 ```
-final class UI\Control\Separator extends UI\Control {
+class UI\Control\Separator extends UI\Control {
 
 	public function __construct(int $type == SEPARATOR::HORIZONTAL);
 
@@ -361,7 +361,7 @@ UI\Control\Picker
 *An object representing a uiDatePicker*
 
 ```
-final class UI\Control\Picker extends UI\Control {
+class UI\Control\Picker extends UI\Control {
 	public function __construct(int $type = UI\PICKER::DATE);
 
 	const DATE;
@@ -375,7 +375,7 @@ UI\Menu
 *An object representing a uiMenu*
 
 ```
-final class UI\Menu {
+class UI\Menu {
 	public function append(string $name [, string $type = MenuItem::class]) : UI\MenuItem;
 	public function appendCheck(string $name [, string $type = MenuItem::class]) : UI\MenuItem;
 	public function appendQuit([string $type = MenuItem::class]) : UI\MenuItem;
@@ -445,7 +445,7 @@ UI\Draw\Path
 *An object representing a uiDrawPath*
 
 ```
-final class UI\Draw\Path {
+class UI\Draw\Path {
 	public function newFigure(UI\Point $point) : void;
 	public function newFigureWithArc(UI\Point $point, double $radius, double $angle, double $sweep, double $negative) : void;
 	public function lineTo(UI\Point $point, double $radius, double $angle, double $sweep, double $negative) : void;
@@ -467,7 +467,7 @@ UI\Draw\Color
 *An object representing RGBA colors*
 
 ```
-final class UI\Draw\Color {
+class UI\Draw\Color {
 	public function setChannel(int $channel, double $value) : void;
 	public function getChannel(int $channel) : double;
 
@@ -485,7 +485,7 @@ UI\Draw\Brush
 *An object representing a uiDrawBrush*
 
 ```
-final class UI\Draw\Brush {
+class UI\Draw\Brush {
 	public function getType() : int;
 	public function setType(int $type) : void;
 	public function getColor() : UI\Draw\Color;
@@ -505,7 +505,7 @@ UI\Draw\Stroke
 *An object representing uiDrawStrokeParams*
 
 ```
-final class UI\Draw\Stroke {
+class UI\Draw\Stroke {
 	
 	public function __construct(int $cap, int $join, double $thickness, float $miterLimit);
 
@@ -524,7 +524,7 @@ UI\Draw\Matrix
 *An object representing a uiDrawMatrix*
 
 ```
-final class UI\Draw\Matrix {
+class UI\Draw\Matrix {
 	public function translate(UI\Point $point) : void;
 	public function scale(UI\Point $center, UI\Point $point) : void;
 	public function rotate(UI\Point $point, double $amount) : void;

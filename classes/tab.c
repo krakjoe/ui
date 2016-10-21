@@ -35,23 +35,10 @@ zend_object* php_ui_tab_create(zend_class_entry *ce) {
 
 	tab->std.handlers = &php_ui_tab_handlers;
 
+	tab->t = uiNewTab();
+
 	return &tab->std;
 }
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Tab Tab::__construct() */
-PHP_METHOD(Tab, __construct) 
-{
-	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	tab->t = uiNewTab();
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_append_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
@@ -175,7 +162,6 @@ PHP_METHOD(Tab, hasMargin)
 
 /* {{{ */
 const zend_function_entry php_ui_tab_methods[] = {
-	PHP_ME(Tab, __construct,   php_ui_tab_construct_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Tab, append,        php_ui_tab_append_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Tab, delete,        php_ui_tab_delete_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Tab, pages,         php_ui_tab_pages_info,      ZEND_ACC_PUBLIC)
@@ -194,7 +180,6 @@ PHP_MINIT_FUNCTION(UI_Tab)
 
 	uiTab_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiTab_ce->create_object = php_ui_tab_create;
-	uiTab_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_tab_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

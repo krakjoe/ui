@@ -252,13 +252,12 @@ PHP_MINIT_FUNCTION(UI_DrawPath)
 
 	uiDrawPath_ce = zend_register_internal_class(&ce);
 	uiDrawPath_ce->create_object = php_ui_path_create;
-	uiDrawPath_ce->ce_flags |= ZEND_ACC_FINAL;
-	
+
 	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("WINDING"), PHP_UI_PATH_WINDING);
 	zend_declare_class_constant_long(uiDrawPath_ce, ZEND_STRL("ALTERNATE"), PHP_UI_PATH_ALTERNATE);
 
 	memcpy(&php_ui_path_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-	
+
 	php_ui_path_handlers.offset = XtOffsetOf(php_ui_path_t, std);
 	php_ui_path_handlers.free_obj = php_ui_path_free;
 

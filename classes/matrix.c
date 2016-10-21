@@ -36,23 +36,10 @@ zend_object* php_ui_matrix_create(zend_class_entry *ce) {
 
 	matrix->std.handlers = &php_ui_matrix_handlers;
 
+	uiDrawMatrixSetIdentity(&matrix->m);
+
 	return &matrix->std;
 }
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto DrawMatrix DrawMatrix::__construct() */
-PHP_METHOD(DrawMatrix, __construct) 
-{
-	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	uiDrawMatrixSetIdentity(&matrix->m);
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_matrix_translate_info, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
@@ -196,7 +183,6 @@ PHP_METHOD(DrawMatrix, invert)
 
 /* {{{ */
 const zend_function_entry php_ui_matrix_methods[] = {
-	PHP_ME(DrawMatrix, __construct,     php_ui_matrix_construct_info,       ZEND_ACC_PUBLIC)
 	PHP_ME(DrawMatrix, translate,       php_ui_matrix_translate_info,       ZEND_ACC_PUBLIC)
 	PHP_ME(DrawMatrix, scale,           php_ui_matrix_scale_info,           ZEND_ACC_PUBLIC)
 	PHP_ME(DrawMatrix, rotate,          php_ui_matrix_rotate_info,          ZEND_ACC_PUBLIC)
@@ -216,7 +202,6 @@ PHP_MINIT_FUNCTION(UI_DrawMatrix)
 
 	uiDrawMatrix_ce = zend_register_internal_class(&ce);
 	uiDrawMatrix_ce->create_object = php_ui_matrix_create;
-	uiDrawMatrix_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_matrix_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

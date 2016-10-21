@@ -36,23 +36,10 @@ zend_object* php_ui_grid_create(zend_class_entry *ce) {
 
 	grid->std.handlers = &php_ui_grid_handlers;
 
+	grid->g = uiNewGrid();
+
 	return &grid->std;
 }
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_construct_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Grid Grid::__construct() */
-PHP_METHOD(Grid, __construct) 
-{
-	php_ui_grid_t *grid = php_ui_grid_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	grid->g = uiNewGrid();
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_set_padded_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, text, _IS_BOOL, 0)
@@ -118,7 +105,6 @@ PHP_METHOD(Grid, append)
 
 /* {{{ */
 const zend_function_entry php_ui_grid_methods[] = {
-	PHP_ME(Grid, __construct, php_ui_grid_construct_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Grid, setPadded,   php_ui_grid_set_padded_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Grid, isPadded,    php_ui_grid_is_padded_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Grid, append,      php_ui_grid_append_info,      ZEND_ACC_PUBLIC)
@@ -134,7 +120,6 @@ PHP_MINIT_FUNCTION(UI_Grid)
 
 	uiGrid_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGrid_ce->create_object = php_ui_grid_create;
-	uiGrid_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("FILL"), uiAlignFill);
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("START"), uiAlignStart);

@@ -106,7 +106,6 @@ PHP_MINIT_FUNCTION(UI_Label)
 
 	uiLabel_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiLabel_ce->create_object = php_ui_label_create;
-	uiLabel_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	memcpy(&php_ui_label_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

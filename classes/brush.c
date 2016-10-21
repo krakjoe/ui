@@ -197,7 +197,6 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 
 	uiDrawBrush_ce = zend_register_internal_class(&ce);
 	uiDrawBrush_ce->create_object = php_ui_brush_create;
-	uiDrawBrush_ce->ce_flags |= ZEND_ACC_FINAL;
 
 	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("SOLID"), PHP_UI_BRUSH_SOLID);
 	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("LGRADIENT"), PHP_UI_BRUSH_LINEAR_GRADIENT);
