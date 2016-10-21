@@ -8,11 +8,9 @@ TODO
 ====
 
   - make other people test stuff
-  - make onClosing/onQuit tidy
-  - make other people do windows build
-  - mouse/key events (in progress)
+  - key events (in progress)
   - drawing (in progress)
-  - documentation
+  - documentation (in [progress](https://github.com/krakjoe/ui/blob/master/doc.md))
  
 Requirements
 ===========
