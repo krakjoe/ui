@@ -16,6 +16,10 @@ use UI\Draw\Brush;
 use UI\Draw\Stroke;
 use UI\Draw\Matrix;
 
+use UI\Draw\Text\Font\Descriptor;
+use UI\Draw\Text\Font;
+use UI\Draw\Text\Layout;
+
 $app = new App();
 
 $window = new Window($app, "libui Histogram Example", new Size(640, 480), true);
@@ -70,6 +74,8 @@ $histogram = new class($dataSources) extends Area {
 	}
 
 	protected function onDraw(Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) {
+		$start = microtime(true);
+
 		$path = new Path(PATH::WINDING);
 		$path->addRectangle($clipPoint, $areaSize);
 		$path->end();
@@ -112,6 +118,16 @@ $histogram = new class($dataSources) extends Area {
 		$brush->setColor($strokeColor);
 
 		$pen->stroke($path, $brush, $stroke);
+
+		$layout = new Layout(sprintf(
+			"Drawn in %.5f seconds", 
+				microtime(true) - $start),
+			$this->font,
+			$clipSize->width
+		);
+		$layout->setColor(0, 100, new Color(0x000000, 1));
+
+		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}
 
 	public function setColorSource(ColorButton $button) {
@@ -125,10 +141,12 @@ $histogram = new class($dataSources) extends Area {
 	public function __construct(array &$sources, ColorButton $button = null) {
 		$this->sources =& $sources;
 		$this->button  = $button;
+		$this->font = new Font(new Descriptor("arial", 12));
 	}
 
 	private $sources;
 	private $button;
+	private $font;
 };
 
 $colorBox = new Entry();
