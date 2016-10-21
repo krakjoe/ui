@@ -28,6 +28,7 @@
 #include <classes/matrix.h>
 #include <classes/stroke.h>
 #include <classes/pen.h>
+#include <classes/layout.h>
 
 zend_object_handlers php_ui_pen_handlers;
 
@@ -174,6 +175,29 @@ PHP_METHOD(DrawPen, restore)
 	uiDrawRestore(c->c);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_write_info, 0, 0, 0)
+	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, layout, UI\\Draw\\Text\\Layout, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void UI\Draw\Pen::write(UI\Point point, UI\Draw\Text\Layout layout) */
+PHP_METHOD(DrawPen, write)
+{
+	php_ui_pen_t *pen = php_ui_pen_fetch(getThis());
+	zval *_point = NULL, *_layout = NULL;
+	php_ui_point_t *point;
+	php_ui_layout_t *layout;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &_point, uiPoint_ce, &_layout, uiDrawTextLayout_ce) != SUCCESS) {
+		return;
+	}
+		
+	layout = php_ui_layout_fetch(_layout);
+	point = php_ui_point_fetch(_point);
+
+	uiDrawText(pen->c, point->x, point->y, layout->l);	
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_pen_methods[] = {
 	PHP_ME(DrawPen, fill, php_ui_pen_fill_info, ZEND_ACC_PUBLIC)
@@ -182,6 +206,7 @@ const zend_function_entry php_ui_pen_methods[] = {
 	PHP_ME(DrawPen, clip, php_ui_pen_clip_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPen, save, php_ui_pen_save_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPen, restore, php_ui_pen_restore_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawPen, write, php_ui_pen_write_info, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

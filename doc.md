@@ -450,6 +450,7 @@ final class UI\Draw\Pen {
 	public function stroke(UI\Draw\Path $path, UI\Draw\Brush $brush, UI\Draw\Stroke $stroke) : void;
 	public function transform(UI\Draw\Matrix $matrix) : void;	
 	public function clip(UI\Draw\Path $path) : void;
+	public function write(UI\Point $point, UI\Draw\Text\Layout $layout) : void;
 	public function save() : void;
 	public function restore() : void;
 }
@@ -547,5 +548,84 @@ class UI\Draw\Matrix {
 	public function multiply(UI\Draw\Matrix $matrix) : UI\Draw\Matrix;
 	public function isInvertible() : bool;
 	public function invert() : void;
+}
+```
+
+UI\Draw\Text\Font\Descriptor
+=========================
+*An object representing a uiDrawTextFontDescriptor*
+
+```
+class UI\Draw\Text\Font\Descriptor {
+	public function __construct(string family, double size [, 
+		int weight = UI\Draw\Text\Font\Weight::Normal, 
+		int italic = UI\Draw\Text\Font\Italic::Normal,
+		int stretch = UI\Draw\Text\Font\Stretch::Normal
+	]);
+}
+```
+
+UI\Draw\Text\Font\Weight
+======================
+*An enum representing uiDrawTextFontWeight*
+
+```
+final class UI\Draw\Text\Font\Weight {
+	const Thin;
+	const Light;
+	const UltraLight;
+	const Book;
+	const Normal;
+	const Medium;
+	const SemiBold;
+	const Bold;
+	const UtraBold; /* typo here in libui */
+	const Heavy;
+	const UltraHeavy;
+}
+```
+
+UI\Draw\Text\Font\Italic
+======================
+*An enum representing uiDrawTextFontItalic*
+
+```
+final class UI\Draw\Text\Font\Italic {
+	const Normal;
+	const Italic;
+	const Oblique;
+}
+```
+
+UI\Draw\Text\Font\Stretch
+======================
+*An enum representing uiDrawTextFontStretch*
+
+```
+final class UI\Draw\Text\Font\Stretch {
+	const UltraCondensed;
+	const ExtraCondensed;
+	const Condensed;
+	const SemiCondensed;
+	const Normal;
+	const SemiExpanded;
+	const Expanded;
+	const ExtraExpanded;
+	const UltraExpanded;
+}
+```
+
+
+UI\Draw\Text\Layout
+=================
+*An object representing uiDrawTextLayout*
+
+```
+class UI\Draw\Text\Layout {
+	public function __construct(string text, UI\Draw\Text\Font font, double width);
+
+	public function setWidth(double width) : void;
+
+	public function setColor(UI\Draw\Color color) : void;
 }
 ```
