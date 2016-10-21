@@ -111,14 +111,7 @@ PHP_METHOD(Window, __construct)
 
 	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
 
-	{
-		php_ui_app_t *a = php_ui_app_fetch(app);
-
-		if (zend_hash_next_index_insert(&a->windows, getThis())) {
-			Z_ADDREF_P(getThis());
-		}
-	}
-	
+	php_ui_app_window(app, getThis());
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
