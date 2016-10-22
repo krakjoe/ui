@@ -162,6 +162,10 @@ PHP_METHOD(Window, setSize)
 		return;
 	}
 
+	if (!uiControlVisible(uiControl(win->w))) {
+		return;
+	}
+
 	s = php_ui_size_fetch(size);
 
 	uiWindowSetContentSize(win->w, (int) s->width, (int) s->height);
@@ -197,6 +201,10 @@ PHP_METHOD(Window, setPosition)
 	php_ui_point_t *p;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &point, uiPoint_ce) != SUCCESS) {
+		return;
+	}
+
+	if (!uiControlVisible(uiControl(win->w))) {
 		return;
 	}
 
@@ -337,6 +345,10 @@ PHP_METHOD(Window, center)
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	if (!uiControlVisible(uiControl(win->w))) {
 		return;
 	}
 

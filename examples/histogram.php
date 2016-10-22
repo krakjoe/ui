@@ -94,8 +94,10 @@ $histogram = new class($dataSources) extends Area {
 
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
+		
+		$black = new Color(0x000000, 1);
 
-		$pen->stroke($path, new Brush(Brush::Solid, new Color(0x000000, 1)), $stroke);
+		$pen->stroke($path, new Brush(Brush::Solid, $black), $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($zero);
@@ -126,7 +128,7 @@ $histogram = new class($dataSources) extends Area {
 			$this->font,
 			$clipSize->width
 		);
-		$layout->setColor(new Color(0x000000, 1));
+		$layout->setColor($black);
 
 		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}
@@ -241,6 +243,8 @@ $vBox->append($colorBoxButton);
 $hBox->append($histogram, true);
 
 $window->show();
+
+$window->center();
 
 $app->run();
 ?>
