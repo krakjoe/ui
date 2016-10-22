@@ -94,7 +94,8 @@ $histogram = new class($dataSources) extends Area {
 		$path->lineTo(new Point(20 + $graphSize->width, 20 + $graphSize->height));	
 		$path->end();
 
-		$stroke = new Stroke(Cap::Flat, Join::Miter, 2, 10);
+		$stroke = new Stroke();
+		$stroke->setThickness(2);
 
 		$pen->stroke($path, new Brush(Brush::Solid, new Color(0x000000, 1)), $stroke);
 

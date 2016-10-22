@@ -539,7 +539,21 @@ UI\Draw\Stroke
 
 ```
 class UI\Draw\Stroke {
-	public function __construct(int $cap, int $join, double $thickness, float $miterLimit);
+	public function setCap(int $cap) : void;
+	public function getCap() : int;
+	public function setJoin(int $join) : void;
+	public function getJoin() : int;
+	public function setThickness(double $thickness) : void;
+	public function getThickness() : double;
+	public function setMiterLimit(double $limit) : void;
+	public function getMiterLimit() : double;
+
+	public function __construct([
+		int $cap = UI\Draw\Line\Cap::Flat, 
+		int $join = UI\Draw\Line\Join::Miter, 
+		double $thickness = 1, 
+		float $miterLimit = 10
+	]);
 }
 ```
 
