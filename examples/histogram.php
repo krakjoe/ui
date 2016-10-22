@@ -8,6 +8,8 @@ use UI\Control\Spin;
 use UI\Control\ColorButton;
 use UI\Control\Button;
 use UI\Control\Entry;
+use UI\Control\Label;
+use UI\Control\Combo;
 use UI\Area;
 use UI\Draw\Pen;
 use UI\Draw\Path;
@@ -108,7 +110,7 @@ $histogram = new class($dataSources) extends Area {
 
 		$path = $this->getGraphPath($points, $graphSize, true);
 
-		$brush = new Brush(Brush::Solid, $this->button->getColor());
+		$brush = new Brush(Brush::Solid, $this->color->getColor());
 
 		$pen->fill($path, $brush);
 
@@ -125,7 +127,7 @@ $histogram = new class($dataSources) extends Area {
 		$layout = new Layout(sprintf(
 			"Drawn in %.5f seconds", 
 				microtime(true) - $start),
-			$this->font,
+			$this->font->getFont(),
 			$clipSize->width
 		);
 		$layout->setColor($black);
@@ -133,22 +135,30 @@ $histogram = new class($dataSources) extends Area {
 		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}
 
-	public function setColorSource(ColorButton $button) {
-		$this->button = $button;
+	public function setColorSource(ColorButton $source) {
+		$this->color = $source;
 	}
 
 	public function getColorSource() {
-		return $this->button;
+		return $this->color;
 	}
 
-	public function __construct(array &$sources, ColorButton $button = null) {
+	public function setFontSource(Combo $font) {
+		$this->font = $font;
+	}
+
+	public function getFontSource() {
+		return $this->font;
+	}
+
+	public function __construct(array &$sources, ColorButton $color = null, Font $font = null) {
 		$this->sources =& $sources;
-		$this->button  = $button;
-		$this->font = new Font(new Descriptor("arial", 12));
+		$this->color  = $color;
+		$this->font = $font;
 	}
 
 	private $sources;
-	private $button;
+	private $color;
 	private $font;
 };
 
@@ -174,12 +184,12 @@ $colorButton = new class($histogram, $colorBox, new Color(0x8892BF, 1)) extends 
 		$this->entry = $entry;
 
 		$this->setColor($color);
+
+		$this->histogram->setColorSource($this);
 	}
 
 	private $histogram;
 };
-
-$histogram->setColorSource($colorButton);
 
 $redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
 	$redrawColor = $colorButton->getColor();
@@ -193,6 +203,7 @@ $redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
 	$histogram->redraw();
 };
 
+$vBox->append(new Label("Change Data:"));
 for ($i = 0; $i < 10; $i++) {
 
 	$dataSources[$i] = new class(0, 100, $redrawHistogram) extends Spin {
@@ -214,6 +225,7 @@ for ($i = 0; $i < 10; $i++) {
 	$vBox->append($dataSources[$i]);
 }
 
+$vBox->append(new Label("Choose Color:"));
 $vBox->append($colorButton);
 
 $colorBoxButton = new class("Set Color", $colorButton, $colorBox, $redrawHistogram) extends Button {
@@ -240,6 +252,42 @@ $colorBoxButton = new class("Set Color", $colorButton, $colorBox, $redrawHistogr
 
 $vBox->append($colorBox);
 $vBox->append($colorBoxButton);
+
+$vBox->append(new Label("Choose Font:"));
+$fontCombo = new class($histogram) extends Combo {
+	
+	public function onSelected() {
+		$this->histogram->redraw();
+	}
+
+	public function __construct(Area $histogram) {
+		$this->families  = UI\Draw\Text\Font\fontFamilies();
+		$this->histogram = $histogram;
+
+		sort($this->families);
+
+		foreach ($this->families as $family) {
+			$this->append($family);
+		}
+
+		$this->setSelected(0);
+
+		$this->histogram->setFontSource($this);
+	}
+
+	public function getFont(int $selected = -1, int $size = 12) {
+		return new Font(
+			new Descriptor($this->families[
+				$selected > -1 ? $families : $this->getSelected()
+			], $size));
+	}
+
+	private $items;
+	private $families;
+};
+
+$vBox->append($fontCombo);
+
 $hBox->append($histogram, true);
 
 $window->show();
