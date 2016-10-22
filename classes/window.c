@@ -62,9 +62,10 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	int result = 1;
 
 	if (!window->closing.fci.size) {
+		uiControlDestroy(uiControl(window->w));
 		uiQuit();
 
-		return 1;
+		return 0;
 	}
 
 	ZVAL_UNDEF(&rv);

@@ -35,7 +35,15 @@ int php_ui_app_should_quit_handler(void *arg) {
 	int result = 1;
 
 	if (!app->quit.fci.size) {
-		uiQuit();
+		zval *_window = NULL;
+
+		ZEND_HASH_FOREACH_VAL(&app->windows, _window) {
+			php_ui_window_t *window = 
+				php_ui_window_fetch(_window);
+			uiControlDestroy(uiControl(window->w));
+		} ZEND_HASH_FOREACH_END();
+
+		zend_hash_clean(&app->windows);
 
 		return result;
 	}
