@@ -8,8 +8,6 @@ TODO
 ====
 
   - make other people test stuff
-  - key events (in progress)
-  - drawing (in progress)
   - documentation (in [progress](https://github.com/krakjoe/ui/blob/master/doc.md))
  
 Requirements
@@ -18,5 +16,4 @@ Requirements
   - PHP 7
   - [libui](https://github.com/andlabs/libui) (use current master)
   - Windows/MacOSX/Linux (GTK-3)
-  - patience
   - patience
