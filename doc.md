@@ -93,7 +93,7 @@ class UI\Window extends UI\Control {
 	public function msg(string $title, string $message) : void;
 	public function error(string $title, string $message) : void;
 
-	public function onClosing() : void;
+	protected function onClosing() : void;
 
 	public function __construct(string $title, UI\Size $size, boolean $menu);
 }
