@@ -9,8 +9,6 @@ use UI\Control\ColorButton;
 use UI\Control\Button;
 use UI\Control\Entry;
 use UI\Area;
-use UI\Draw\Line\Cap;
-use UI\Draw\Line\Join;
 use UI\Draw\Pen;
 use UI\Draw\Path;
 use UI\Draw\Color;
