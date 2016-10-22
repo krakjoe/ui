@@ -173,7 +173,7 @@ PHP_MINIT_FUNCTION(UI_Box)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Box", php_ui_box_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Box", php_ui_box_methods);
 
 	uiBox_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiBox_ce->create_object = php_ui_box_create;

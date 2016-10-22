@@ -140,7 +140,7 @@ PHP_MINIT_FUNCTION(UI_Combo)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Combo", php_ui_combo_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Combo", php_ui_combo_methods);
 
 	uiCombo_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiCombo_ce->create_object = php_ui_combo_create;

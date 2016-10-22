@@ -138,7 +138,7 @@ PHP_MINIT_FUNCTION(UI_Button)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Button", php_ui_button_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Button", php_ui_button_methods);
 
 	uiButton_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiButton_ce->create_object = php_ui_button_create;

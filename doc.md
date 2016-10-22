@@ -99,12 +99,12 @@ class UI\Window extends UI\Control {
 }
 ```
 
-UI\Control\Form
+UI\Controls\Form
 ======
 *An object representing a uiForm*
 
 ```
-class UI\Control\Form extends UI\Control {
+class UI\Controls\Form extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(string $label, UI\Control $control, bool $stretchy = false) : bool;
@@ -112,12 +112,12 @@ class UI\Control\Form extends UI\Control {
 }
 ```
 
-UI\Control\Grid
+UI\Controls\Grid
 =======
 *An object representing a uiGrid*
 
 ```
-class UI\Control\Grid extends UI\Control {
+class UI\Controls\Grid extends UI\Control {
 	public function setPadded(bool $padded) : void;
 	public function isPadded() : bool;
 	public function append(UI\Control $control, int $left, int $top, int $xspan, int $yspan, bool $hexpand, int $haign, bool $vexpand, int $valign);
@@ -134,12 +134,12 @@ class UI\Control\Grid extends UI\Control {
 }
 ```
 
-UI\Control\Tab
+UI\Controls\Tab
 ======
 *An object representing a uiTab*
 
 ```
-class UI\Control\Tab extends UI\Control {
+class UI\Controls\Tab extends UI\Control {
 	public function append(string $name, UI\Control $control) : void;
 	public function delete(int $index) : void;
 	public function pages() : int;
@@ -149,12 +149,12 @@ class UI\Control\Tab extends UI\Control {
 }
 ```
 
-UI\Control\Box
+UI\Controls\Box
 =====
 *An object representing a uiBox*
 
 ```
-class UI\Control\Box extends UI\Control {
+class UI\Controls\Box extends UI\Control {
 	public function getOrientation() : int;
 	public function append(UI\Control $control, bool $stretchy = false) : void;
 	public function delete(int $index) : void;
@@ -168,12 +168,12 @@ class UI\Control\Box extends UI\Control {
 }
 ```
 
-UI\Control\Check
+UI\Controls\Check
 =======
 *An object represnting a uiCheckbox*
 
 ```
-class UI\Control\Check extends UI\Control {
+class UI\Controls\Check extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setChecked(bool $checked) : void;
@@ -185,12 +185,12 @@ class UI\Control\Check extends UI\Control {
 }
 ```
 
-UI\Control\Button
+UI\Controls\Button
 ========
 *An object representing a uiButton*
 
 ```
-class UI\Control\Button extends UI\Control {
+class UI\Controls\Button extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 
@@ -200,12 +200,12 @@ class UI\Control\Button extends UI\Control {
 }
 ```
 
-UI\Control\ColorButton
+UI\Controls\ColorButton
 =============
 *An object representing a uiColorButton*
 
 ```
-class UI\Control\ColorButton extends UI\Control {
+class UI\Controls\ColorButton extends UI\Control {
 	public function setColor(UI\Draw\Color color) : void;
 	public function getColor() : UI\Draw\Color;
 
@@ -213,12 +213,12 @@ class UI\Control\ColorButton extends UI\Control {
 }
 ```
 
-UI\Control\Label
+UI\Controls\Label
 =======
 *An object representing a uiLabel*
 
 ```
-class UI\Control\Label extends UI\Control {
+class UI\Controls\Label extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 
@@ -226,12 +226,12 @@ class UI\Control\Label extends UI\Control {
 }
 ```
 
-UI\Control\Entry
+UI\Controls\Entry
 =======
 *An object representing a uiEntry*
 
 ```
-class UI\Control\Entry extends UI\Control {
+class UI\Controls\Entry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
@@ -247,12 +247,12 @@ class UI\Control\Entry extends UI\Control {
 }
 ```
 
-UI\Control\MultilineEntry
+UI\Controls\MultilineEntry
 =======
 *An object represneting a uiMultilineEntry*
 
 ```
-class UI\Control\MultilineEntry extends UI\Control {
+class UI\Controls\MultilineEntry extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function setReadOnly(bool $readOnly) : void;
@@ -268,12 +268,12 @@ class UI\Control\MultilineEntry extends UI\Control {
 }
 ```
 
-UI\Control\Group
+UI\Controls\Group
 =======
 *An object representing a uiGroup*
 
 ```
-class UI\Control\Group extends UI\Control {
+class UI\Controls\Group extends UI\Control {
 	public function setTitle(string $text) : void;
 	public function getTitle() : string;
 	public function setMargin(bool $margin) : void;
@@ -284,12 +284,12 @@ class UI\Control\Group extends UI\Control {
 }
 ```
 
-UI\Control\Spin
+UI\Controls\Spin
 ======
 *An object representing a uiSpinbox*
 
 ```
-class UI\Control\Spin extends UI\Control {
+class UI\Controls\Spin extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 
@@ -299,12 +299,12 @@ class UI\Control\Spin extends UI\Control {
 }
 ```
 
-UI\Control\Slider
+UI\Controls\Slider
 ========
 *An object representing a uiSlider*
 
 ```
-class UI\Control\Slider extends UI\Control {
+class UI\Controls\Slider extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 
@@ -314,22 +314,22 @@ class UI\Control\Slider extends UI\Control {
 }
 ```
 
-UI\Control\Progress
+UI\Controls\Progress
 ==========
 
 ```
-class UI\Control\Progress extends UI\Control {
+class UI\Controls\Progress extends UI\Control {
 	public function setValue(int $value) : void;
 	public function getValue() : int;
 }
 ```
 
-UI\Control\Separator
+UI\Controls\Separator
 ===========
 *An object representing a uiSeparator*
 
 ```
-class UI\Control\Separator extends UI\Control {
+class UI\Controls\Separator extends UI\Control {
 
 	public function __construct(int $type == Separator::Horizontal);
 
@@ -338,12 +338,12 @@ class UI\Control\Separator extends UI\Control {
 }
 ```
 
-UI\Control\Combo
+UI\Controls\Combo
 =======
 *An object representing a uiCombobox*
 
 ```
-class UI\Control\Combo extends UI\Control {
+class UI\Controls\Combo extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
@@ -353,12 +353,12 @@ class UI\Control\Combo extends UI\Control {
 ```
 
 
-UI\Control\EditableCombo
+UI\Controls\EditableCombo
 ==============
 *An object representing a uiEditableCombobox*
 
 ```
-class UI\Control\EditableCombo extends UI\Control {
+class UI\Controls\EditableCombo extends UI\Control {
 	public function setText(string $text) : void;
 	public function getText() : string;
 	public function append(string $text) : void;
@@ -367,12 +367,12 @@ class UI\Control\EditableCombo extends UI\Control {
 }
 ```
 
-UI\Control\Radio
+UI\Controls\Radio
 =======
 *An object representing a uiRadioButton*
 
 ```
-class UI\Control\Radio extends UI\Control {
+class UI\Controls\Radio extends UI\Control {
 	public function setSelected(int $selected) : void;
 	public function getSelected() : int;
 	public function append(string $text) : void;
@@ -381,12 +381,12 @@ class UI\Control\Radio extends UI\Control {
 }
 ```
 
-UI\Control\Picker
+UI\Controls\Picker
 ========
 *An object representing a uiDatePicker*
 
 ```
-class UI\Control\Picker extends UI\Control {
+class UI\Controls\Picker extends UI\Control {
 	public function __construct(int $type = Picker::Date);
 
 	const Date;

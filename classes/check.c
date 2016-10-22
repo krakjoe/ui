@@ -176,7 +176,7 @@ PHP_MINIT_FUNCTION(UI_Check)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Check", php_ui_check_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Check", php_ui_check_methods);
 
 	uiCheck_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiCheck_ce->create_object = php_ui_check_create;

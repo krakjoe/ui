@@ -84,7 +84,7 @@ PHP_MINIT_FUNCTION(UI_Picker)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Picker", php_ui_picker_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Picker", php_ui_picker_methods);
 
 	uiPicker_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiPicker_ce->create_object = php_ui_picker_create;

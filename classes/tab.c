@@ -176,7 +176,7 @@ PHP_MINIT_FUNCTION(UI_Tab)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Tab", php_ui_tab_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Tab", php_ui_tab_methods);
 
 	uiTab_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiTab_ce->create_object = php_ui_tab_create;

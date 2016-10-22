@@ -190,7 +190,7 @@ PHP_MINIT_FUNCTION(UI_Entry)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Entry", php_ui_entry_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Entry", php_ui_entry_methods);
 
 	uiEntry_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiEntry_ce->create_object = php_ui_entry_create;

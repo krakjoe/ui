@@ -102,7 +102,7 @@ PHP_MINIT_FUNCTION(UI_Label)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Label", php_ui_label_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Label", php_ui_label_methods);
 
 	uiLabel_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiLabel_ce->create_object = php_ui_label_create;

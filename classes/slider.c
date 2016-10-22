@@ -137,7 +137,7 @@ PHP_MINIT_FUNCTION(UI_Slider)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\\Control", "Slider", php_ui_slider_methods);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Controls", "Slider", php_ui_slider_methods);
 
 	uiSlider_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiSlider_ce->create_object = php_ui_slider_create;
