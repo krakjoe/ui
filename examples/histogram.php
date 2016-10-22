@@ -126,7 +126,7 @@ $histogram = new class($dataSources) extends Area {
 			$this->font,
 			$clipSize->width
 		);
-		$layout->setColor(0, 100, new Color(0x000000, 1));
+		$layout->setColor(new Color(0x000000, 1));
 
 		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}

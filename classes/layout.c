@@ -71,7 +71,9 @@ PHP_METHOD(DrawTextLayout, __construct)
 
 	f = php_ui_font_fetch(font);
 
-	layout->l = uiDrawNewTextLayout(ZSTR_VAL(text), f->f, width);
+	layout->l = 
+		uiDrawNewTextLayout(ZSTR_VAL(text), f->f, width);
+	layout->end = ZSTR_LEN(text);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_layout_set_width_info, 0, 0, 1)
@@ -91,13 +93,13 @@ PHP_METHOD(DrawTextLayout, setWidth)
 	uiDrawTextLayoutSetWidth(layout->l, width);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_layout_set_color_info, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_layout_set_color_info, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
 	ZEND_ARG_TYPE_INFO(0, start, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, end, IS_LONG, 0)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void UI\Draw\Text\Layout::setColor(int start, int end, UI\Draw\Color color) */
+/* {{{ proto void UI\Draw\Text\Layout::setColor(UI\Draw\Color color [, int start, int end]) */
 PHP_METHOD(DrawTextLayout, setColor)
 {
 	php_ui_layout_t *layout = php_ui_layout_fetch(getThis());
@@ -105,8 +107,12 @@ PHP_METHOD(DrawTextLayout, setColor)
 	zval *color = NULL;
 	php_ui_color_t *c;
 	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "llO", &start, &end, &color, uiDrawColor_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O|ll", &color, uiDrawColor_ce, &start, &end) != SUCCESS) {
 		return;
+	}
+
+	if (ZEND_NUM_ARGS() < 3) {
+		end = layout->end;
 	}
 	
 	c = php_ui_color_fetch(color);

@@ -22,6 +22,7 @@ zend_class_entry *uiDrawTextLayout_ce;
 
 typedef struct _php_ui_layout_t {
 	uiDrawTextLayout* l;
+	zend_long end;
 	zend_object std;
 } php_ui_layout_t;
 

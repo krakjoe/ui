@@ -672,6 +672,6 @@ class UI\Draw\Text\Layout {
 
 	public function setWidth(double width) : void;
 
-	public function setColor(UI\Draw\Color color) : void;
+	public function setColor(UI\Draw\Color color [, int start, int end]) : void;
 }
 ```
