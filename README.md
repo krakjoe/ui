@@ -8,12 +8,12 @@ TODO
 ====
 
   - make other people test stuff
-  - documentation (in [progress](https://github.com/krakjoe/ui/blob/master/doc.md))
+  - track upstream changes ... forever ...
  
 Requirements
 ===========
 
   - PHP 7
-  - [libui](https://github.com/andlabs/libui) (use current master)
+  - [libui](https://github.com/andlabs/libui) (ce37d12d230cea529bf6f5ac1d3bc76b9a75bbbd)
   - Windows/MacOSX/Linux (GTK-3)
   - patience
