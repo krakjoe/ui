@@ -101,22 +101,22 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_insert_at_info, 0, 0, 3)
 	ZEND_ARG_OBJ_INFO(0,  control, UI\\Control, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Tab::insertAt(string name, bool before, Control control) */
+/* {{{ proto void Tab::insertAt(string name, int page, Control control) */
 PHP_METHOD(Tab, insertAt)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
 	zend_string *name = NULL;
-	zend_bool before = 0;
+	zend_long page = 0;
 	zval *control = NULL;
 	uiControl *ctrl = NULL;
 	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO", &name, &before, &control, uiControl_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SlO", &name, &page, &control, uiControl_ce) != SUCCESS) {
 		return;
 	}
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) before, ctrl);
+	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl);
 }
 /* }}} */
 
