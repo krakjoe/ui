@@ -224,7 +224,7 @@ const zend_function_entry php_ui_path_methods[] = {
 	PHP_ME(DrawPath, __construct, php_ui_path_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPath, newFigure,   php_ui_path_new_figure_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPath, newFigureWithArc,   php_ui_path_draw_to_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(DrawPath, lineTo,   php_ui_path_draw_to_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(DrawPath, lineTo,   php_ui_path_line_to_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPath, arcTo,   php_ui_path_draw_to_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPath, bezierTo, php_ui_path_draw_to_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawPath, closeFigure, php_ui_path_close_figure_info, ZEND_ACC_PUBLIC)
