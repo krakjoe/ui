@@ -25,6 +25,11 @@
 
 zend_object_handlers php_ui_descriptor_handlers;
 
+zend_class_entry *uiDrawTextFontDescriptor_ce;
+zend_class_entry *uiDrawTextFontWeight_ce;
+zend_class_entry *uiDrawTextFontItalic_ce;
+zend_class_entry *uiDrawTextFontStretch_ce;
+
 zend_object* php_ui_descriptor_create(zend_class_entry *ce) {
 	php_ui_descriptor_t *descriptor = 
 		(php_ui_descriptor_t*) ecalloc(1, sizeof(php_ui_descriptor_t) + zend_object_properties_size(ce));

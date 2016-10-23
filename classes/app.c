@@ -24,6 +24,8 @@
 #include <classes/app.h>
 #include <classes/window.h>
 
+zend_class_entry *uiApp_ce;
+
 zend_object_handlers php_ui_app_handlers;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);

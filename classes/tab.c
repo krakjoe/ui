@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_tab_handlers;
 
+zend_class_entry *uiTab_ce;
+
 zend_object* php_ui_tab_create(zend_class_entry *ce) {
 	php_ui_tab_t *tab = (php_ui_tab_t*) ecalloc(1, sizeof(php_ui_tab_t) + zend_object_properties_size(ce));
 

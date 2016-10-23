@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_form_handlers;
 
+zend_class_entry *uiForm_ce;
+
 zend_object* php_ui_form_create(zend_class_entry *ce) {
 	php_ui_form_t *form = 
 		(php_ui_form_t*) ecalloc(1, sizeof(php_ui_form_t) + zend_object_properties_size(ce));

@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_GROUP_H
 #define HAVE_PHP_UI_GROUP_H
 
-zend_class_entry *uiGroup_ce;
+extern zend_class_entry *uiGroup_ce;
 
 typedef struct _php_ui_group_t {
 	uiGroup *g;

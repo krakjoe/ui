@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_SEPARATOR_H
 #define HAVE_PHP_UI_SEPARATOR_H
 
-zend_class_entry *uiSeparator_ce;
+extern zend_class_entry *uiSeparator_ce;
 
 typedef struct _php_ui_separator_t {
 	uiSeparator *s;

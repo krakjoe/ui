@@ -25,6 +25,8 @@
 
 zend_object_handlers php_ui_size_handlers;
 
+zend_class_entry *uiSize_ce;
+
 zval *php_ui_size_construct(zval *size, double width, double height)
 {
 	php_ui_size_t *s;

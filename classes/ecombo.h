@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_ECOMBO_H
 #define HAVE_PHP_UI_ECOMBO_H
 
-zend_class_entry *uiEditableCombo_ce;
+extern zend_class_entry *uiEditableCombo_ce;
 
 typedef struct _php_ui_ecombo_t {
 	uiEditableCombobox *c;

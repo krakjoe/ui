@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_COMBO_H
 #define HAVE_PHP_UI_COMBO_H
 
-zend_class_entry *uiCombo_ce;
+extern zend_class_entry *uiCombo_ce;
 
 typedef struct _php_ui_combo_t {
 	uiCombobox *c;

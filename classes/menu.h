@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_MENU_H
 #define HAVE_PHP_UI_MENU_H
 
-zend_class_entry *uiMenu_ce;
+extern zend_class_entry *uiMenu_ce;
 
 typedef struct _php_ui_menu_t {
 	uiMenu *m;

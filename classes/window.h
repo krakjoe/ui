@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_WINDOW_H
 #define HAVE_PHP_UI_WINDOW_H
 
-zend_class_entry *uiWindow_ce;
+extern zend_class_entry *uiWindow_ce;
 
 typedef struct _php_ui_window_t {
 	uiWindow *w;

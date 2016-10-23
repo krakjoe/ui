@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_color_handlers;
 
+zend_class_entry *uiDrawColor_ce;
+
 zend_object* php_ui_color_create(zend_class_entry *ce) {
 	php_ui_color_t *color = 
 		(php_ui_color_t*) ecalloc(1, sizeof(php_ui_color_t) + zend_object_properties_size(ce));

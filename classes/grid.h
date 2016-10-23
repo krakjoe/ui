@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_GRID_H
 #define HAVE_PHP_UI_GRID_H
 
-zend_class_entry *uiGrid_ce;
+extern zend_class_entry *uiGrid_ce;
 
 typedef struct _php_ui_grid_t {
 	uiGrid *g;

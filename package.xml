@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>UI</name>
+ <channel>pecl.php.net</channel>
+ <summary>UI API</summary>
+ <description>An OO wrapper around libui</description>
+ <lead>
+  <name>Joe Watkins</name>
+  <user>krakjoe</user>
+  <email>krakjoe@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2016-10-23</date>
+ <time>12:00:00</time>
+ <version>
+  <release>0.9.9</release>
+  <api>0.9.9</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP License</license>
+ <notes>
+ initial release
+ </notes>
+ <contents>
+  <dir name="/">
+	<file name="examples/histogram.php" role="doc" />
+	<file name="examples/gallery.php" role="doc" />
+    <file name="classes/app.c" role="src" />
+    <file name="classes/app.h" role="src" />
+    <file name="classes/area.c" role="src" />
+    <file name="classes/area.h" role="src" />
+    <file name="classes/box.c" role="src" />
+    <file name="classes/box.h" role="src" />
+    <file name="classes/brush.c" role="src" />
+    <file name="classes/brush.h" role="src" />
+    <file name="classes/button.c" role="src" />
+    <file name="classes/button.h" role="src" />
+    <file name="classes/cbutton.c" role="src" />
+    <file name="classes/cbutton.h" role="src" />
+    <file name="classes/check.c" role="src" />
+    <file name="classes/check.h" role="src" />
+    <file name="classes/color.c" role="src" />
+    <file name="classes/color.h" role="src" />
+    <file name="classes/combo.c" role="src" />
+    <file name="classes/combo.h" role="src" />
+    <file name="classes/control.c" role="src" />
+    <file name="classes/control.h" role="src" />
+    <file name="classes/descriptor.c" role="src" />
+    <file name="classes/descriptor.h" role="src" />
+    <file name="classes/ecombo.c" role="src" />
+    <file name="classes/ecombo.h" role="src" />
+    <file name="classes/entry.c" role="src" />
+    <file name="classes/entry.h" role="src" />
+    <file name="classes/font.c" role="src" />
+    <file name="classes/font.h" role="src" />
+    <file name="classes/form.c" role="src" />
+    <file name="classes/form.h" role="src" />
+    <file name="classes/grid.c" role="src" />
+    <file name="classes/grid.h" role="src" />
+    <file name="classes/group.c" role="src" />
+    <file name="classes/group.h" role="src" />
+    <file name="classes/item.c" role="src" />
+    <file name="classes/item.h" role="src" />
+    <file name="classes/label.c" role="src" />
+    <file name="classes/label.h" role="src" />
+    <file name="classes/layout.c" role="src" />
+    <file name="classes/layout.h" role="src" />
+    <file name="classes/matrix.c" role="src" />
+    <file name="classes/matrix.h" role="src" />
+    <file name="classes/menu.c" role="src" />
+    <file name="classes/menu.h" role="src" />
+    <file name="classes/multi.c" role="src" />
+    <file name="classes/multi.h" role="src" />
+    <file name="classes/path.c" role="src" />
+    <file name="classes/path.h" role="src" />
+    <file name="classes/pen.c" role="src" />
+    <file name="classes/pen.h" role="src" />
+    <file name="classes/picker.c" role="src" />
+    <file name="classes/picker.h" role="src" />
+    <file name="classes/point.c" role="src" />
+    <file name="classes/point.h" role="src" />
+    <file name="classes/progress.c" role="src" />
+    <file name="classes/progress.h" role="src" />
+    <file name="classes/radio.c" role="src" />
+    <file name="classes/radio.h" role="src" />
+    <file name="classes/separator.c" role="src" />
+    <file name="classes/separator.h" role="src" />
+    <file name="classes/size.c" role="src" />
+    <file name="classes/size.h" role="src" />
+    <file name="classes/slider.c" role="src" />
+    <file name="classes/slider.h" role="src" />
+    <file name="classes/spin.c" role="src" />
+    <file name="classes/spin.h" role="src" />
+    <file name="classes/stroke.c" role="src" />
+    <file name="classes/stroke.h" role="src" />
+    <file name="classes/tab.c" role="src" />
+    <file name="classes/tab.h" role="src" />
+    <file name="classes/window.c" role="src" />
+    <file name="classes/window.h" role="src" />
+	<file name="config.m4" role="src" />
+	<file name="config.w32" role="src" />
+	<file name="LICENSE" role="doc" />
+	<file name="ui.c" role="src" />
+	<file name="php_ui.h" role="src" />
+	<file name="README.md" role="doc" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>7.0.0RC5</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>ui</providesextension>
+ <extsrcrelease />
+</package>

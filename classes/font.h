@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_FONT_H
 #define HAVE_PHP_UI_FONT_H
 
-zend_class_entry *uiDrawTextFont_ce;
+extern zend_class_entry *uiDrawTextFont_ce;
 
 typedef struct _php_ui_font_t {
 	uiDrawTextFont* f;

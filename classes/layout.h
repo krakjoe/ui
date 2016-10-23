@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_LAYOUT_H
 #define HAVE_PHP_UI_LAYOUT_H
 
-zend_class_entry *uiDrawTextLayout_ce;
+extern zend_class_entry *uiDrawTextLayout_ce;
 
 typedef struct _php_ui_layout_t {
 	uiDrawTextLayout* l;

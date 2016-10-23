@@ -18,9 +18,9 @@
 #ifndef HAVE_PHP_UI_STROKE_H
 #define HAVE_PHP_UI_STROKE_H
 
-zend_class_entry *uiDrawStroke_ce;
-zend_class_entry *uiDrawLineCap_ce;
-zend_class_entry *uiDrawLineJoin_ce;
+extern zend_class_entry *uiDrawStroke_ce;
+extern zend_class_entry *uiDrawLineCap_ce;
+extern zend_class_entry *uiDrawLineJoin_ce;
 
 typedef struct _php_ui_stroke_t {
 	uiDrawStrokeParams s;

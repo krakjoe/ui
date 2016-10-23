@@ -25,6 +25,10 @@
 
 zend_object_handlers php_ui_stroke_handlers;
 
+zend_class_entry *uiDrawStroke_ce;
+zend_class_entry *uiDrawLineCap_ce;
+zend_class_entry *uiDrawLineJoin_ce;
+
 zend_object* php_ui_stroke_create(zend_class_entry *ce) {
 	php_ui_stroke_t *stroke = 
 		(php_ui_stroke_t*) ecalloc(1, sizeof(php_ui_stroke_t) + zend_object_properties_size(ce));
@@ -38,7 +42,7 @@ zend_object* php_ui_stroke_create(zend_class_entry *ce) {
 	return &stroke->std;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_stroke_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, cap, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, join, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, thickness, IS_DOUBLE, 0)

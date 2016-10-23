@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_CONTROL_H
 #define HAVE_PHP_UI_CONTROL_H
 
-zend_class_entry *uiControl_ce;
+extern zend_class_entry *uiControl_ce;
 
 typedef struct _php_ui_control_t {
 	uiControl *c;

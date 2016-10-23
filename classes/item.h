@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_ITEM_H
 #define HAVE_PHP_UI_ITEM_H
 
-zend_class_entry *uiItem_ce;
+extern zend_class_entry *uiItem_ce;
 
 typedef struct _php_ui_item_t {
 	uiMenuItem *i;

@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_PICKER_H
 #define HAVE_PHP_UI_PICKER_H
 
-zend_class_entry *uiPicker_ce;
+extern zend_class_entry *uiPicker_ce;
 
 typedef struct _php_ui_picker_t {
 	uiDateTimePicker *p;

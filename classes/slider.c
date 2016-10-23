@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_slider_handlers;
 
+zend_class_entry *uiSlider_ce;
+
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 zend_object* php_ui_slider_create(zend_class_entry *ce) {

@@ -18,10 +18,10 @@
 #ifndef HAVE_PHP_UI_DESCRIPTOR_H
 #define HAVE_PHP_UI_DESCRIPTOR_H
 
-zend_class_entry *uiDrawTextFontDescriptor_ce;
-zend_class_entry *uiDrawTextFontWeight_ce;
-zend_class_entry *uiDrawTextFontItalic_ce;
-zend_class_entry *uiDrawTextFontStretch_ce;
+extern zend_class_entry *uiDrawTextFontDescriptor_ce;
+extern zend_class_entry *uiDrawTextFontWeight_ce;
+extern zend_class_entry *uiDrawTextFontItalic_ce;
+extern zend_class_entry *uiDrawTextFontStretch_ce;
 
 typedef struct _php_ui_descriptor_t {
 	uiDrawTextFontDescriptor d;

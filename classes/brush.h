@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_BRUSH_H
 #define HAVE_PHP_UI_BRUSH_H
 
-zend_class_entry *uiDrawBrush_ce;
+extern zend_class_entry *uiDrawBrush_ce;
 
 typedef struct _php_ui_brush_t {
 	uiDrawBrush b;

@@ -29,6 +29,8 @@
 
 zend_object_handlers php_ui_area_handlers;
 
+zend_class_entry *uiArea_ce;
+
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawParams *p) {

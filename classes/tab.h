@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_TAB_H
 #define HAVE_PHP_UI_TAB_H
 
-zend_class_entry *uiTab_ce;
+extern zend_class_entry *uiTab_ce;
 
 typedef struct _php_ui_tab_t {
 	uiTab *t;

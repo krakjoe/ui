@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_PROGRESS_H
 #define HAVE_PHP_UI_PROGRESS_H
 
-zend_class_entry *uiProgress_ce;
+extern zend_class_entry *uiProgress_ce;
 
 typedef struct _php_ui_progress_t {
 	uiProgressBar *p;

@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_APP_H
 #define HAVE_PHP_UI_APP_H
 
-zend_class_entry *uiApp_ce;
+extern zend_class_entry *uiApp_ce;
 
 typedef struct _php_ui_app_t {
 	HashTable windows;

@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_brush_handlers;
 
+zend_class_entry *uiDrawBrush_ce;
+
 static inline uiDrawBrushType php_ui_brush_type(zend_long type) {
 	switch (type) {
 		case PHP_UI_BRUSH_SOLID: return uiDrawBrushTypeSolid;

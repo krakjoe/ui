@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_menu_handlers;
 
+zend_class_entry *uiMenu_ce;
+
 extern void php_ui_item_click_handler(uiMenuItem *i, uiWindow *w,  void *_item);
 
 zend_object* php_ui_menu_create(zend_class_entry *ce) {

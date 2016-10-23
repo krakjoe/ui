@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_group_handlers;
 
+zend_class_entry *uiGroup_ce;
+
 zend_object* php_ui_group_create(zend_class_entry *ce) {
 	php_ui_group_t *group = 
 		(php_ui_group_t*) ecalloc(1, sizeof(php_ui_group_t) + zend_object_properties_size(ce));

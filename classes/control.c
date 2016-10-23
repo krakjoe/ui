@@ -23,6 +23,8 @@
 
 #include <classes/control.h>
 
+zend_class_entry *uiControl_ce;
+
 extern int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *buffer, size_t blen, zend_unserialize_data *data);
 extern int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_serialize_data *data);
 

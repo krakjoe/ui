@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_font_handlers;
 
+zend_class_entry *uiDrawTextFont_ce;
+
 zend_object* php_ui_font_create(zend_class_entry *ce) {
 	php_ui_font_t *font = 
 		(php_ui_font_t*) ecalloc(1, sizeof(php_ui_font_t) + zend_object_properties_size(ce));

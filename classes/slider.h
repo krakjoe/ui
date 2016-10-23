@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_SLIDER_H
 #define HAVE_PHP_UI_SLIDER_H
 
-zend_class_entry *uiSlider_ce;
+extern zend_class_entry *uiSlider_ce;
 
 typedef struct _php_ui_slider_t {
 	uiSlider *s;

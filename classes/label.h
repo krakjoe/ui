@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_LABEL_H
 #define HAVE_PHP_UI_LABEL_H
 
-zend_class_entry *uiLabel_ce;
+extern zend_class_entry *uiLabel_ce;
 
 typedef struct _php_ui_label_t {
 	uiLabel *l;

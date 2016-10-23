@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_PEN_H
 #define HAVE_PHP_UI_PEN_H
 
-zend_class_entry *uiDrawPen_ce;
+extern zend_class_entry *uiDrawPen_ce;
 
 typedef struct _php_ui_pen_t {
 	uiDrawContext *c;

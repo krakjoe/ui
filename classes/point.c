@@ -25,6 +25,8 @@
 
 zend_object_handlers php_ui_point_handlers;
 
+zend_class_entry *uiPoint_ce;
+
 zval *php_ui_point_construct(zval *point, double x, double y)
 {
 	php_ui_point_t *p;

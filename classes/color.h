@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_COLOR_H
 #define HAVE_PHP_UI_COLOR_H
 
-zend_class_entry *uiDrawColor_ce;
+extern zend_class_entry *uiDrawColor_ce;
 
 typedef struct _php_ui_color_t {
 	double r;

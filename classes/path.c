@@ -27,6 +27,8 @@
 
 zend_object_handlers php_ui_path_handlers;
 
+zend_class_entry *uiDrawPath_ce;
+
 zend_object* php_ui_path_create(zend_class_entry *ce) {
 	php_ui_path_t *path = 
 		(php_ui_path_t*) ecalloc(1, sizeof(php_ui_path_t) + zend_object_properties_size(ce));

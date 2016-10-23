@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_CHECK_H
 #define HAVE_PHP_UI_CHECK_H
 
-zend_class_entry *uiCheck_ce;
+extern zend_class_entry *uiCheck_ce;
 
 typedef struct _php_ui_check_t {
 	uiCheckbox *c;

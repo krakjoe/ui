@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_grid_handlers;
 
+zend_class_entry *uiGrid_ce;
+
 zend_object* php_ui_grid_create(zend_class_entry *ce) {
 	php_ui_grid_t *grid = 
 		(php_ui_grid_t*) ecalloc(1, sizeof(php_ui_grid_t) + zend_object_properties_size(ce));

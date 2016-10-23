@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_MATRIX_H
 #define HAVE_PHP_UI_MATRIX_H
 
-zend_class_entry *uiDrawMatrix_ce;
+extern zend_class_entry *uiDrawMatrix_ce;
 
 typedef struct _php_ui_matrix_t {
 	uiDrawMatrix m;

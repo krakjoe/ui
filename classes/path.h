@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_PATH_H
 #define HAVE_PHP_UI_PATH_H
 
-zend_class_entry *uiDrawPath_ce;
+extern zend_class_entry *uiDrawPath_ce;
 
 typedef struct _php_ui_path_t {
 	uiDrawPath *p;

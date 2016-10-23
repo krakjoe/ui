@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_POINT_H
 #define HAVE_PHP_UI_POINT_H
 
-zend_class_entry *uiPoint_ce;
+extern zend_class_entry *uiPoint_ce;
 
 typedef struct _php_ui_point_t {
 	double x;

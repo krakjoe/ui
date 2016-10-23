@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_FORM_H
 #define HAVE_PHP_UI_FORM_H
 
-zend_class_entry *uiForm_ce;
+extern zend_class_entry *uiForm_ce;
 
 typedef struct _php_ui_form_t {
 	uiForm *f;

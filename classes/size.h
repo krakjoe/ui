@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_SIZE_H
 #define HAVE_PHP_UI_SIZE_H
 
-zend_class_entry *uiSize_ce;
+extern zend_class_entry *uiSize_ce;
 
 typedef struct _php_ui_size_t {
 	double width;

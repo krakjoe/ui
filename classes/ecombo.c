@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_ecombo_handlers;
 
+zend_class_entry *uiEditableCombo_ce;
+
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 void php_ui_ecombo_change_handler(uiEditableCombobox *u, void *_ecombo) {

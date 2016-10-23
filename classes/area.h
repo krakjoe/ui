@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_AREA_H
 #define HAVE_PHP_UI_AREA_H
 
-zend_class_entry *uiArea_ce;
+extern zend_class_entry *uiArea_ce;
 
 typedef struct _php_ui_area_t {
 	uiArea *a;

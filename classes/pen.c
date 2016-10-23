@@ -32,6 +32,8 @@
 
 zend_object_handlers php_ui_pen_handlers;
 
+zend_class_entry *uiDrawPen_ce;
+
 zend_object* php_ui_pen_create(zend_class_entry *ce) {
 	php_ui_pen_t *pen = 
 		(php_ui_pen_t*) ecalloc(1, sizeof(php_ui_pen_t) + zend_object_properties_size(ce));

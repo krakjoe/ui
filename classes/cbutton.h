@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_CBUTTON_H
 #define HAVE_PHP_UI_CBUTTON_H
 
-zend_class_entry *uiColorButton_ce;
+extern zend_class_entry *uiColorButton_ce;
 
 typedef struct _php_ui_cbutton_t {
 	uiColorButton *b;

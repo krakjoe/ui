@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_ENTRY_H
 #define HAVE_PHP_UI_ENTRY_H
 
-zend_class_entry *uiEntry_ce;
+extern zend_class_entry *uiEntry_ce;
 
 typedef struct _php_ui_entry_t {
 	uiEntry *e;

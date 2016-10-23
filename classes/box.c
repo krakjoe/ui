@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_box_handlers;
 
+zend_class_entry *uiBox_ce;
+
 zend_object* php_ui_box_create(zend_class_entry *ce) {
 	php_ui_box_t *box = 
 		(php_ui_box_t*) ecalloc(1, sizeof(php_ui_box_t) + zend_object_properties_size(ce));

@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_MULTI_H
 #define HAVE_PHP_UI_MULTI_H
 
-zend_class_entry *uiMulti_ce;
+extern zend_class_entry *uiMulti_ce;
 
 typedef struct _php_ui_multi_t {
 	uiMultilineEntry *e;

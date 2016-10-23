@@ -18,7 +18,7 @@
 #ifndef HAVE_PHP_UI_BOX_H
 #define HAVE_PHP_UI_BOX_H
 
-zend_class_entry *uiBox_ce;
+extern zend_class_entry *uiBox_ce;
 
 typedef struct _php_ui_box_t {
 	uiBox *b;
