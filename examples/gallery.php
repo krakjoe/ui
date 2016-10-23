@@ -62,7 +62,7 @@ $entryForm->append("Search Entry", new Entry(Entry::Search), false);
 $entryForm->append("Multiline Entry", new MultilineEntry(MultilineEntry::Wrap), true);
 $entryForm->append("Multiline Entry Without Wrapping", new MultilineEntry(MultilineEntry::NoWrap), true);
 
-$entriesGroup->add($entryForm);
+$entriesGroup->append($entryForm);
 
 $tab->append("Basic Controls", $basicControlsVbox);
 $tab->setMargin(0, true);
@@ -78,7 +78,7 @@ $numbersHbox->append($numbersGroup, true);
 $numbersVbox = new Box(Box::Vertical);
 $numbersVbox->setPadded(true);
 
-$numbersGroup->add($numbersVbox);
+$numbersGroup->append($numbersVbox);
 
 $progress = new Progress();
 
@@ -140,7 +140,7 @@ $numbersHbox->append($listsGroup);
 
 $otherBox = new Box(Box::Vertical);
 $otherBox->setPadded(true);
-$listsGroup->add($otherBox);
+$listsGroup->append($otherBox);
 
 $combo = new Combo();
 $combo->append("Item 1");

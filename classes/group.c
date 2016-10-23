@@ -125,12 +125,12 @@ PHP_METHOD(Group, hasMargin)
 	}
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_group_add_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_group_append_info, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Group::add(Control control) */
-PHP_METHOD(Group, add)
+/* {{{ proto void Group::append(Control control) */
+PHP_METHOD(Group, append)
 {
 	php_ui_group_t *group = php_ui_group_fetch(getThis());
 	zval *control = NULL;
@@ -152,7 +152,7 @@ const zend_function_entry php_ui_group_methods[] = {
 	PHP_ME(Group, getTitle,     php_ui_group_get_title_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(Group, setMargin,    php_ui_group_set_margin_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Group, hasMargin,    php_ui_group_has_margin_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(Group, add,          php_ui_group_add_info,         ZEND_ACC_PUBLIC)
+	PHP_ME(Group, append,       php_ui_group_append_info,      ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

@@ -275,7 +275,7 @@ class UI\Controls\Group extends UI\Control {
 	public function getTitle() : string;
 	public function setMargin(bool $margin) : void;
 	public function hasMargin() : bool;
-	public function add(UI\Control $control) : void;
+	public function append(UI\Control $control) : void;
 
 	public function __construct(string $title);
 }
