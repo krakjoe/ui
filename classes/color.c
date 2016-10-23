@@ -71,7 +71,7 @@ PHP_METHOD(DrawColor, __construct)
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_set_channel_info, 0, 0, 2)
-	ZEND_ARG_TYPE_INFO(0, channel, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, channel, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
