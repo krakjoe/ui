@@ -101,7 +101,7 @@ PHP_MINIT_FUNCTION(UI_DrawTextFontDescriptor)
 	php_ui_register_weight(uiDrawTextFontWeight_ce, Medium);
 	php_ui_register_weight(uiDrawTextFontWeight_ce, SemiBold);
 	php_ui_register_weight(uiDrawTextFontWeight_ce, Bold);
-	php_ui_register_weight(uiDrawTextFontWeight_ce, UtraBold); /* typo here in libui */
+	php_ui_register_weight(uiDrawTextFontWeight_ce, UltraBold);
 	php_ui_register_weight(uiDrawTextFontWeight_ce, Heavy);
 	php_ui_register_weight(uiDrawTextFontWeight_ce, UltraHeavy);
 #undef php_ui_register_weight

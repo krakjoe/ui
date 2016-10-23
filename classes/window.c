@@ -190,48 +190,6 @@ PHP_METHOD(Window, getSize)
 	php_ui_size_construct(return_value, (double) width, (double) height);	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_position_info, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto void Window::setPosition(Point point) */
-PHP_METHOD(Window, setPosition) 
-{
-	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	zval *point = NULL;
-	php_ui_point_t *p;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &point, uiPoint_ce) != SUCCESS) {
-		return;
-	}
-
-	if (!uiControlVisible(uiControl(win->w))) {
-		return;
-	}
-
-	p = php_ui_point_fetch(point);
-
-	uiWindowSetPosition(win->w, p->x, p->y);
-} /* }}} */
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_position_info, 0, 0, IS_OBJECT, "UI\\Point", 0)	
-ZEND_END_ARG_INFO()
-
-/* {{{ proto Point Window::getPosition(void) */
-PHP_METHOD(Window, getPosition)
-{
-	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	int x = 0, y = 0;
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	uiWindowPosition(win->w, &x, &y);
-
-	php_ui_point_construct(return_value, (double) x, (double) y);	
-} /* }}} */
-
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_full_screen_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, full, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
@@ -340,21 +298,6 @@ PHP_METHOD(Window, hasMargin)
 	}
 } /* }}} */
 
-/* {{{ proto void Window::center(void) */
-PHP_METHOD(Window, center)
-{
-	php_ui_window_t *win = php_ui_window_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	if (!uiControlVisible(uiControl(win->w))) {
-		return;
-	}
-
-	uiWindowCenter(win->w);
-} /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_add_info, 0, 0, 4)
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
@@ -461,15 +404,12 @@ const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, getTitle,       php_ui_window_get_title_info,       ZEND_ACC_PUBLIC)
 	PHP_ME(Window, setSize,        php_ui_window_set_size_info,        ZEND_ACC_PUBLIC)
 	PHP_ME(Window, getSize,        php_ui_window_get_size_info,        ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setPosition,    php_ui_window_set_position_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(Window, getPosition,    php_ui_window_get_position_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Window, setFullScreen,  php_ui_window_set_full_screen_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Window, isFullScreen,   php_ui_window_is_full_screen_info,  ZEND_ACC_PUBLIC)
 	PHP_ME(Window, setBorders,     php_ui_window_set_borders_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Window, hasBorders,     php_ui_window_has_borders_info,     ZEND_ACC_PUBLIC)
 	PHP_ME(Window, setMargin,      php_ui_window_set_margin_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Window, hasMargin,      php_ui_window_has_margin_info,      ZEND_ACC_PUBLIC)
-	PHP_ME(Window, center,         NULL,          					   ZEND_ACC_PUBLIC)
 	PHP_ME(Window, add,            php_ui_window_add_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, msg,            php_ui_window_box_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, error,          php_ui_window_box_info,             ZEND_ACC_PUBLIC)

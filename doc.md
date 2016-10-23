@@ -80,15 +80,12 @@ class UI\Window extends UI\Control {
 	public function getTitle() : string;
 	public function setSize(UI\Size $size) : void;
 	public function getSize() : UI\Size;
-	public function setPosition(UI\Point $position) : void;
-	public function getPosition() : UI\Point;
 	public function setFullScreen(bool $fullScreen) : void;
 	public function isFullScreen() : bool;
 	public function setBorders(bool $borders) : void;
 	public function hasBorders() : bool;
 	public function setMargin(bool $margin) : void;
 	public function hasMargin() : bool;
-	public function center() : void;
 	public function add(UI\Control $control) : void;
 	public function msg(string $title, string $message) : void;
 	public function error(string $title, string $message) : void;

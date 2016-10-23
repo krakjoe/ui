@@ -292,7 +292,5 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-$window->center();
-
 $app->run();
 ?>

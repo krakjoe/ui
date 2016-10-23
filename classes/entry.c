@@ -67,7 +67,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_entry_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Entry Entry::__construct(int type = ENTRY::NORMAL) */
+/* {{{ proto Entry Entry::__construct([int type = Entry::Normal]) */
 PHP_METHOD(Entry, __construct) 
 {
 	php_ui_entry_t *entry = php_ui_entry_fetch(getThis());
