@@ -127,10 +127,11 @@ PHP_METHOD(DrawMatrix, skew)
 	uiDrawMatrixSkew(&matrix->m, p->x, p->y, a->x, a->y);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_matrix_multiply_info, 0, 0, IS_OBJECT, "UI\\DrawMatrix", 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_matrix_multiply_info, 0, 1, IS_OBJECT, "UI\\DrawMatrix", 0)
+	ZEND_ARG_OBJ_INFO(0, matrix, UI\\Draw\\Matrix, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawMatrix DrawMatrix::multiply() */
+/* {{{ proto UI\Draw\Matrix UI\Draw\Matrix::multiply(UI\Draw\Matrix multiply) */
 PHP_METHOD(DrawMatrix, multiply)
 {
 	php_ui_matrix_t *matrix = php_ui_matrix_fetch(getThis());
