@@ -38,9 +38,19 @@ zend_object* php_ui_form_create(zend_class_entry *ce) {
 
 	form->std.handlers = &php_ui_form_handlers;
 
+	zend_hash_init(&form->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
 	form->f = uiNewForm();
 
 	return &form->std;
+}
+
+void php_ui_form_free(zend_object *o) {
+	php_ui_form_t *form = php_ui_form_from(o);
+
+	zend_hash_destroy(&form->controls);
+
+	zend_object_std_dtor(o);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_set_padded_info, 0, 0, 1)
@@ -101,6 +111,10 @@ PHP_METHOD(Form, append)
 	ctrl = php_ui_control_fetch(control);
 
 	uiFormAppend(form->f, ZSTR_VAL(label), ctrl, stretchy);
+
+	if (zend_hash_next_index_insert(&form->controls, control)) {
+		Z_ADDREF_P(control);
+	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_delete_info, 0, 0, 1)
@@ -117,7 +131,9 @@ PHP_METHOD(Form, delete)
 		return;
 	}
 
-	uiFormDelete(form->f, (int) index);
+	if (zend_hash_index_del(&form->controls, index)) {
+		uiFormDelete(form->f, (int) index);
+	}
 } /* }}} */
 
 /* {{{ */
@@ -142,6 +158,7 @@ PHP_MINIT_FUNCTION(UI_Form)
 	memcpy(&php_ui_form_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_form_handlers.offset = XtOffsetOf(php_ui_form_t, std);
+	php_ui_form_handlers.free_obj = php_ui_form_free;
 
 	return SUCCESS;
 } /* }}} */

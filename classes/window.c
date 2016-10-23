@@ -55,6 +55,8 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 
 	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
 
+	zend_hash_init(&w->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
 	return &w->std;
 }
 
@@ -85,6 +87,14 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	}
 
 	return result;
+}
+
+void php_ui_window_free(zend_object *o) {
+	php_ui_window_t *window = php_ui_window_from(o);
+
+	zend_hash_destroy(&window->controls);
+
+	zend_object_std_dtor(o);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
@@ -320,6 +330,10 @@ PHP_METHOD(Window, add)
 	ctrl = php_ui_control_fetch(control);
 
 	uiWindowSetChild(win->w, ctrl);
+
+	if (zend_hash_next_index_insert(&win->controls, control)) {
+		Z_ADDREF_P(control);
+	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_box_info, 0, 0, 2)
@@ -434,6 +448,7 @@ PHP_MINIT_FUNCTION(UI_Window)
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_window_handlers.offset = XtOffsetOf(php_ui_window_t, std);
+	php_ui_window_handlers.free_obj = php_ui_window_free;
 
 	return SUCCESS;
 } /* }}} */

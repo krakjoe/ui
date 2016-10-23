@@ -22,6 +22,7 @@ extern zend_class_entry *uiGroup_ce;
 
 typedef struct _php_ui_group_t {
 	uiGroup *g;
+	HashTable controls;
 	zend_object std;
 } php_ui_group_t;
 

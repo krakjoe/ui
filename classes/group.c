@@ -38,7 +38,17 @@ zend_object* php_ui_group_create(zend_class_entry *ce) {
 
 	group->std.handlers = &php_ui_group_handlers;
 
+	zend_hash_init(&group->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
 	return &group->std;
+}
+
+void php_ui_group_free(zend_object *o) {
+	php_ui_group_t *group = php_ui_group_from(o);
+
+	zend_hash_destroy(&group->controls);
+
+	zend_object_std_dtor(o);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_group_construct_info, 0, 0, 1)
@@ -145,6 +155,10 @@ PHP_METHOD(Group, append)
 	ctrl = php_ui_control_fetch(control);
 
 	uiGroupSetChild(group->g, ctrl);
+
+	if (zend_hash_next_index_insert(&group->controls, control)) {
+		Z_ADDREF_P(control);
+	}
 } /* }}} */
 
 /* {{{ */
@@ -171,6 +185,7 @@ PHP_MINIT_FUNCTION(UI_Group)
 	memcpy(&php_ui_group_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_group_handlers.offset = XtOffsetOf(php_ui_group_t, std);
+	php_ui_group_handlers.free_obj = php_ui_group_free;
 
 	return SUCCESS;
 } /* }}} */

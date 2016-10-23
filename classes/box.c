@@ -38,7 +38,17 @@ zend_object* php_ui_box_create(zend_class_entry *ce) {
 
 	box->std.handlers = &php_ui_box_handlers;
 
+	zend_hash_init(&box->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
 	return &box->std;
+}
+
+void php_ui_box_free(zend_object *o) {
+	php_ui_box_t *box = php_ui_box_from(o);
+
+	zend_hash_destroy(&box->controls);
+
+	zend_object_std_dtor(o);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_box_construct_info, 0, 0, 0)
@@ -104,6 +114,10 @@ PHP_METHOD(Box, append)
 	ctrl = php_ui_control_fetch(control);
 
 	uiBoxAppend(box->b, ctrl, stretchy);
+
+	if (zend_hash_next_index_insert(&box->controls, control)) {
+		Z_ADDREF_P(control);
+	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_box_delete_info, 0, 0, 1)
@@ -183,6 +197,7 @@ PHP_MINIT_FUNCTION(UI_Box)
 	memcpy(&php_ui_box_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_box_handlers.offset = XtOffsetOf(php_ui_box_t, std);
+	php_ui_box_handlers.free_obj = php_ui_box_free;
 
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Vertical"), PHP_UI_BOX_VERTICAL);
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Horizontal"), PHP_UI_BOX_HORIZONTAL);
