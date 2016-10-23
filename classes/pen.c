@@ -175,7 +175,7 @@ PHP_METHOD(DrawPen, restore)
 	uiDrawRestore(c->c);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_write_info, 0, 0, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_write_info, 0, 0, 2)
 	ZEND_ARG_OBJ_INFO(0, point, UI\\Point, 0)
 	ZEND_ARG_OBJ_INFO(0, layout, UI\\Draw\\Text\\Layout, 0)
 ZEND_END_ARG_INFO()
