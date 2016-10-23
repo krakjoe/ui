@@ -72,8 +72,6 @@ $box->append($stars, true);
 
 $win->show();
 
-$microtime = microtime(true);
-
 do {
 	$app->run(true, false);
 
