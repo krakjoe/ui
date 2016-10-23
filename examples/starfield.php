@@ -31,14 +31,14 @@ $stars = new class(512, 32) extends Area {
 			$star[1] -= 0.2;
 
 			if ($star[1] <= 0) {
-				$star[0]->setX(mt_rand(-25, 25));
-				$star[0]->setY(mt_rand(-25, 25));
+				$star[0]->x = mt_rand(-25, 25);
+				$star[0]->y = mt_rand(-25, 25);
 				$star[1] = $this->depth;
 			}
 
 			$k = 128 / $star[1];
-			$px = $star[0]->getX() * $k + $hWidth;
-			$py = $star[0]->getY() * $k + $hHeight;
+			$px = $star[0]->x * $k + $hWidth;
+			$py = $star[0]->y * $k + $hHeight;
 			
 			if ($px >= 0 && $px <= $size->width && $py >= 0 && $py <= $size->height) {
 				$starSize = (1 - $star[1] / 32) * 5;
