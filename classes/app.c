@@ -108,27 +108,25 @@ void php_ui_app_free(zend_object *o) {
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_app_run_info, 0, 0, 0)
-	ZEND_ARG_TYPE_INFO(0, loop, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(0, block, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void App::run([bool loop = false, bool block = false])*/
+/* {{{ proto void App::run([int flags = 0])*/
 PHP_METHOD(App, run)
 {
-	zend_bool loop = 0;
-	zend_bool block = 0;
+	zend_long flags = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|bb", &loop, &block) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|l", &flags) != SUCCESS) {
 		return;
 	}
 
 	
-	if (!loop) {
+	if (!(flags & PHP_UI_APP_LOOP)) {
 		uiMain();
 		return;
 	}
 	
-	uiMainStep(block);
+	uiMainStep((flags & PHP_UI_APP_WAIT) == PHP_UI_APP_WAIT);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_app_quit_info, 0, 0, 0)
@@ -167,6 +165,9 @@ PHP_MINIT_FUNCTION(UI_App)
 
 	uiApp_ce = zend_register_internal_class(&ce);
 	uiApp_ce->create_object = php_ui_app_create;
+
+	zend_declare_class_constant_long(uiApp_ce, ZEND_STRL("Loop"), PHP_UI_APP_LOOP);
+	zend_declare_class_constant_long(uiApp_ce, ZEND_STRL("Wait"), PHP_UI_APP_WAIT);
 
 	memcpy(&php_ui_app_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
