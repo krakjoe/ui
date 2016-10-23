@@ -24,7 +24,7 @@
 extern zend_module_entry ui_module_entry;
 #define phpext_ui_ptr &ui_module_entry
 
-#define PHP_UI_VERSION "0.9.9"
+#define PHP_UI_VERSION "0.9.10dev"
 
 #ifdef PHP_WIN32
 #	define PHP_UI_API __declspec(dllexport)
