@@ -73,7 +73,7 @@ $box->append($stars, true);
 $win->show();
 
 do {
-	$app->run(true, false);
+	$app->run(App::Loop);
 
 	$stars->redraw();
 } while($win->isVisible());
