@@ -77,15 +77,17 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$starSize = (1 - $star[1] / 32) * 5;
 
 				$path = new Path(Path::Winding);
-				$path->addRectangle(
-					new Point($px, $py), 
-					new Size($starSize, $starSize));
+				$path->arcTo(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
+				
 				$path->end();
 
 				$color = new Color(0, 1);
 				$color->setChannel(Color::Red, $starSize);
 				$color->setChannel(Color::Green, $starSize);
 				$color->setChannel(Color::Blue, $starSize);
+				if ($star[2]) {
+					$color->setChannel(Color::Alpha, mt_rand(0,10)/10);
+				}
 
 				$pen->fill($path, new Brush(Brush::Solid, $color));
 			}
@@ -121,7 +123,8 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 		for ($i = 0; $i < $this->max; $i++) {
 			$this->stars[] = [
 				new Point(mt_rand(-25, 25), mt_rand(-25, 25)),
-				mt_rand(1, $this->depth)
+				mt_rand(1, $this->depth),
+				mt_rand(0, 1)
 			];
 		}
 
