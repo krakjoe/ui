@@ -39,5 +39,8 @@ typedef struct _php_ui_app_t {
 
 void php_ui_app_window(zval *app, zval *window);
 
+#define PHP_UI_APP_LOOP	1<<0
+#define PHP_UI_APP_WAIT	1<<1
+
 PHP_MINIT_FUNCTION(UI_App);
 #endif
