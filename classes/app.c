@@ -164,12 +164,6 @@ ZEND_END_ARG_INFO()
 /* {{{ */
 PHP_METHOD(App, quit)
 {
-	php_ui_app_t *app = php_ui_app_fetch(getThis());
-
-	if (app->ticks) {
-		uiMainStep(0);
-	}
-
 	uiQuit();
 } /* }}} */
 
