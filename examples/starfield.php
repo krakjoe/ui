@@ -56,7 +56,6 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 		$path->addRectangle(
 			new Point(0, 0), $size);
 		$path->end();
-		
 		$pen->fill($path, new Brush(Brush::Solid, new Color(0, 1)));
 
 		foreach ($this->stars as $idx => &$star) {
@@ -73,19 +72,18 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 			$py = $star[0]->y * $k + $hHeight;
 			
 			if ($px >= 0 && $px <= $size->width && $py >= 0 && $py <= $size->height) {
-
 				$starSize = (1 - $star[1] / 32) * 5;
 
 				$path = new Path(Path::Winding);
 				$path->arcTo(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
-				
 				$path->end();
 
-				$color = new Color(0, 1);
+				$color = new Color(0 ,1);
 				$color->setChannel(Color::Red, $starSize);
 				$color->setChannel(Color::Green, $starSize);
 				$color->setChannel(Color::Blue, $starSize);
-				if ($star[2]) {
+
+				if ($star[2] && $star[3]++ % 3 == 0) {
 					$color->setChannel(Color::Alpha, mt_rand(0,10)/10);
 				}
 
@@ -124,7 +122,8 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 			$this->stars[] = [
 				new Point(mt_rand(-25, 25), mt_rand(-25, 25)),
 				mt_rand(1, $this->depth),
-				mt_rand(0, 1)
+				mt_rand(0, 1),
+				0
 			];
 		}
 
