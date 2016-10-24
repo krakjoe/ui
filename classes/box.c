@@ -51,6 +51,15 @@ void php_ui_box_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+HashTable* php_ui_box_gc(zval *object, zval **table, int *n) {
+	php_ui_box_t *box = php_ui_box_fetch(object);
+
+	*table = box->std.properties_table;
+	*n     = box->std.ce->default_properties_count;
+
+	return &box->controls;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_box_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, orientation, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -198,6 +207,7 @@ PHP_MINIT_FUNCTION(UI_Box)
 
 	php_ui_box_handlers.offset = XtOffsetOf(php_ui_box_t, std);
 	php_ui_box_handlers.free_obj = php_ui_box_free;
+	php_ui_box_handlers.get_gc = php_ui_box_gc;
 
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Vertical"), PHP_UI_BOX_VERTICAL);
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Horizontal"), PHP_UI_BOX_HORIZONTAL);

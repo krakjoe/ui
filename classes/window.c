@@ -97,6 +97,15 @@ void php_ui_window_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+HashTable* php_ui_window_gc(zval *object, zval **table, int *n) {
+	php_ui_window_t *window = php_ui_window_fetch(object);
+
+	*table = window->std.properties_table;
+	*n     = window->std.ce->default_properties_count;
+
+	return &window->controls;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
 	ZEND_ARG_OBJ_INFO(0, app, UI\\App, 0)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)

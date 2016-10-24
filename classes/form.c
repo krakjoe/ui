@@ -53,6 +53,15 @@ void php_ui_form_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+HashTable* php_ui_form_gc(zval *object, zval **table, int *n) {
+	php_ui_form_t *form = php_ui_form_fetch(object);
+
+	*table = form->std.properties_table;
+	*n     = form->std.ce->default_properties_count;
+
+	return &form->controls;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_set_padded_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, padded, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
@@ -159,6 +168,7 @@ PHP_MINIT_FUNCTION(UI_Form)
 	
 	php_ui_form_handlers.offset = XtOffsetOf(php_ui_form_t, std);
 	php_ui_form_handlers.free_obj = php_ui_form_free;
+	php_ui_form_handlers.get_gc = php_ui_form_gc;
 
 	return SUCCESS;
 } /* }}} */

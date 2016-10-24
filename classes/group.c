@@ -51,6 +51,15 @@ void php_ui_group_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+HashTable* php_ui_group_gc(zval *object, zval **table, int *n) {
+	php_ui_group_t *group = php_ui_group_fetch(object);
+
+	*table = group->std.properties_table;
+	*n     = group->std.ce->default_properties_count;
+
+	return &group->controls;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_group_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -186,6 +195,7 @@ PHP_MINIT_FUNCTION(UI_Group)
 	
 	php_ui_group_handlers.offset = XtOffsetOf(php_ui_group_t, std);
 	php_ui_group_handlers.free_obj = php_ui_group_free;
+	php_ui_group_handlers.get_gc = php_ui_group_gc;
 
 	return SUCCESS;
 } /* }}} */

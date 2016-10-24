@@ -53,6 +53,15 @@ void php_ui_grid_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
+HashTable* php_ui_grid_gc(zval *object, zval **table, int *n) {
+	php_ui_grid_t *grid = php_ui_grid_fetch(object);
+
+	*table = grid->std.properties_table;
+	*n     = grid->std.ce->default_properties_count;
+
+	return &grid->controls;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_set_padded_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, text, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
@@ -151,6 +160,7 @@ PHP_MINIT_FUNCTION(UI_Grid)
 	
 	php_ui_grid_handlers.offset = XtOffsetOf(php_ui_grid_t, std);
 	php_ui_grid_handlers.free_obj = php_ui_grid_free;
+	php_ui_grid_handlers.get_gc = php_ui_grid_gc;
 
 	return SUCCESS;
 } /* }}} */

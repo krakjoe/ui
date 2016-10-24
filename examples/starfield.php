@@ -11,9 +11,9 @@ use UI\Draw\Path;
 use UI\Draw\Color;
 
 $app = new class extends App {
-
 	public function setStars(Area $stars) {
 		$this->stars = $stars;
+
 	}
 
 	protected function onTick() {
