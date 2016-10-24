@@ -99,26 +99,6 @@ PHP_MINIT_FUNCTION(ui)
 	XInitThreads();
 #endif
 
-	{
-		uiInitOptions options;
-
-		const char *initError = NULL;
-
-		memset(&options, 0, sizeof(uiInitOptions));
-
-		initError = uiInit(&options);
-
-		if (initError) {
-			zend_error(E_ERROR,
-				"Cannot initialize libui: %s", initError);
-			uiFreeInitError(initError);
-
-			return FAILURE;
-		}
-
-		uiMainSteps();
-	}
-
 	PHP_MINIT(UI_App)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Point)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Size)(INIT_FUNC_ARGS_PASSTHRU);
@@ -169,8 +149,6 @@ PHP_MINIT_FUNCTION(ui)
  */
 PHP_MSHUTDOWN_FUNCTION(ui)
 {
-	uiUninit();
-
 	return SUCCESS;
 }
 /* }}} */
@@ -179,9 +157,28 @@ PHP_MSHUTDOWN_FUNCTION(ui)
  */
 PHP_RINIT_FUNCTION(ui)
 {
+	uiInitOptions options;
+
+	const char *initError = NULL;
+
 #if defined(COMPILE_DL_UI) && defined(ZTS)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+
+	memset(&options, 0, sizeof(uiInitOptions));
+
+	initError = uiInit(&options);
+
+	if (initError) {
+		zend_error(E_ERROR,
+			"Cannot initialize libui: %s", initError);
+		uiFreeInitError(initError);
+
+		return FAILURE;
+	}
+
+	uiMainSteps();
+
 	return SUCCESS;
 }
 /* }}} */
@@ -190,6 +187,8 @@ PHP_RINIT_FUNCTION(ui)
  */
 PHP_RSHUTDOWN_FUNCTION(ui)
 {
+	uiUninit();
+
 	return SUCCESS;
 }
 /* }}} */

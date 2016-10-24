@@ -10,11 +10,24 @@ use UI\Draw\Brush;
 use UI\Draw\Path;
 use UI\Draw\Color;
 
-$app = new App();
+$app = new class extends App {
+
+	public function setStars(Area $stars) {
+		$this->stars = $stars;
+	}
+
+	protected function onTick() {
+		$this->stars->redraw();	
+	}
+
+	private $stars;
+};
+
 $win = new Window($app, "Starfield", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
-$stars = new class(512, 32) extends Area {
+
+$app->setStars(new class($box, 512, 32) extends Area {
 
 	public function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
 		$hWidth = $size->width / 2;
@@ -57,7 +70,8 @@ $stars = new class(512, 32) extends Area {
 		}
 	}
 
-	public function __construct($max, $depth) {
+	public function __construct($box, $max, $depth) {
+		$this->box = $box;
 		$this->max = $max;
 		$this->depth = $depth;
 		for ($i = 0; $i < $this->max; $i++) {
@@ -66,16 +80,14 @@ $stars = new class(512, 32) extends Area {
 				mt_rand(1, $this->depth)
 			];
 		}
+		$this->box->append($this, true);
 	}
-};
-$box->append($stars, true);
+});
 
 $win->show();
 
 do {
-	$app->run(true, false);
-
-	$stars->redraw();
+	$app->run(true);
 } while($win->isVisible());
 
 $app->quit();
