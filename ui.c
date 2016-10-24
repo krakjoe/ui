@@ -187,7 +187,9 @@ PHP_RINIT_FUNCTION(ui)
  */
 PHP_RSHUTDOWN_FUNCTION(ui)
 {
+#if 0
 	uiUninit();
+#endif
 
 	return SUCCESS;
 }
