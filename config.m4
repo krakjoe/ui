@@ -2,7 +2,7 @@ PHP_ARG_WITH(ui,           for ui support,
 [  --with-ui               Include ui support])
 
 PHP_ARG_ENABLE(ui-threads, for ui threads,
-[  --enable-ui-threads     Initialize X11 threads])
+[  --enable-ui-threads     Initialize X11 threads], no, no)
 
 if test "$PHP_UI" != "no"; then
   SEARCH_PATH="/usr/local /usr"
