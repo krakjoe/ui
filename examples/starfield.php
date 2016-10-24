@@ -28,12 +28,16 @@ $win = new Window($app, "Starfield", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
 
-$app->setStars(new class($box, 1024, 64) extends Area {
+$font = new UI\Draw\Text\Font(
+	new UI\Draw\Text\Font\Descriptor("arial", 12)			
+);
+
+$app->setStars(new class($box, 1024, 64, $font) extends Area {
 
 	public function onKey(string $key, int $ext, int $flags) {
 		if ($flags & Area::Down) {
 			switch ($ext) {
-				case Key::Up: if ($this->velocity < 30) {
+				case Key::Up: if ($this->velocity < 40) {
 					$this->velocity++;;
 				} break;
 
@@ -86,12 +90,32 @@ $app->setStars(new class($box, 1024, 64) extends Area {
 				$pen->fill($path, new Brush(Brush::Solid, $color));
 			}
 		}
+
+		$this->writeRenderSpeed($pen, $size);
 	}
 
-	public function __construct($box, $max, $depth, $velocity = 2) {
+	private function writeRenderSpeed(UI\Draw\Pen $pen, UI\Size $size) {
+		$now = time();
+		@$this->frames[$now]++;
+
+		$layout = new UI\Draw\Text\Layout(sprintf(
+			"%d fps",
+			isset($this->frames[$now - 1]) ? 
+				$this->frames[$now-1] : $this->frames[$now]
+		), $this->font, $size->width);
+
+		$layout->setColor(new Color(0xFFFFFF, 1));
+	
+		$pen->write(new Point(20, 20), $layout);
+
+		unset($this->frames[$now-2]);
+	}
+
+	public function __construct($box, $max, $depth, $font, $velocity = 2) {
 		$this->box = $box;
 		$this->max = $max;
 		$this->depth = $depth;
+		$this->font = $font;
 		$this->velocity = $velocity;
 
 		for ($i = 0; $i < $this->max; $i++) {
@@ -100,6 +124,7 @@ $app->setStars(new class($box, 1024, 64) extends Area {
 				mt_rand(1, $this->depth)
 			];
 		}
+
 		$this->box->append($this, true);
 	}
 });
