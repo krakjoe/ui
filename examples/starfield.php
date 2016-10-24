@@ -87,7 +87,7 @@ $app->setStars(new class($box, 512, 32) extends Area {
 $win->show();
 
 do {
-	$app->run(App::Loop);
+	$app->run(App::Loop | App::Wait);
 } while($win->isVisible());
 
 $app->quit();
