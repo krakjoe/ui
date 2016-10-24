@@ -30,6 +30,7 @@
 zend_object_handlers php_ui_area_handlers;
 
 zend_class_entry *uiArea_ce;
+zend_class_entry *uiKey_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
@@ -126,7 +127,7 @@ static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent
 		zend_long modifiers = e->Modifiers;
 
 		ZVAL_UNDEF(&rv);
-		area->mouse.fci.retval = &rv;
+		area->key.fci.retval = &rv;
 
 		ZVAL_NEW_STR(&key, zend_string_init(&e->Key, sizeof(char), 0));
 		ZVAL_LONG(&ext, e->ExtKey);
@@ -146,6 +147,8 @@ static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent
 		}
 
 		zend_fcall_info_args_clear(&area->key.fci, 1);
+
+		zval_ptr_dtor(&key);
 
 		if (Z_TYPE(rv) != IS_UNDEF) {
 			zval_ptr_dtor(&rv);
@@ -311,7 +314,53 @@ PHP_MINIT_FUNCTION(UI_Area)
 	memcpy(&php_ui_area_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_area_handlers.offset = XtOffsetOf(php_ui_area_t, std);
-	
+
+	INIT_NS_CLASS_ENTRY(ce, "UI", "Key", NULL);
+
+	uiKey_ce = zend_register_internal_class(&ce);
+	uiKey_ce->ce_flags |= ZEND_ACC_FINAL;
+#define php_ui_register_key(c, n) zend_declare_class_constant_long(c, ZEND_STRL(#n), uiExtKey##n)
+	php_ui_register_key(uiKey_ce, Escape);
+	php_ui_register_key(uiKey_ce, Insert);
+	php_ui_register_key(uiKey_ce, Delete);
+	php_ui_register_key(uiKey_ce, Home);
+	php_ui_register_key(uiKey_ce, End);
+	php_ui_register_key(uiKey_ce, PageUp);
+	php_ui_register_key(uiKey_ce, PageDown);
+	php_ui_register_key(uiKey_ce, Up);
+	php_ui_register_key(uiKey_ce, Down);
+	php_ui_register_key(uiKey_ce, Left);
+	php_ui_register_key(uiKey_ce, Right);
+	php_ui_register_key(uiKey_ce, F1);
+	php_ui_register_key(uiKey_ce, F2);
+	php_ui_register_key(uiKey_ce, F3);
+	php_ui_register_key(uiKey_ce, F4);
+	php_ui_register_key(uiKey_ce, F5);
+	php_ui_register_key(uiKey_ce, F6);
+	php_ui_register_key(uiKey_ce, F7);
+	php_ui_register_key(uiKey_ce, F8);
+	php_ui_register_key(uiKey_ce, F9);
+	php_ui_register_key(uiKey_ce, F10);
+	php_ui_register_key(uiKey_ce, F11);
+	php_ui_register_key(uiKey_ce, F12);
+	php_ui_register_key(uiKey_ce, N0);
+	php_ui_register_key(uiKey_ce, N1);
+	php_ui_register_key(uiKey_ce, N2);
+	php_ui_register_key(uiKey_ce, N3);
+	php_ui_register_key(uiKey_ce, N4);
+	php_ui_register_key(uiKey_ce, N5);
+	php_ui_register_key(uiKey_ce, N6);
+	php_ui_register_key(uiKey_ce, N7);
+	php_ui_register_key(uiKey_ce, N8);
+	php_ui_register_key(uiKey_ce, N9);
+	php_ui_register_key(uiKey_ce, NDot);
+	php_ui_register_key(uiKey_ce, NEnter);
+	php_ui_register_key(uiKey_ce, NAdd);
+	php_ui_register_key(uiKey_ce, NSubtract);
+	php_ui_register_key(uiKey_ce, NMultiply);
+	php_ui_register_key(uiKey_ce, NDivide);
+#undef php_ui_register_key
+		
 	return SUCCESS;
 } /* }}} */
 #endif
