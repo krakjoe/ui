@@ -34,7 +34,7 @@ $font = new UI\Draw\Text\Font(
 
 $app->setStars(new class($box, 1024, 64, $font) extends Area {
 
-	public function onKey(string $key, int $ext, int $flags) {
+	protected function onKey(string $key, int $ext, int $flags) {
 		if ($flags & Area::Down) {
 			switch ($ext) {
 				case Key::Up: if ($this->velocity < 40) {
@@ -48,7 +48,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 		}
 	}
 
-	public function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
+	protected function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
 		$hWidth = $size->width / 2;
 		$hHeight = $size->height /2;
 		
