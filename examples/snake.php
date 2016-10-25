@@ -96,9 +96,7 @@ $app->setGame(new class($box) extends Area{
 		if (!$this->pause && ($run = microtime(true)) - $this->run > 0.1 / $this->level) {
 			$this->run = $run;
 
-			$next = new Point(
-				$this->snake[0]->x, 
-				$this->snake[0]->y);
+			$next = clone $this->snake[0];
 
 			switch ($this->direction) {
 				case Key::Right: $next->x++; break;
@@ -126,7 +124,7 @@ $app->setGame(new class($box) extends Area{
 			}
 
 			if ($this->food == $next) {
-				$tail = new Point($next->x, $next->y);
+				$tail = $next;
 				$this->newFood($size);
 				$this->score++;
 				$this->level = ceil($this->score / 10);
@@ -135,6 +133,7 @@ $app->setGame(new class($box) extends Area{
 				$tail->x = $next->x;
 				$tail->y = $next->y;
 			}
+
 			array_unshift($this->snake, $tail);
 		}
 
@@ -143,7 +142,6 @@ $app->setGame(new class($box) extends Area{
 		}
 		
 		$this->newCell($pen, $this->food);
-
 
 		$this->newScoreBoard($pen, $size, $clip, $clipSize);
 	}
@@ -163,7 +161,7 @@ $app->setGame(new class($box) extends Area{
 	private function newCell(Pen $pen, Point $point) {
 		$path = new Path(Path::Winding);
 		$path->addRectangle(
-			new Point($point->x * 10, $point->y * 10),
+			$point->x * 10,
 			new Size(10, 10));
 		$path->end();
 

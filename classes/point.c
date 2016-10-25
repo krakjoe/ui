@@ -141,6 +141,75 @@ const zend_function_entry php_ui_point_methods[] = {
 }; /* }}} */
 
 /* {{{ */
+static int php_ui_point_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2) {
+	php_ui_point_t *point = php_ui_point_fetch(op1);
+
+#define php_ui_point_do_operation(operator) do { \
+	if (Z_TYPE_P(op2) == IS_OBJECT && instanceof_function(Z_OBJCE_P(op2), uiPoint_ce)) { \
+		php_ui_point_t *operand = php_ui_point_fetch(op2);                               \
+		php_ui_point_t *retval;                                                          \
+						                                                                 \
+		object_init_ex(result, uiPoint_ce);                                              \
+                                                                                         \
+		retval = php_ui_point_fetch(result);                                             \
+		retval->x = point->x operator operand->x;                                        \
+		retval->y = point->x operator operand->y;                                        \
+                                                                                         \
+		return SUCCESS;                                                                  \
+	}                                                                                    \
+                                                                                         \
+	if (Z_TYPE_P(op2) == IS_LONG || Z_TYPE_P(op2) == IS_DOUBLE) {                        \
+		php_ui_point_t *retval;                                                          \
+                                                                                         \
+		object_init_ex(result, uiPoint_ce);                                              \
+		                                                                                 \
+		retval = php_ui_point_fetch(result);                                             \
+		retval->x = point->x operator zval_get_double(op2);                              \
+		retval->y = point->y operator zval_get_double(op2);                              \
+                                                                                         \
+		return SUCCESS;                                                                  \
+	}                                                                                    \
+} while(0)
+
+	switch (opcode) {
+		case ZEND_MUL:
+			php_ui_point_do_operation(*);
+		break;
+
+		case ZEND_DIV:
+			php_ui_point_do_operation(/);
+		break;
+
+		case ZEND_SUB:
+			php_ui_point_do_operation(-);
+		break;
+
+		case ZEND_ADD:
+			php_ui_point_do_operation(+);
+		break;
+	}
+
+#undef php_ui_point_do_operation
+
+	return FAILURE;
+} /* }}} */
+
+/* {{{ */
+static zend_object* php_ui_point_clone(zval *o) {
+	php_ui_point_t *object = php_ui_point_fetch(o);
+
+	zend_object *cloned = 
+		php_ui_point_create(object->std.ce);
+
+	php_ui_point_t *clone = php_ui_point_from(cloned);
+
+	clone->x = object->x;
+	clone->y = object->y;
+
+	return cloned;	
+} /* }}} */
+
+/* {{{ */
 static int php_ui_point_compare(zval *op1, zval *op2) {
 	php_ui_point_t *l = php_ui_point_fetch(op1);
 	php_ui_point_t *r = php_ui_point_fetch(op2);
@@ -249,6 +318,8 @@ PHP_MINIT_FUNCTION(UI_Point)
 	memcpy(&php_ui_point_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_point_handlers.offset = XtOffsetOf(php_ui_point_t, std);
+	php_ui_point_handlers.do_operation = php_ui_point_operate;
+	php_ui_point_handlers.clone_obj = php_ui_point_clone;
 	php_ui_point_handlers.compare_objects = php_ui_point_compare;
 	php_ui_point_handlers.read_property = php_ui_point_read;
 	php_ui_point_handlers.get_property_ptr_ptr = php_ui_point_noref;

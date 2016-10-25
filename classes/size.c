@@ -140,6 +140,74 @@ const zend_function_entry php_ui_size_methods[] = {
 	PHP_FE_END
 }; /* }}} */
 
+/* {{{ */
+static int php_ui_size_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2) {
+	php_ui_size_t *size = php_ui_size_fetch(op1);
+
+#define php_ui_size_do_operation(operator) do { \
+	if (Z_TYPE_P(op2) == IS_OBJECT && instanceof_function(Z_OBJCE_P(op2), uiSize_ce)) {  \
+		php_ui_size_t *operand = php_ui_size_fetch(op2);                                 \
+		php_ui_size_t *retval;                                                           \
+						                                                                 \
+		object_init_ex(result, uiSize_ce);                                               \
+                                                                                         \
+		retval = php_ui_size_fetch(result);                                             \
+		retval->width = size->width operator operand->width;                             \
+		retval->height = size->height operator operand->height;                          \
+                                                                                         \
+		return SUCCESS;                                                                  \
+	}                                                                                    \
+                                                                                         \
+	if (Z_TYPE_P(op2) == IS_LONG || Z_TYPE_P(op2) == IS_DOUBLE) {                        \
+		php_ui_size_t *retval;                                                           \
+                                                                                         \
+		object_init_ex(result, uiSize_ce);                                               \
+		                                                                                 \
+		retval = php_ui_size_fetch(result);                                              \
+		retval->width = size->width operator zval_get_double(op2);                       \
+		retval->height = size->height operator zval_get_double(op2);                     \
+                                                                                         \
+		return SUCCESS;                                                                  \
+	}                                                                                    \
+} while(0)
+
+	switch (opcode) {
+		case ZEND_MUL:
+			php_ui_size_do_operation(*);
+		break;
+
+		case ZEND_DIV:
+			php_ui_size_do_operation(/);
+		break;
+
+		case ZEND_SUB:
+			php_ui_size_do_operation(-);
+		break;
+
+		case ZEND_ADD:
+			php_ui_size_do_operation(+);
+		break;
+	}
+
+#undef php_ui_size_do_operation
+
+	return FAILURE;
+} /* }}} */
+
+/* {{{ */
+static zend_object* php_ui_size_clone(zval *o) {
+	php_ui_size_t *object = php_ui_size_fetch(o);
+
+	zend_object *cloned = 
+		php_ui_size_create(object->std.ce);
+
+	php_ui_size_t *clone = php_ui_size_from(cloned);
+
+	clone->width = object->width;
+	clone->height = object->height;
+
+	return cloned;	
+} /* }}} */
 
 /* {{{ */
 static int php_ui_size_compare(zval *op1, zval *op2) {
@@ -235,6 +303,8 @@ PHP_MINIT_FUNCTION(UI_Size)
 	memcpy(&php_ui_size_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_size_handlers.offset = XtOffsetOf(php_ui_size_t, std);
+	php_ui_size_handlers.do_operation = php_ui_size_operate;
+	php_ui_size_handlers.clone_obj = php_ui_size_clone;
 	php_ui_size_handlers.compare_objects = php_ui_size_compare;
 	php_ui_size_handlers.read_property = php_ui_size_read;
 	php_ui_size_handlers.get_property_ptr_ptr = php_ui_size_noref;
