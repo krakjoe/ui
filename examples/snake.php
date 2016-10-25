@@ -235,7 +235,7 @@ $app->setGame(new class($box) extends Area{
 $win->show();
 
 do {
-	$app->run(App::Loop | App::Wait);
+	$app->run(App::Loop);
 } while($win->isVisible());
 
 $app->quit();
