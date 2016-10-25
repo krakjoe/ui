@@ -160,9 +160,7 @@ $app->setGame(new class($box) extends Area{
 
 	private function newCell(Pen $pen, Point $point) {
 		$path = new Path(Path::Winding);
-		$path->addRectangle(
-			$point->x * 10,
-			new Size(10, 10));
+		$path->addRectangle($point * 10, new Size(10, 10));
 		$path->end();
 
 		$brush = new Brush(Brush::Solid, new Color(0x0000FF, 1));
