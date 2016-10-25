@@ -70,8 +70,10 @@ $app->setGame(new class($box) extends Area{
 					$this->direction = $key;
 				break;
 
-				case Key::Escape:
-					$this->pause = !$this->pause;
+				default:
+					if ($char == " ") {
+						$this->pause = !$this->pause;
+					}
 				break;
 			}
 		}
