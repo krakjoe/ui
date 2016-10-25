@@ -13,7 +13,6 @@ use UI\Draw\Brush;
 use UI\Draw\Path;
 use UI\Draw\Color;
 use UI\Draw\Stroke;
-use UI\Draw\Matrix;
 
 use UI\Draw\Text\Font;
 use UI\Draw\Text\Font\Descriptor;
@@ -81,38 +80,22 @@ $app->setGame(new class($box) extends Area{
 	}
 
 	protected function onDraw(Pen $pen, Size $size, Point $clip, Size $clipSize) {
-		$zero = new Point(0, 0);
-		$frame = $zero + 40;
-		$frameSize = $size - 80;
-
 		$path = new Path(Path::Winding);
-		$path->addRectangle($zero, $size);
+		$path->addRectangle(new Point(0, 0), $size);
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, Color::of(0xf5f5f5, 1));
+		$brush = new Brush(Brush::Solid, new Color(0xFFFFFF, 1));
 		$pen->fill($path, $brush);
 
 		$stroke = new Stroke();	
-		$brush->setColor(
-			Color::of(0, 255));
+		$brush->setColor(new Color(0, 1));
 		$pen->stroke($path, $brush, $stroke);
-
-		$path = new Path(Path::Winding);
-		$path->addRectangle($frame, $frameSize);
-		$path->end();
-
-		$pen->stroke($path, $brush, $stroke);
-
-		$matrix = new Matrix();
-		$matrix->translate($frame);
-
-		$pen->transform($matrix);
 
 		if (!$this->food) {
-			$this->newFood($frameSize);
+			$this->newFood($size);
 		}
 
-		if (!$this->pause && ($run = microtime(true)) - $this->run > 0.1 / $this->level * 2) {
+		if (!$this->pause && ($run = microtime(true)) - $this->run > 0.1 / $this->level) {
 			$this->run = $run;
 
 			$next = clone $this->snake[0];
@@ -124,10 +107,10 @@ $app->setGame(new class($box) extends Area{
 				case Key::Down: $next->y++; break;
 			}
 
-			if ($next->x < 0 || $next->x >= ($frameSize->width)/10 || 
-				$next->y < 0 || $next->y >= ($frameSize->height)/10) {
+			if ($next->x < 0 || $next->x >= $size->width/10 || 
+				$next->y < 0 || $next->y >= $size->height/10) {
 				$this->newSnake();
-				$this->newFood($frameSize);
+				$this->newFood($size);
 
 				foreach ($this->snake as $body) {
 					$this->newCell($pen, $body);
@@ -144,9 +127,9 @@ $app->setGame(new class($box) extends Area{
 
 			if ($this->food == $next) {
 				$tail = $next;
-				$this->newFood($frameSize);
-				$this->score += 10;
-				$this->level = ceil($this->score / 100);
+				$this->newFood($size);
+				$this->score++;
+				$this->level = ceil($this->score / 10);
 			} else {
 				$tail = array_pop($this->snake);
 				$tail->x = $next->x;
@@ -162,13 +145,7 @@ $app->setGame(new class($box) extends Area{
 		
 		$this->newCell($pen, $this->food);
 
-		$matrix = new Matrix();
-		$matrix->translate($zero - 40);
-		$pen->transform($matrix);
-
-		if ($this->pause) {
-			$this->drawPause($pen, $size);
-		} else $this->drawScore($pen, $size);
+		$this->newScoreBoard($pen, $size, $clip, $clipSize);
 	}
 
 	private function newSnake() {
@@ -179,8 +156,8 @@ $app->setGame(new class($box) extends Area{
 
 	private function newFood(Size $size) {
 		$this->food = new Point(
-			floor(mt_rand(40, ($size->width ) - 10) / 10), 
-			floor(mt_rand(40, ($size->height) - 10) / 10));
+			floor(mt_rand(0, $size->width - 10) / 10), 
+			floor(mt_rand(0, $size->height - 10) / 10));
 	}
 
 	private function newCell(Pen $pen, Point $point) {
@@ -188,29 +165,17 @@ $app->setGame(new class($box) extends Area{
 		$path->addRectangle($point * 10, new Size(10, 10));
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, Color::of(0x0000FF, 1));
+		$brush = new Brush(Brush::Solid, new Color(0x0000FF, 1));
 		$pen->fill($path, $brush);
 		
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		$brush->setColor(Color::of(0x000000, 1));
+		$brush->setColor(new Color(0x000000, 1));
 
 		$pen->stroke($path, $brush, $stroke);
 	}
 
-	private function drawPause(Pen $pen, Size $size) {
-		$layout = new UI\Draw\Text\Layout(sprintf(
-			"Press space bar to play ...",
-			$this->level,
-			$this->score
-		), new Font(new Descriptor("arial", 12)), $size->width);
-
-		$layout->setColor(Color::of(0x000000, 1));
-
-		$pen->write(new Point(20, 10), $layout);
-	}
-
-	private function drawScore(Pen $pen, Size $size) {
+	private function newScoreBoard(Pen $pen, Size $size, Point $clip, Size $clipSize) {
 
 		$layout = new UI\Draw\Text\Layout(sprintf(
 			"Level: %d Score: %d",
@@ -218,18 +183,17 @@ $app->setGame(new class($box) extends Area{
 			$this->score
 		), new Font(new Descriptor("arial", 12)), $size->width);
 
-		$layout->setColor(Color::of(0x000000, 1));
+		$layout->setColor(new Color(0x000000, 1));
 	
-		$pen->write(new Point(20, 10), $layout);
+		$pen->write(new Point(20, $size->height - 20), $layout);
 	}
 	
+	private $pause = true;
 	private $snake;
 	private $food;
 	private $direction = Key::Right;
 	private $level = 1;
 	private $score = 0;
-	private $pause = true;
-	private $run = 0;
 });
 
 $win->show();

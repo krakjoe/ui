@@ -73,8 +73,6 @@
 #include <classes/font.h>
 #include <classes/layout.h>
 
-ZEND_DECLARE_MODULE_GLOBALS(ui);
-
 void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
 	zend_function *function = zend_hash_str_find_ptr(&object->ce->function_table, name, nlength);
 
@@ -93,16 +91,10 @@ void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend
 	fcc->called_scope = object->ce;
 }
 
-static void php_ui_globals_ctor(zend_ui_globals *uig) {
-	memset(uig, 0, sizeof(zend_ui_globals));
-}
-
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ui)
 {
-	ZEND_INIT_MODULE_GLOBALS(ui, php_ui_globals_ctor, NULL);
-
 #ifdef HAVE_UI_X_THREADS
 	XInitThreads();
 #endif
@@ -161,12 +153,6 @@ PHP_MSHUTDOWN_FUNCTION(ui)
 }
 /* }}} */
 
-/* {{{ */
-static void php_ui_tables_dtor(zval *zv) {
-	zend_hash_destroy(Z_PTR_P(zv));
-	efree(Z_PTR_P(zv));
-} /* }}} */
-
 /* {{{ PHP_RINIT_FUNCTION
  */
 PHP_RINIT_FUNCTION(ui)
@@ -193,8 +179,6 @@ PHP_RINIT_FUNCTION(ui)
 
 	uiMainSteps();
 
-	zend_hash_init(&UIG(colors), 32, NULL, php_ui_tables_dtor, 0);
-
 	return SUCCESS;
 }
 /* }}} */
@@ -206,8 +190,6 @@ PHP_RSHUTDOWN_FUNCTION(ui)
 #if 0
 	uiUninit();
 #endif
-
-	zend_hash_destroy(&UIG(colors));
 
 	return SUCCESS;
 }
