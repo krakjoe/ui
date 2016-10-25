@@ -20,9 +20,12 @@
 #include <ui.h>
 
 #include "php.h"
+#include "php_ui.h"
 
 #include <classes/control.h>
 #include <classes/color.h>
+
+ZEND_EXTERN_MODULE_GLOBALS(ui);
 
 zend_object_handlers php_ui_color_handlers;
 
@@ -41,6 +44,24 @@ zend_object* php_ui_color_create(zend_class_entry *ce) {
 	return &color->std;
 }
 
+static inline void php_ui_color_construct(zval *object, zend_long rgb, zend_bool set_alpha_channel, double alpha) {
+	php_ui_color_t *color = php_ui_color_fetch(object);
+	uint8_t component;
+
+	if (rgb) {
+		component = (uint8_t) ((rgb >> 16) & 0xFF);
+		color->r = ((double) component) / 255;
+		component = (uint8_t) ((rgb >> 8) & 0xFF);
+		color->g = ((double) component) / 255;
+		component = (uint8_t) (rgb & 0xFF);
+		color->b = ((double) component) / 255;
+	}
+
+	if (set_alpha_channel) {
+		color->a = alpha;
+	}
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, rgb, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, alpha, IS_DOUBLE, 0)
@@ -52,24 +73,12 @@ PHP_METHOD(DrawColor, __construct)
 	php_ui_color_t *color = php_ui_color_fetch(getThis());
 	zend_long rgb = 0;
 	double alpha = 0;
-	uint8_t component;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|ld", &rgb, &alpha) != SUCCESS) {
 		return;
 	}
 
-	if (rgb) {
-		component = (uint8_t) ((rgb >> 16) & 0xFF);
-		color->r = ((double) component) / 255;
-		component = (uint8_t) ((rgb >> 8) & 0xFF);
-		color->g = ((double) component) / 255;
-		component = (uint8_t) (rgb & 0xFF);
-		color->b = ((double) component) / 255;
-	}
-
-	if (ZEND_NUM_ARGS() > 1) {
-		color->a = alpha;
-	}
+	php_ui_color_construct(getThis(), rgb, ZEND_NUM_ARGS() > 1, alpha);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_set_channel_info, 0, 0, 2)
@@ -135,11 +144,54 @@ PHP_METHOD(DrawColor, getChannel)
 	RETURN_DOUBLE(-1);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_color_of_info, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, rgb, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, alpha, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto UI\Draw\Color UI\Draw\Color::of(int rgb [, int alpha]) */
+PHP_METHOD(DrawColor, of)
+{
+	zend_long rgb = 0, alpha = 0;
+	HashTable *colors = NULL;
+	zval *color = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|d", &rgb, &alpha) != SUCCESS) {
+		return;
+	}
+
+	colors = zend_hash_index_find_ptr(&UIG(colors), rgb);
+
+	if (!colors) {
+		colors = (HashTable*) ecalloc(1, sizeof(HashTable));
+
+		if (!zend_hash_index_add_ptr(&UIG(colors), rgb, colors)) {
+			efree(colors);
+			return;
+		}
+
+		zend_hash_init(colors, 255, NULL, ZVAL_PTR_DTOR, 0);
+	}
+
+	if ((color = zend_hash_index_find(colors, alpha))) {
+		RETURN_ZVAL(color, 1, 0);
+	}
+
+	object_init_ex(return_value, uiDrawColor_ce);
+
+	php_ui_color_construct(return_value, rgb, ZEND_NUM_ARGS() > 1, alpha / 255);
+
+	if (zend_hash_index_add(colors, alpha, return_value)) {
+		Z_ADDREF_P(return_value);
+	}
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_color_methods[] = {
 	PHP_ME(DrawColor, __construct,  php_ui_color_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawColor, setChannel,   php_ui_color_set_channel_info, ZEND_ACC_PUBLIC)
 	PHP_ME(DrawColor, getChannel,   php_ui_color_get_channel_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawColor, of,           php_ui_color_of_info, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_FE_END
 }; /* }}} */
 

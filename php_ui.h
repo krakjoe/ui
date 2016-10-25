@@ -38,6 +38,16 @@ extern zend_module_entry ui_module_entry;
 #include "TSRM.h"
 #endif
 
+ZEND_BEGIN_MODULE_GLOBALS(ui)
+	HashTable colors;
+ZEND_END_MODULE_GLOBALS(ui)
+
+#ifdef ZTS
+#       define UIG(v) TSRMG(ui_globals_id, zend_ui_globals *, v)
+#else
+#       define UIG(v) ui_globals.v
+#endif
+
 #if defined(ZTS) && defined(COMPILE_DL_UI)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
