@@ -140,6 +140,15 @@ const zend_function_entry php_ui_size_methods[] = {
 	PHP_FE_END
 }; /* }}} */
 
+
+/* {{{ */
+static int php_ui_size_compare(zval *op1, zval *op2) {
+	php_ui_size_t *l = php_ui_size_fetch(op1);
+	php_ui_size_t *r = php_ui_size_fetch(op2);
+
+	return l->width == r->width && l->height == r->height ? SUCCESS : FAILURE;
+} /* }}} */
+
 /* {{{ */
 static zval* php_ui_size_read(zval *object, zval *member, int type, void **cache, zval *rv) {
 	php_ui_size_t *size = php_ui_size_fetch(object);
@@ -226,6 +235,7 @@ PHP_MINIT_FUNCTION(UI_Size)
 	memcpy(&php_ui_size_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_size_handlers.offset = XtOffsetOf(php_ui_size_t, std);
+	php_ui_size_handlers.compare_objects = php_ui_size_compare;
 	php_ui_size_handlers.read_property = php_ui_size_read;
 	php_ui_size_handlers.get_property_ptr_ptr = php_ui_size_noref;
 	php_ui_size_handlers.write_property = php_ui_size_write;
