@@ -150,8 +150,12 @@ PHP_METHOD(App, run)
 	}
 
 	if (app->tick.fci.size && !app->ticks) {
+#ifndef _WIN32
 		uiQueueMain(
 			php_ui_app_tick_handler, app);
+#else
+		php_ui_app_tick_handler(app);
+#endif
 		app->ticks++;
 	}
 	

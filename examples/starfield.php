@@ -77,7 +77,11 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$starSize = (1 - $star[1] / 32) * 5;
 
 				$path = new Path(Path::Winding);
-				$path->arcTo(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
+				if (PHP_OS == "WINNT") {
+					$path->addRectangle(new Point($px, $py), new Size($starSize, $starSize));
+				} else {
+					$path->arcTo(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
+				}
 				$path->end();
 
 				$color = new Color(0 ,1);
