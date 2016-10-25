@@ -10,11 +10,11 @@
   <email>krakjoe@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-10-23</date>
+ <date>2016-10-25</date>
  <time>12:00:00</time>
  <version>
-  <release>0.9.9</release>
-  <api>0.9.9</api>
+  <release>1.0.0</release>
+  <api>1.0.0</api>
  </version>
  <stability>
   <release>beta</release>
@@ -22,7 +22,12 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
- initial release
+  App::run changes (see docs)
+  App::onTick (see docs)
+  UI\Key enumeration
+  UI\Point and UI\Size math operations
+  Reference counting for layout controls
+  Fix build when x is not available
  </notes>
  <contents>
   <dir name="/">
