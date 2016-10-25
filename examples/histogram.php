@@ -292,9 +292,5 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-do {
-	$app->run(true);
-} while($window->isVisible());
-
-$app->quit();
+$app->run();
 ?>
