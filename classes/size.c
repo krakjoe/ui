@@ -149,9 +149,11 @@ static int php_ui_size_operate(zend_uchar opcode, zval *result, zval *op1, zval 
 		php_ui_size_t *operand = php_ui_size_fetch(op2);                                 \
 		php_ui_size_t *retval;                                                           \
 						                                                                 \
-		object_init_ex(result, uiSize_ce);                                               \
+		if (result != op1) {                                                             \
+			object_init_ex(result, uiSize_ce);                                           \
+		}                                                                                \
                                                                                          \
-		retval = php_ui_size_fetch(result);                                             \
+		retval = php_ui_size_fetch(result);                                              \
 		retval->width = size->width operator operand->width;                             \
 		retval->height = size->height operator operand->height;                          \
                                                                                          \
@@ -161,7 +163,9 @@ static int php_ui_size_operate(zend_uchar opcode, zval *result, zval *op1, zval 
 	if (Z_TYPE_P(op2) == IS_LONG || Z_TYPE_P(op2) == IS_DOUBLE) {                        \
 		php_ui_size_t *retval;                                                           \
                                                                                          \
-		object_init_ex(result, uiSize_ce);                                               \
+		if (result != op1) {                                                             \
+			object_init_ex(result, uiSize_ce);                                           \
+		}                                                                                \
 		                                                                                 \
 		retval = php_ui_size_fetch(result);                                              \
 		retval->width = size->width operator zval_get_double(op2);                       \

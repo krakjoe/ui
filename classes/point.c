@@ -149,7 +149,9 @@ static int php_ui_point_operate(zend_uchar opcode, zval *result, zval *op1, zval
 		php_ui_point_t *operand = php_ui_point_fetch(op2);                               \
 		php_ui_point_t *retval;                                                          \
 						                                                                 \
-		object_init_ex(result, uiPoint_ce);                                              \
+		if (result != op1) {                                                             \
+			object_init_ex(result, uiPoint_ce);                                          \
+		}                                                                                \
                                                                                          \
 		retval = php_ui_point_fetch(result);                                             \
 		retval->x = point->x operator operand->x;                                        \
@@ -161,7 +163,9 @@ static int php_ui_point_operate(zend_uchar opcode, zval *result, zval *op1, zval
 	if (Z_TYPE_P(op2) == IS_LONG || Z_TYPE_P(op2) == IS_DOUBLE) {                        \
 		php_ui_point_t *retval;                                                          \
                                                                                          \
-		object_init_ex(result, uiPoint_ce);                                              \
+		if (result != op1) {                                                             \
+			object_init_ex(result, uiPoint_ce);                                          \
+		}                                                                                \
 		                                                                                 \
 		retval = php_ui_point_fetch(result);                                             \
 		retval->x = point->x operator zval_get_double(op2);                              \
