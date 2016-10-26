@@ -80,7 +80,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				if (PHP_OS == "WINNT") {
 					$path->addRectangle(new Point($px, $py), new Size($starSize, $starSize));
 				} else {
-					$path->arcTo(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
+					$path->newFigureWithArc(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
 				}
 				$path->end();
 
