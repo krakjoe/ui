@@ -7,8 +7,9 @@ ui
 TODO
 ====
 
-  - make other people test stuff
-  - track upstream changes ... forever ...
+  - Font Metrics
+  - onQueueMain for pthreads
+  - 
  
 Requirements
 ===========
@@ -17,3 +18,13 @@ Requirements
   - [libui](https://github.com/andlabs/libui) (ce37d12d230cea529bf6f5ac1d3bc76b9a75bbbd)
   - Windows/MacOSX/Linux (GTK-3)
   - patience
+
+Documentation
+============
+
+The documentation for UI can be found in the [PHP manual](http://php.net/ui)
+
+Contributions
+============
+
+Pull requests are welcome, and should target the develop branch.

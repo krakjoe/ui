@@ -10,11 +10,11 @@
   <email>krakjoe@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-10-25</date>
- <time>12:00:00</time>
+ <date>2016-10-26</date>
+ <time>09:00:00</time>
  <version>
-  <release>1.0.0</release>
-  <api>1.0.0</api>
+  <release>1.0.1</release>
+  <api>1.0.1</api>
  </version>
  <stability>
   <release>beta</release>
@@ -22,17 +22,14 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-  App::run changes (see docs)
-  App::onTick (see docs)
-  UI\Key enumeration
-  UI\Point and UI\Size math operations
-  Reference counting for layout controls
-  Fix build when x is not available
+  Fix windows onTick
  </notes>
  <contents>
   <dir name="/">
 	<file name="examples/histogram.php" role="doc" />
 	<file name="examples/gallery.php" role="doc" />
+    <file name="examples/snake.php" role="doc"/>
+    <file name="examples/starfield.php" role="doc"/>
     <file name="classes/app.c" role="src" />
     <file name="classes/app.h" role="src" />
     <file name="classes/area.c" role="src" />
