@@ -8,13 +8,11 @@ if (PHP_UI != "no") {
 		CHECK_LIB("libui.lib", "ui", PHP_UI)) {
 		EXTENSION("ui", "ui.c", PHP_UI_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 /I" + configure_module_dirname);
 		ADD_SOURCES(
-                "ext/ui/classes",
-                "window.c box.c form.c grid.c app.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c point.c size.c area.c pen.c path.c color.c brush.c stroke.c matrix.c descriptor.c font.c layout.c",
-                "ui"
-        );
+			configure_module_dirname + '/classes',
+			"window.c box.c form.c grid.c app.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c point.c size.c area.c pen.c path.c color.c brush.c stroke.c matrix.c descriptor.c font.c layout.c",
+			"ui"
+		);
 	} else {
 		WARNING("libui not found; libraries and headers not found");
 	}
 }
-
-
