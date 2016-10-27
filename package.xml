@@ -13,8 +13,8 @@
  <date>2016-10-26</date>
  <time>09:00:00</time>
  <version>
-  <release>1.0.1</release>
-  <api>1.0.1</api>
+  <release>1.0.2</release>
+  <api>1.0.2</api>
  </version>
  <stability>
   <release>beta</release>
@@ -22,7 +22,9 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-  Fix windows onTick
+   UI\Size and UI\Point support for basic math operators (+,/,*,-) fixed
+   UI\Point cast to UI\Size with UI\Size::of(UI\Point) (can also take double-ish)
+   UI\Size cast to UI\Point with UI\Point::at(UI\Size) (can also take double-ish)
  </notes>
  <contents>
   <dir name="/">
