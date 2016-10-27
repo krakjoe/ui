@@ -21,7 +21,7 @@
 
 #include "php.h"
 
-#include <classes/point.h>
+#include <classes/common.h>
 
 zend_object_handlers php_ui_point_handlers;
 
@@ -130,6 +130,40 @@ PHP_METHOD(Point, setY)
 	point->y = y;
 } /* }}} */
 
+/* {{{ proto Point Point::at(double value)
+		     Point Point::at(UI\Size size) */
+PHP_METHOD(Point, at)
+{
+	php_ui_point_t *point;
+	zval *location = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &location) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE_P(location) == IS_OBJECT && instanceof_function(Z_OBJCE_P(location), uiPoint_ce)) {
+		RETURN_ZVAL(location, 1, 0);
+	}
+
+	if (Z_TYPE_P(location) == IS_OBJECT && instanceof_function(Z_OBJCE_P(location), uiSize_ce)) {
+		php_ui_size_t *size = php_ui_size_fetch(location);
+		
+		object_init_ex(return_value, uiPoint_ce);
+		
+		point = php_ui_point_fetch(return_value);
+
+		point->x = size->width;
+		point->y = size->height;
+		return;
+	}
+
+	object_init_ex(return_value, uiPoint_ce);
+
+	point = php_ui_point_fetch(return_value);
+	point->x = zval_get_double(location);
+	point->y = zval_get_double(location);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_point_methods[] = {
 	PHP_ME(Point, __construct, php_ui_point_construct_info, ZEND_ACC_PUBLIC)
@@ -137,65 +171,13 @@ const zend_function_entry php_ui_point_methods[] = {
 	PHP_ME(Point, getY,        php_ui_point_get_point_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Point, setX,        php_ui_point_set_point_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Point, setY,        php_ui_point_set_point_info, ZEND_ACC_PUBLIC)
+	PHP_ME(Point, at,          NULL,                        ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_FE_END
 }; /* }}} */
 
 /* {{{ */
 static int php_ui_point_operate(zend_uchar opcode, zval *result, zval *op1, zval *op2) {
-	php_ui_point_t *point = php_ui_point_fetch(op1);
-
-#define php_ui_point_do_operation(operator) do { \
-	if (Z_TYPE_P(op2) == IS_OBJECT && instanceof_function(Z_OBJCE_P(op2), uiPoint_ce)) { \
-		php_ui_point_t *operand = php_ui_point_fetch(op2);                               \
-		php_ui_point_t *retval;                                                          \
-						                                                                 \
-		if (result != op1) {                                                             \
-			object_init_ex(result, uiPoint_ce);                                          \
-		}                                                                                \
-                                                                                         \
-		retval = php_ui_point_fetch(result);                                             \
-		retval->x = point->x operator operand->x;                                        \
-		retval->y = point->x operator operand->y;                                        \
-                                                                                         \
-		return SUCCESS;                                                                  \
-	}                                                                                    \
-                                                                                         \
-	if (Z_TYPE_P(op2) == IS_LONG || Z_TYPE_P(op2) == IS_DOUBLE) {                        \
-		php_ui_point_t *retval;                                                          \
-                                                                                         \
-		if (result != op1) {                                                             \
-			object_init_ex(result, uiPoint_ce);                                          \
-		}                                                                                \
-		                                                                                 \
-		retval = php_ui_point_fetch(result);                                             \
-		retval->x = point->x operator zval_get_double(op2);                              \
-		retval->y = point->y operator zval_get_double(op2);                              \
-                                                                                         \
-		return SUCCESS;                                                                  \
-	}                                                                                    \
-} while(0)
-
-	switch (opcode) {
-		case ZEND_MUL:
-			php_ui_point_do_operation(*);
-		break;
-
-		case ZEND_DIV:
-			php_ui_point_do_operation(/);
-		break;
-
-		case ZEND_SUB:
-			php_ui_point_do_operation(-);
-		break;
-
-		case ZEND_ADD:
-			php_ui_point_do_operation(+);
-		break;
-	}
-
-#undef php_ui_point_do_operation
-
-	return FAILURE;
+	return php_ui_point_size_operation(opcode, result, op1, op2, uiPoint_ce);
 } /* }}} */
 
 /* {{{ */

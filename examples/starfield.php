@@ -51,12 +51,10 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 	}
 
 	protected function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
-		$hWidth = $size->width / 2;
-		$hHeight = $size->height /2;
-		
+		$hSize = $size / 2;
+
 		$path = new Path(Path::Winding);
-		$path->addRectangle(
-			new Point(0, 0), $size);
+		$path->addRectangle(Point::at(0), $size);
 		$path->end();
 		$pen->fill($path, new Brush(Brush::Solid, new Color(0, 1)));
 
@@ -69,18 +67,16 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$star[1] = $this->depth;
 			}
 
-			$k = 128 / $star[1];
-			$px = $star[0]->x * $k + $hWidth;
-			$py = $star[0]->y * $k + $hHeight;
-			
-			if ($px >= 0 && $px <= $size->width && $py >= 0 && $py <= $size->height) {
+			$pos = $star[0] * (128 / $star[1]) + $hSize;
+
+			if ($pos->x >= 0 && $pos->x <= $size->width && $pos->y >= 0 && $pos->y <= $size->height) {
 				$starSize = (1 - $star[1] / 32) * 5;
 
 				$path = new Path(Path::Winding);
 				if (PHP_OS == "WINNT") {
-					$path->addRectangle(new Point($px, $py), new Size($starSize, $starSize));
+					$path->addRectangle($pos, new Size($starSize, $starSize));
 				} else {
-					$path->newFigureWithArc(new Point($px, $py), $starSize/2, 0, M_PI*2, 0);
+					$path->newFigureWithArc($pos, $starSize/2, 0, M_PI*2, 0);
 				}
 				$path->end();
 
