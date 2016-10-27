@@ -1,0 +1,21 @@
+language: php
+php:
+  - 7.0
+  - nightly
+
+script:
+  - mkdir deps
+  - mkdir deps/lib
+  - mkdir deps/include
+  - git clone https://github.com/andlabs/libui
+  - cd libui
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j4
+  - cp out/libui.so ../../deps/lib
+  - cp ../ui*.h ../../deps/include
+  - phpize
+  - ./configure --with-ui=deps
+  - make
+  - REPORT_EXIT_STATUS=1 TEST_PHP_ARGS="-q --show-diff" make test
