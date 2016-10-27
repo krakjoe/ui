@@ -20,7 +20,7 @@ before_script:
   - cp out/libui.so.0 ../../deps/lib
   - cp ../ui*.h ../../deps/include
   - cd ../../
-
+ 
 script:
   - phpize
   - ./configure --with-ui=deps
