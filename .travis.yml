@@ -10,7 +10,9 @@ addons:
     packages:
       - cmake
       - cmake-data
-      - gtk-3.0
+
+before_script:
+  - sudo apt-get -y install gtk-3.0
 
 script:
   - mkdir deps
