@@ -30,7 +30,9 @@ zend_class_entry *uiDrawTextFont_ce;
 
 #define PHP_UI_FONT_METRICS(font) do { \
 	if (!(font)->metrics) { \
-		uiDrawTextFontGetMetrics((font)->f, &(font)->m); \
+		uiDrawTextFontGetMetrics( \
+			(font)->f, &(font)->m); \
+		(font)->metrics = 1; \
 	} \
 } while(0)
 
