@@ -1,16 +1,24 @@
 language: php
 sudo: required
 dist: trusty
+
 php:
   - 7.0
   - nightly
 
+git:
+  depth: 1
+
 env:
   - DISPLAY=:0
-  
+
+addons:
+  apt:
+    packages:
+      - libgtk-3-dev
+      - xvfb
+
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install libgtk-3-dev xvfb -y
   - mkdir deps
   - mkdir deps/lib
   - mkdir deps/include
@@ -18,7 +26,7 @@ before_script:
   - cd libui
   - mkdir build
   - cd build
-  - cmake .. -G "Unix Makefiles"
+  - cmake ..
   - make -j4
   - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
@@ -30,3 +38,6 @@ script:
   - ./configure --with-ui=deps
   - make
   - REPORT_EXIT_STATUS=1 TEST_PHP_ARGS="-q --show-diff" make test
+
+after_script:
+  - ps -ef | grep "Xvfb" | grep -v "grep" | awk '{print $2}' | xargs kill -9 # kill the virtual display
