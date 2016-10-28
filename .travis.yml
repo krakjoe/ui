@@ -5,6 +5,9 @@ php:
   - 7.0
   - nightly
 
+env:
+  - DISPLAY=:0
+  
 before_script:
   - sudo apt-get update
   - sudo apt-get install libgtk-3-dev xvfb -y
@@ -20,7 +23,7 @@ before_script:
   - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
   - cd ../../
-  - Xvfb :0 -screen 0 1024x768x24 -ac > /dev/null 2>&1 & # start virtual display
+  - Xvfb -pixdepths 3 27 -fbdir /var/tmp > /dev/null 2>&1 & # start virtual display
 
 script:
   - phpize
