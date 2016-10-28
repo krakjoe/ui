@@ -9,9 +9,7 @@ ui
 TODO
 ====
 
-  - Font Metrics
-  - onQueueMain for pthreads
-  - 
+  - queue for pthreads
  
 Requirements
 ===========

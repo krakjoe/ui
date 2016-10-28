@@ -28,6 +28,12 @@ zend_object_handlers php_ui_font_handlers;
 
 zend_class_entry *uiDrawTextFont_ce;
 
+#define PHP_UI_FONT_METRICS(font) do { \
+	if (!(font)->metrics) { \
+		uiDrawTextFontGetMetrics((font)->f, &(font)->m); \
+	} \
+} while(0)
+
 zend_object* php_ui_font_create(zend_class_entry *ce) {
 	php_ui_font_t *font = 
 		(php_ui_font_t*) ecalloc(1, sizeof(php_ui_font_t) + zend_object_properties_size(ce));
@@ -74,9 +80,87 @@ PHP_METHOD(DrawTextFont, __construct)
 	}
 } /* }}} */
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_font_get_info, 0, 0, IS_DOUBLE, NULL, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto double UI\Draw\Text\Font::getAscent(void) */
+PHP_METHOD(DrawTextFont, getAscent) 
+{
+	php_ui_font_t *font = php_ui_font_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	PHP_UI_FONT_METRICS(font);
+
+	RETURN_DOUBLE(font->m.Ascent);
+} /* }}} */
+
+/* {{{ proto double UI\Draw\Text\Font::getDescent(void) */
+PHP_METHOD(DrawTextFont, getDescent) 
+{
+	php_ui_font_t *font = php_ui_font_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	PHP_UI_FONT_METRICS(font);
+
+	RETURN_DOUBLE(font->m.Descent);
+} /* }}} */
+
+/* {{{ proto double UI\Draw\Text\Font::getLeading(void) */
+PHP_METHOD(DrawTextFont, getLeading) 
+{
+	php_ui_font_t *font = php_ui_font_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	PHP_UI_FONT_METRICS(font);
+
+	RETURN_DOUBLE(font->m.Leading);
+} /* }}} */
+
+/* {{{ proto double UI\Draw\Text\Font::getUnderlinePosition(void) */
+PHP_METHOD(DrawTextFont, getUnderlinePosition) 
+{
+	php_ui_font_t *font = php_ui_font_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	PHP_UI_FONT_METRICS(font);
+
+	RETURN_DOUBLE(font->m.UnderlinePos);
+} /* }}} */
+
+/* {{{ proto double UI\Draw\Text\Font::getUnderlineThickness(void) */
+PHP_METHOD(DrawTextFont, getUnderlineThickness) 
+{
+	php_ui_font_t *font = php_ui_font_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	PHP_UI_FONT_METRICS(font);
+
+	RETURN_DOUBLE(font->m.UnderlineThickness);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_font_methods[] = {
-	PHP_ME(DrawTextFont, __construct, php_ui_font_construct_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, __construct,             php_ui_font_construct_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, getAscent,               php_ui_font_get_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, getDescent,              php_ui_font_get_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, getLeading,              php_ui_font_get_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, getUnderlinePosition,    php_ui_font_get_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFont, getUnderlineThickness,   php_ui_font_get_info,       ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

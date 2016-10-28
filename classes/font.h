@@ -22,6 +22,8 @@ extern zend_class_entry *uiDrawTextFont_ce;
 
 typedef struct _php_ui_font_t {
 	uiDrawTextFont* f;
+	uiDrawTextFontMetrics m;
+	zend_bool metrics;
 	zend_object std;
 } php_ui_font_t;
 
