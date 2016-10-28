@@ -51,6 +51,15 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_descriptor_construct_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, stretch, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_descriptor_string_info, 0, 0, IS_STRING, NULL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_descriptor_double_info, 0, 0, IS_DOUBLE, NULL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_descriptor_long_info, 0, 0, IS_LONG, NULL, 0)
+ZEND_END_ARG_INFO()
+
 /* {{{ proto UI\Draw\Text\Font\Descriptor UI\Draw\Text\Font\Descriptor::__construct(string family, double size [, int weight = UI\Draw\Text\Font\Weight::NORMAL]) */
 PHP_METHOD(DrawTextFontDescriptor, __construct) 
 {
@@ -72,9 +81,74 @@ PHP_METHOD(DrawTextFontDescriptor, __construct)
 	descriptor->d.Stretch = stretch;
 } /* }}} */
 
+/* {{{ proto string UI\Draw\Text\Font\Descriptor::geFamily(void) */
+PHP_METHOD(DrawTextFontDescriptor, getFamily)
+{
+	php_ui_descriptor_t *descriptor = php_ui_descriptor_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_STRING(descriptor->d.Family);
+} /* }}} */
+
+/* {{{ proto double UI\Draw\Text\Font\Descriptor::getSize(void) */
+PHP_METHOD(DrawTextFontDescriptor, getSize)
+{
+	php_ui_descriptor_t *descriptor = php_ui_descriptor_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_DOUBLE(descriptor->d.Size);
+} /* }}} */
+
+/* {{{ proto int UI\Draw\Text\Font\Descriptor::getWeight(void) */
+PHP_METHOD(DrawTextFontDescriptor, getWeight)
+{
+	php_ui_descriptor_t *descriptor = php_ui_descriptor_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_LONG(descriptor->d.Weight);
+} /* }}} */
+
+/* {{{ proto int UI\Draw\Text\Font\Descriptor::getItalic(void) */
+PHP_METHOD(DrawTextFontDescriptor, getItalic)
+{
+	php_ui_descriptor_t *descriptor = php_ui_descriptor_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_LONG(descriptor->d.Italic);
+} /* }}} */
+
+/* {{{ proto int UI\Draw\Text\Font\Descriptor::getStretch(void) */
+PHP_METHOD(DrawTextFontDescriptor, getStretch)
+{
+	php_ui_descriptor_t *descriptor = php_ui_descriptor_fetch(getThis());
+
+	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	RETURN_LONG(descriptor->d.Stretch);
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_descriptor_methods[] = {
 	PHP_ME(DrawTextFontDescriptor, __construct, php_ui_descriptor_construct_info, ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFontDescriptor, getFamily,   php_ui_descriptor_string_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFontDescriptor, getSize,     php_ui_descriptor_double_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFontDescriptor, getWeight,     php_ui_descriptor_long_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFontDescriptor, getItalic,     php_ui_descriptor_long_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawTextFontDescriptor, getStretch,     php_ui_descriptor_long_info,    ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
