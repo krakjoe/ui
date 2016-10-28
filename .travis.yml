@@ -28,7 +28,7 @@ before_script:
   - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
   - cd ../../
-  - Xvfb -pixdepths 3 27 -fbdir /var/tmp > /dev/null 2>&1 & # start virtual display
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :0 -pixdepths 3 27 -fbdir /var/tmp"
 
 script:
   - phpize
@@ -37,4 +37,4 @@ script:
   - REPORT_EXIT_STATUS=1 TEST_PHP_ARGS="-q --show-diff" make test
 
 after_script:
-  - ps -ef | grep "Xvfb" | grep -v "grep" | awk '{print $2}' | xargs kill -9 # kill the virtual display
+  - "start-stop-daemon --stop --oknodo --pidfile /tmp/custom_xvfb.pid --retry 5"
