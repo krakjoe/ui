@@ -6,9 +6,6 @@ php:
   - 7.0
   - nightly
 
-git:
-  depth: 1
-
 env:
   - DISPLAY=:0
 
