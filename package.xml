@@ -13,8 +13,8 @@
  <date>2016-10-28</date>
  <time>11:00:00</time>
  <version>
-  <release>1.0.2</release>
-  <api>1.0.2</api>
+  <release>1.0.3</release>
+  <api>1.0.3</api>
  </version>
  <stability>
   <release>beta</release>
@@ -22,9 +22,16 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-   UI\Size and UI\Point support for basic math operators (+,/,*,-) fixed
-   UI\Point cast to UI\Size with UI\Size::of(UI\Point) (can also take double-ish)
-   UI\Size cast to UI\Point with UI\Point::at(UI\Size) (can also take double-ish)
+   UI\Draw\Text\Font\Descriptor::getFamily
+   UI\Draw\Text\Font\Descriptor::getSize
+   UI\Draw\Text\Font\Descriptor::getWeight
+   UI\Draw\Text\Font\Descriptor::getItalic
+   UI\Draw\Text\Font\Descriptor::getStretch
+   UI\Draw\Text\Font::getAscent
+   UI\Draw\Text\Font::getDescent
+   UI\Draw\Text\Font::getLeading
+   UI\Draw\Text\Font::getUnderlinePosition
+   UI\Draw\Text\Font::getUnderlineThickness
  </notes>
  <contents>
   <dir name="/">
