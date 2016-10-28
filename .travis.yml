@@ -1,26 +1,21 @@
 language: php
+sudo: required
 dist: trusty
 php:
   - 7.0
   - nightly
 
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install libgtk-3-dev -y
-  - mkdir deps
-  - mkdir deps/lib
-  - mkdir deps/include
-  - git clone https://github.com/andlabs/libui
-  - cd libui
-  - mkdir build
-  - cd build
+  - sudo apt-get update && sudo apt-get install libgtk-3-dev -y
+  - mkdir deps && mkdir deps/lib && mkdir deps/include
+  - git clone --depth=1 https://github.com/andlabs/libui
+  - cd libui && mkdir build && cd build
   - cmake .. -G "Unix Makefiles"
   - make -j4
-  - cp out/libui.so ../../deps/lib
-  - cp out/libui.so.0 ../../deps/lib
+  - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
   - cd ../../
- 
+
 script:
   - phpize
   - ./configure --with-ui=deps
