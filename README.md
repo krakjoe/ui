@@ -2,7 +2,7 @@ ui
 ==
 *Cross platform UI development in PHP 7*
 
-[![Build Status](https://travis-ci.org/krakjoe/ui.svg?branch=develop)](https://travis-ci.org/krakjoe/ui)
+[![Build Status](https://travis-ci.org/krakjoe/ui.svg?branch=release)](https://travis-ci.org/krakjoe/ui)
 
 [libui](https://github.com/andlabs/libui) is a very excellent cross platform ui development library written in C: This extension provides an interface to [libui](https://github.com/andlabs/libui).
 
