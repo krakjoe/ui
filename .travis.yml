@@ -1,4 +1,5 @@
 language: php
+sudo: required
 dist: trusty
 php:
   - 7.0
@@ -10,17 +11,16 @@ before_script:
   - mkdir deps
   - mkdir deps/lib
   - mkdir deps/include
-  - git clone https://github.com/andlabs/libui
+  - git clone --depth=1 https://github.com/andlabs/libui
   - cd libui
   - mkdir build
   - cd build
   - cmake .. -G "Unix Makefiles"
   - make -j4
-  - cp out/libui.so ../../deps/lib
-  - cp out/libui.so.0 ../../deps/lib
+  - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
   - cd ../../
- 
+
 script:
   - phpize
   - ./configure --with-ui=deps
