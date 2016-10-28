@@ -25,4 +25,3 @@ script:
   - phpize
   - ./configure --with-ui=deps
   - make
-  - REPORT_EXIT_STATUS=1 TEST_PHP_ARGS="-q --show-diff" make test
