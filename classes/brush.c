@@ -32,7 +32,7 @@ static inline uiDrawBrushType php_ui_brush_type(zend_long type) {
 	switch (type) {
 		case PHP_UI_BRUSH_SOLID: return uiDrawBrushTypeSolid;
 		case PHP_UI_BRUSH_LINEAR_GRADIENT: return uiDrawBrushTypeLinearGradient;
-		case PHP_UI_BRUSH_RADIAL_GRADIENT: uiDrawBrushTypeRadialGradient;
+		case PHP_UI_BRUSH_RADIAL_GRADIENT: return uiDrawBrushTypeRadialGradient;
 		case PHP_UI_BRUSH_IMAGE: return uiDrawBrushTypeImage;
 	}
 	return uiDrawBrushTypeSolid;
