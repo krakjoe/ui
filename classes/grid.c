@@ -40,9 +40,11 @@ zend_object* php_ui_grid_create(zend_class_entry *ce) {
 
 	grid->std.handlers = &php_ui_grid_handlers;
 
-	zend_hash_init(&grid->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(grid->controls);
 
-	php_ui_set_controls(&grid->std, ZEND_STRL("controls"), &grid->controls);
+	zend_hash_init(grid->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&grid->std, ZEND_STRL("controls"), grid->controls);
 
 	grid->g = uiNewGrid();
 
@@ -110,7 +112,7 @@ PHP_METHOD(Grid, append)
 	
 	uiGridAppend(grid->g, ctrl, left, top, xspan, yspan, hexpand, halign, vexpand, valign);
 
-	if (zend_hash_next_index_insert(&grid->controls, control)) {
+	if (zend_hash_next_index_insert(grid->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 } /* }}} */

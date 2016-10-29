@@ -30,7 +30,7 @@ zend_object_handlers php_ui_form_handlers;
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
 
 #define PHP_UI_FORM_CONTROL_CHECK(form, control) do { \
-	if (control < 0 || control >= zend_hash_num_elements(&form->controls)) { \
+	if (control < 0 || control >= zend_hash_num_elements(form->controls)) { \
 		php_ui_exception_ex( \
 			InvalidArgumentException, "control %ld does not exist", control); \
 		return; \
@@ -49,9 +49,11 @@ zend_object* php_ui_form_create(zend_class_entry *ce) {
 
 	form->std.handlers = &php_ui_form_handlers;
 
-	zend_hash_init(&form->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(form->controls);
 
-	php_ui_set_controls(&form->std, ZEND_STRL("controls"), &form->controls);
+	zend_hash_init(form->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&form->std, ZEND_STRL("controls"), form->controls);
 
 	form->f = uiNewForm();
 
@@ -117,11 +119,11 @@ PHP_METHOD(Form, append)
 
 	uiFormAppend(form->f, ZSTR_VAL(label), ctrl, stretchy);
 
-	if (zend_hash_next_index_insert(&form->controls, control)) {
+	if (zend_hash_next_index_insert(form->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 
-	RETURN_LONG(zend_hash_num_elements(&form->controls) - 1);
+	RETURN_LONG(zend_hash_num_elements(form->controls) - 1);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_delete_info, 0, 1, _IS_BOOL, NULL, 0)
@@ -140,7 +142,7 @@ PHP_METHOD(Form, delete)
 
 	PHP_UI_FORM_CONTROL_CHECK(form, index);
 
-	if (zend_hash_index_del(&form->controls, index)) {
+	if (zend_hash_index_del(form->controls, index)) {
 		uiFormDelete(form->f, (int) index);
 
 		RETURN_TRUE;

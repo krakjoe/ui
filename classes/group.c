@@ -40,9 +40,11 @@ zend_object* php_ui_group_create(zend_class_entry *ce) {
 
 	group->std.handlers = &php_ui_group_handlers;
 
-	zend_hash_init(&group->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(group->controls);
 
-	php_ui_set_controls(&group->std, ZEND_STRL("controls"), &group->controls);
+	zend_hash_init(group->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&group->std, ZEND_STRL("controls"), group->controls);
 
 	return &group->std;
 }
@@ -152,7 +154,7 @@ PHP_METHOD(Group, append)
 
 	uiGroupSetChild(group->g, ctrl);
 
-	if (zend_hash_next_index_insert(&group->controls, control)) {
+	if (zend_hash_next_index_insert(group->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 } /* }}} */

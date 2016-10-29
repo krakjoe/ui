@@ -22,7 +22,7 @@ extern zend_class_entry *uiWindow_ce;
 
 typedef struct _php_ui_window_t {
 	uiWindow *w;
-	HashTable controls;
+	HashTable *controls;
 	struct php_ui_window_closing_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;

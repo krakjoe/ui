@@ -32,7 +32,7 @@ extern void php_ui_set_controls(zend_object *std, const char *name, size_t nleng
 zend_class_entry *uiBox_ce;
 
 #define PHP_UI_BOX_CONTROL_CHECK(box, control) do { \
-	if (control < 0 || control >= zend_hash_num_elements(&box->controls)) { \
+	if (control < 0 || control >= zend_hash_num_elements(box->controls)) { \
 		php_ui_exception_ex( \
 			InvalidArgumentException, "control %ld does not exist", control); \
 		return; \
@@ -49,9 +49,11 @@ zend_object* php_ui_box_create(zend_class_entry *ce) {
 
 	box->std.handlers = &php_ui_box_handlers;
 
-	zend_hash_init(&box->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(box->controls);
 
-	php_ui_set_controls(&box->std, ZEND_STRL("controls"), &box->controls);
+	zend_hash_init(box->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&box->std, ZEND_STRL("controls"), box->controls);
 
 	return &box->std;
 }
@@ -120,11 +122,11 @@ PHP_METHOD(Box, append)
 
 	uiBoxAppend(box->b, ctrl, stretchy);
 
-	if (zend_hash_next_index_insert(&box->controls, control)) {
+	if (zend_hash_next_index_insert(box->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 
-	RETURN_LONG(zend_hash_num_elements(&box->controls) - 1);
+	RETURN_LONG(zend_hash_num_elements(box->controls) - 1);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_delete_info, 0, 1, _IS_BOOL, NULL, 0)
@@ -143,7 +145,7 @@ PHP_METHOD(Box, delete)
 
 	PHP_UI_BOX_CONTROL_CHECK(box, index);
 
-	if (zend_hash_index_del(&box->controls, index)) {
+	if (zend_hash_index_del(box->controls, index)) {
 		uiBoxDelete(box->b, (int) index);
 
 		RETURN_TRUE;

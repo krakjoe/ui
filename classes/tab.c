@@ -28,7 +28,7 @@
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
 
 #define PHP_UI_TAB_PAGE_CHECK(tab, page) do { \
-	if (page < 0 || page >= uiTabNumPages(tab->t)) { \
+	if (page < 0 || page >= zend_hash_num_elements(tab->controls)) { \
 		php_ui_exception_ex( \
 			InvalidArgumentException, "page %ld does not exist", page); \
 		return; \
@@ -50,9 +50,11 @@ zend_object* php_ui_tab_create(zend_class_entry *ce) {
 
 	tab->t = uiNewTab();
 
-	zend_hash_init(&tab->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(tab->controls);
 
-	php_ui_set_controls(&tab->std, ZEND_STRL("controls"), &tab->controls);
+	zend_hash_init(tab->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&tab->std, ZEND_STRL("controls"), tab->controls);
 
 	return &tab->std;
 }
@@ -78,11 +80,11 @@ PHP_METHOD(Tab, append)
 
 	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl);
 
-	if (zend_hash_next_index_insert(&tab->controls, control)) {
+	if (zend_hash_next_index_insert(tab->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 
-	RETURN_LONG(zend_hash_num_elements(&tab->controls) - 1);
+	RETURN_LONG(zend_hash_num_elements(tab->controls) - 1);
 }
 /* }}} */
 
@@ -102,7 +104,7 @@ PHP_METHOD(Tab, delete)
 
 	PHP_UI_TAB_PAGE_CHECK(tab, index);
 
-	if (zend_hash_index_del(&tab->controls, index) == SUCCESS) {
+	if (zend_hash_index_del(tab->controls, index) == SUCCESS) {
 		uiTabDelete(tab->t, (int) index);
 
 		RETURN_TRUE;
@@ -123,7 +125,7 @@ PHP_METHOD(Tab, pages)
 		return;
 	}
 
-	RETURN_LONG(zend_hash_num_elements(&tab->controls));
+	RETURN_LONG(zend_hash_num_elements(tab->controls));
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_insert_at_info, 0, 3, IS_LONG, NULL, 0)

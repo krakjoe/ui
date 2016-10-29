@@ -57,9 +57,11 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 
 	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
 
-	zend_hash_init(&w->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+	ALLOC_HASHTABLE(w->controls);
 
-	php_ui_set_controls(&w->std, ZEND_STRL("controls"), &w->controls);
+	zend_hash_init(w->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&w->std, ZEND_STRL("controls"), w->controls);
 
 	return &w->std;
 }
@@ -327,7 +329,7 @@ PHP_METHOD(Window, add)
 
 	uiWindowSetChild(win->w, ctrl);
 
-	if (zend_hash_next_index_insert(&win->controls, control)) {
+	if (zend_hash_next_index_insert(win->controls, control)) {
 		Z_ADDREF_P(control);
 	}
 } /* }}} */
