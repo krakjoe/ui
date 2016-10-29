@@ -33,6 +33,8 @@
 #	include <X11/Xlib.h>
 #endif
 
+#include <classes/exceptions.h>
+
 #include <classes/point.h>
 #include <classes/size.h>
 
@@ -98,6 +100,8 @@ PHP_MINIT_FUNCTION(ui)
 #ifdef HAVE_UI_X_THREADS
 	XInitThreads();
 #endif
+
+	PHP_MINIT(UI_Exceptions)(INIT_FUNC_ARGS_PASSTHRU);
 
 	PHP_MINIT(UI_App)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Point)(INIT_FUNC_ARGS_PASSTHRU);

@@ -36,6 +36,7 @@
    UI\Draw\Brush::addStop
    UI\Draw\Brush::delStop
    UI\Draw\Brush::setStop
+   Exceptions
  </notes>
  <contents>
   <dir name="/">
@@ -68,6 +69,8 @@
     <file name="classes/descriptor.h" role="src" />
     <file name="classes/ecombo.c" role="src" />
     <file name="classes/ecombo.h" role="src" />
+    <file name="classes/exceptions.c" role="src" />
+    <file name="classes/exceptions.h" role="src" />
     <file name="classes/entry.c" role="src" />
     <file name="classes/entry.h" role="src" />
     <file name="classes/font.c" role="src" />

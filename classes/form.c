@@ -21,10 +21,19 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/control.h>
 #include <classes/form.h>
 
 zend_object_handlers php_ui_form_handlers;
+
+#define PHP_UI_FORM_CONTROL_CHECK(form, control) do { \
+	if (control < 0 || control >= zend_hash_num_elements(&form->controls)) { \
+		php_ui_exception_ex( \
+			InvalidArgumentException, "control %ld does not exist", control); \
+		return; \
+	} \
+} while(0)
 
 zend_class_entry *uiForm_ce;
 
@@ -98,13 +107,13 @@ PHP_METHOD(Form, isPadded)
 	}
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_form_append_info, 0, 0, 2)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_append_info, 0, 2, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
 	ZEND_ARG_TYPE_INFO(0, stretchy, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Form::append(string label, Control control [, bool stretchy = false]) */
+/* {{{ proto int Form::append(string label, Control control [, bool stretchy = false]) */
 PHP_METHOD(Form, append)
 {
 	php_ui_form_t *form = php_ui_form_fetch(getThis());
@@ -124,13 +133,15 @@ PHP_METHOD(Form, append)
 	if (zend_hash_next_index_insert(&form->controls, control)) {
 		Z_ADDREF_P(control);
 	}
+
+	RETURN_LONG(zend_hash_num_elements(&form->controls) - 1);
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_form_delete_info, 0, 0, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_delete_info, 0, 1, _IS_BOOL, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Form::delete(int index) */
+/* {{{ proto bool Form::delete(int index) */
 PHP_METHOD(Form, delete)
 {
 	php_ui_form_t *form = php_ui_form_fetch(getThis());
@@ -140,9 +151,15 @@ PHP_METHOD(Form, delete)
 		return;
 	}
 
+	PHP_UI_FORM_CONTROL_CHECK(form, index);
+
 	if (zend_hash_index_del(&form->controls, index)) {
 		uiFormDelete(form->f, (int) index);
+
+		RETURN_TRUE;
 	}
+
+	RETURN_FALSE;
 } /* }}} */
 
 /* {{{ */

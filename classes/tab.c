@@ -21,8 +21,17 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/control.h>
 #include <classes/tab.h>
+
+#define PHP_UI_TAB_PAGE_CHECK(tab, page) do { \
+	if (page < 0 || page >= uiTabNumPages(tab->t)) { \
+		php_ui_exception_ex( \
+			InvalidArgumentException, "page %ld does not exist", page); \
+		return; \
+	} \
+} while(0)
 
 zend_object_handlers php_ui_tab_handlers;
 
@@ -75,17 +84,15 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Tab, delete)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
-	zend_long index = 0;
+	zend_long page = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &index) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &page) != SUCCESS) {
 		return;
 	}
 
-	if (index < 0 || index >= uiTabNumPages(tab->t)) {
-		RETURN_FALSE;
-	}
+	PHP_UI_TAB_PAGE_CHECK(tab, page);
 
-	uiTabDelete(tab->t, (int) index);
+	uiTabDelete(tab->t, (int) page);
 
 	RETURN_TRUE;
 } /* }}} */
@@ -148,9 +155,7 @@ PHP_METHOD(Tab, setMargin)
 		return;
 	}
 
-	if (page < 0 || page >= uiTabNumPages(tab->t)) {
-		RETURN_FALSE;
-	}
+	PHP_UI_TAB_PAGE_CHECK(tab, page);
 
 	uiTabSetMargined(tab->t, (int) page, (int) margin);
 
@@ -171,9 +176,7 @@ PHP_METHOD(Tab, hasMargin)
 		return;
 	}
 
-	if (page < 0 || page >= uiTabNumPages(tab->t)) {
-		RETURN_FALSE;
-	}
+	PHP_UI_TAB_PAGE_CHECK(tab, page);
 
 	if (uiTabMargined(tab->t, (int) page)) {
 		RETURN_TRUE;
