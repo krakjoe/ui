@@ -42,12 +42,12 @@ zend_object* php_ui_tab_create(zend_class_entry *ce) {
 	return &tab->std;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_append_info, 0, 0, 2)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_append_info, 0, 2, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0,  control, UI\\Control, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Tab::append(string name, Control control) */
+/* {{{ proto int Tab::append(string name, Control control) */
 PHP_METHOD(Tab, append)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
@@ -62,14 +62,16 @@ PHP_METHOD(Tab, append)
 	ctrl = php_ui_control_fetch(control);
 
 	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl);
+
+	RETURN_LONG(uiTabNumPages(tab->t) - 1);
 }
 /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_delete_info, 0, 0, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_delete_info, 0, 1, _IS_BOOL, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Tab::delete(int index) */
+/* {{{ proto bool Tab::delete(int index) */
 PHP_METHOD(Tab, delete)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
@@ -79,7 +81,13 @@ PHP_METHOD(Tab, delete)
 		return;
 	}
 
+	if (index < 0 || index >= uiTabNumPages(tab->t)) {
+		RETURN_FALSE;
+	}
+
 	uiTabDelete(tab->t, (int) index);
+
+	RETURN_TRUE;
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_pages_info, 0, 0, IS_LONG, NULL, 0)
@@ -97,13 +105,13 @@ PHP_METHOD(Tab, pages)
 	RETURN_LONG(uiTabNumPages(tab->t));
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_insert_at_info, 0, 0, 3)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_insert_at_info, 0, 3, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, before, _IS_BOOL, 0)
 	ZEND_ARG_OBJ_INFO(0,  control, UI\\Control, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Tab::insertAt(string name, int page, Control control) */
+/* {{{ proto int Tab::insertAt(string name, int page, Control control) */
 PHP_METHOD(Tab, insertAt)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
@@ -119,6 +127,8 @@ PHP_METHOD(Tab, insertAt)
 	ctrl = php_ui_control_fetch(control);
 
 	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl);
+
+	RETURN_LONG(uiTabNumPages(tab->t));
 }
 /* }}} */
 
@@ -127,7 +137,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_tab_set_margin_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, margin, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Tab::setMargin(int page, bool margin) */
+/* {{{ proto bool Tab::setMargin(int page, bool margin) */
 PHP_METHOD(Tab, setMargin) 
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
@@ -138,7 +148,13 @@ PHP_METHOD(Tab, setMargin)
 		return;
 	}
 
+	if (page < 0 || page >= uiTabNumPages(tab->t)) {
+		RETURN_FALSE;
+	}
+
 	uiTabSetMargined(tab->t, (int) page, (int) margin);
+
+	RETURN_TRUE;
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_has_margin_info, 0, 1, _IS_BOOL, NULL, 0)
@@ -153,6 +169,10 @@ PHP_METHOD(Tab, hasMargin)
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &page) != SUCCESS) {
 		return;
+	}
+
+	if (page < 0 || page >= uiTabNumPages(tab->t)) {
+		RETURN_FALSE;
 	}
 
 	if (uiTabMargined(tab->t, (int) page)) {
