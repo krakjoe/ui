@@ -58,9 +58,19 @@ zend_object* php_ui_brush_create(zend_class_entry *ce) {
 	return &brush->std;
 }
 
+void php_ui_brush_free(zend_object *o) {
+	php_ui_brush_t *brush = php_ui_brush_from(o);
+
+	if (brush->b.NumStops) {
+		free(brush->b.Stops);
+	}
+
+	zend_object_std_dtor(o);
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 1)
 	ZEND_ARG_TYPE_INFO(0, X0, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, Y0, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, X1, IS_DOUBLE, 0)
@@ -76,18 +86,21 @@ PHP_METHOD(DrawBrush, __construct)
 	zval *color = NULL;
 	double X0 = 0, Y0 = 0, X1 = 0, Y1 = 0, radius = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|Oddddd", &type, &color, uiDrawColor_ce, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|O!ddddd", &type, &color, uiDrawColor_ce, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
 		return;
 	}
 
 	brush->b.Type = php_ui_brush_type(type);
 
-	php_ui_brush_color(brush, php_ui_color_fetch(color));
+	if (color) {
+		php_ui_brush_color(brush, php_ui_color_fetch(color));
+	}
 
 	brush->b.X0 = X0;
 	brush->b.Y0 = Y0;
 	brush->b.X1 = X1;
 	brush->b.Y1 = Y1;
+	brush->b.OuterRadius = radius;
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_set_color_info, 0, 0, 1)
@@ -180,6 +193,39 @@ PHP_METHOD(DrawBrush, getColor)
 	color->a = brush->b.A;	
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_stop_info, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
+	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void UI\Draw\Brush::addStop(double position, UI\Draw\Color color) */
+PHP_METHOD(DrawBrush, addStop)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	double position = 0;
+	zval *color = NULL;
+	php_ui_color_t *c;
+	
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dO", &position, &color, uiDrawColor_ce) != SUCCESS) {
+		return;
+	}
+
+	c = php_ui_color_fetch(color);
+
+	if (!brush->b.NumStops) {
+		brush->b.Stops = malloc(sizeof(uiDrawBrushGradientStop));
+	} else {
+		brush->b.Stops = realloc(brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
+	}
+
+	brush->b.Stops[brush->b.NumStops].Pos = position;
+	brush->b.Stops[brush->b.NumStops].R   = c->r;
+	brush->b.Stops[brush->b.NumStops].G   = c->g;
+	brush->b.Stops[brush->b.NumStops].B   = c->b;
+	brush->b.Stops[brush->b.NumStops].A   = c->a;
+	brush->b.NumStops++;	
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info,   ZEND_ACC_PUBLIC)
@@ -187,6 +233,7 @@ const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, setType,     php_ui_brush_set_type_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, setColor,    php_ui_brush_set_color_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, getColor,    php_ui_brush_get_color_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, addStop,     php_ui_brush_stop_info,        ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
@@ -208,6 +255,7 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 	memcpy(&php_ui_brush_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_brush_handlers.offset = XtOffsetOf(php_ui_brush_t, std);
+	php_ui_brush_handlers.free_obj = php_ui_brush_free;
 
 	return SUCCESS;
 } /* }}} */
