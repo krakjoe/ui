@@ -27,6 +27,8 @@
 
 zend_object_handlers php_ui_box_handlers;
 
+extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+
 zend_class_entry *uiBox_ce;
 
 #define PHP_UI_BOX_CONTROL_CHECK(box, control) do { \
@@ -49,24 +51,9 @@ zend_object* php_ui_box_create(zend_class_entry *ce) {
 
 	zend_hash_init(&box->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
 
+	php_ui_set_controls(&box->std, ZEND_STRL("controls"), &box->controls);
+
 	return &box->std;
-}
-
-void php_ui_box_free(zend_object *o) {
-	php_ui_box_t *box = php_ui_box_from(o);
-
-	zend_hash_destroy(&box->controls);
-
-	zend_object_std_dtor(o);
-}
-
-HashTable* php_ui_box_gc(zval *object, zval **table, int *n) {
-	php_ui_box_t *box = php_ui_box_fetch(object);
-
-	*table = box->std.properties_table;
-	*n     = box->std.ce->default_properties_count;
-
-	return &box->controls;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_box_construct_info, 0, 0, 0)
@@ -221,12 +208,11 @@ PHP_MINIT_FUNCTION(UI_Box)
 
 	uiBox_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiBox_ce->create_object = php_ui_box_create;
+	zend_declare_property_null(uiBox_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
 
 	memcpy(&php_ui_box_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_box_handlers.offset = XtOffsetOf(php_ui_box_t, std);
-	php_ui_box_handlers.free_obj = php_ui_box_free;
-	php_ui_box_handlers.get_gc = php_ui_box_gc;
 
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Vertical"), PHP_UI_BOX_VERTICAL);
 	zend_declare_class_constant_long(uiBox_ce, ZEND_STRL("Horizontal"), PHP_UI_BOX_HORIZONTAL);

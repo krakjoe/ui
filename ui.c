@@ -75,6 +75,21 @@
 #include <classes/font.h>
 #include <classes/layout.h>
 
+void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table) {
+	zval obj;
+	zval *controls;
+
+	ZVAL_OBJ(&obj, std);
+	
+	controls = zend_read_property(std->ce, &obj, name, nlength, 1, controls);
+
+	if (!controls) {
+		return;
+	}
+
+	ZVAL_ARR(controls, table);
+}
+
 void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
 	zend_function *function = zend_hash_str_find_ptr(&object->ce->function_table, name, nlength);
 

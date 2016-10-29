@@ -27,6 +27,8 @@
 
 zend_object_handlers php_ui_form_handlers;
 
+extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+
 #define PHP_UI_FORM_CONTROL_CHECK(form, control) do { \
 	if (control < 0 || control >= zend_hash_num_elements(&form->controls)) { \
 		php_ui_exception_ex( \
@@ -49,26 +51,11 @@ zend_object* php_ui_form_create(zend_class_entry *ce) {
 
 	zend_hash_init(&form->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
 
+	php_ui_set_controls(&form->std, ZEND_STRL("controls"), &form->controls);
+
 	form->f = uiNewForm();
 
 	return &form->std;
-}
-
-void php_ui_form_free(zend_object *o) {
-	php_ui_form_t *form = php_ui_form_from(o);
-
-	zend_hash_destroy(&form->controls);
-
-	zend_object_std_dtor(o);
-}
-
-HashTable* php_ui_form_gc(zval *object, zval **table, int *n) {
-	php_ui_form_t *form = php_ui_form_fetch(object);
-
-	*table = form->std.properties_table;
-	*n     = form->std.ce->default_properties_count;
-
-	return &form->controls;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_form_set_padded_info, 0, 0, 1)
@@ -180,12 +167,11 @@ PHP_MINIT_FUNCTION(UI_Form)
 
 	uiForm_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiForm_ce->create_object = php_ui_form_create;
+	zend_declare_property_null(uiForm_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
 
 	memcpy(&php_ui_form_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_form_handlers.offset = XtOffsetOf(php_ui_form_t, std);
-	php_ui_form_handlers.free_obj = php_ui_form_free;
-	php_ui_form_handlers.get_gc = php_ui_form_gc;
 
 	return SUCCESS;
 } /* }}} */

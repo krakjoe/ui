@@ -25,6 +25,8 @@
 #include <classes/control.h>
 #include <classes/tab.h>
 
+extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+
 #define PHP_UI_TAB_PAGE_CHECK(tab, page) do { \
 	if (page < 0 || page >= uiTabNumPages(tab->t)) { \
 		php_ui_exception_ex( \
@@ -47,6 +49,10 @@ zend_object* php_ui_tab_create(zend_class_entry *ce) {
 	tab->std.handlers = &php_ui_tab_handlers;
 
 	tab->t = uiNewTab();
+
+	zend_hash_init(&tab->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&tab->std, ZEND_STRL("controls"), &tab->controls);
 
 	return &tab->std;
 }
@@ -72,7 +78,11 @@ PHP_METHOD(Tab, append)
 
 	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl);
 
-	RETURN_LONG(uiTabNumPages(tab->t) - 1);
+	if (zend_hash_next_index_insert(&tab->controls, control)) {
+		Z_ADDREF_P(control);
+	}
+
+	RETURN_LONG(zend_hash_num_elements(&tab->controls) - 1);
 }
 /* }}} */
 
@@ -84,17 +94,21 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Tab, delete)
 {
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
-	zend_long page = 0;
+	zend_long index = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &page) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &index) != SUCCESS) {
 		return;
 	}
 
-	PHP_UI_TAB_PAGE_CHECK(tab, page);
+	PHP_UI_TAB_PAGE_CHECK(tab, index);
 
-	uiTabDelete(tab->t, (int) page);
+	if (zend_hash_index_del(&tab->controls, index) == SUCCESS) {
+		uiTabDelete(tab->t, (int) index);
 
-	RETURN_TRUE;
+		RETURN_TRUE;
+	}
+
+	RETURN_FALSE;
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_pages_info, 0, 0, IS_LONG, NULL, 0)
@@ -109,7 +123,7 @@ PHP_METHOD(Tab, pages)
 		return;
 	}
 
-	RETURN_LONG(uiTabNumPages(tab->t));
+	RETURN_LONG(zend_hash_num_elements(&tab->controls));
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_insert_at_info, 0, 3, IS_LONG, NULL, 0)
@@ -206,10 +220,12 @@ PHP_MINIT_FUNCTION(UI_Tab)
 	uiTab_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiTab_ce->create_object = php_ui_tab_create;
 
+	zend_declare_property_null(uiTab_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
+
 	memcpy(&php_ui_tab_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_tab_handlers.offset = XtOffsetOf(php_ui_tab_t, std);
-
+	
 	return SUCCESS;
 } /* }}} */
 #endif

@@ -26,6 +26,8 @@
 
 zend_object_handlers php_ui_grid_handlers;
 
+extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+
 zend_class_entry *uiGrid_ce;
 
 zend_object* php_ui_grid_create(zend_class_entry *ce) {
@@ -40,26 +42,11 @@ zend_object* php_ui_grid_create(zend_class_entry *ce) {
 
 	zend_hash_init(&grid->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
 
+	php_ui_set_controls(&grid->std, ZEND_STRL("controls"), &grid->controls);
+
 	grid->g = uiNewGrid();
 
 	return &grid->std;
-}
-
-void php_ui_grid_free(zend_object *o) {
-	php_ui_grid_t *grid = php_ui_grid_from(o);
-
-	zend_hash_destroy(&grid->controls);
-
-	zend_object_std_dtor(o);
-}
-
-HashTable* php_ui_grid_gc(zval *object, zval **table, int *n) {
-	php_ui_grid_t *grid = php_ui_grid_fetch(object);
-
-	*table = grid->std.properties_table;
-	*n     = grid->std.ce->default_properties_count;
-
-	return &grid->controls;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_grid_set_padded_info, 0, 0, 1)
@@ -145,6 +132,7 @@ PHP_MINIT_FUNCTION(UI_Grid)
 
 	uiGrid_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiGrid_ce->create_object = php_ui_grid_create;
+	zend_declare_property_null(uiGrid_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
 
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Fill"), uiAlignFill);
 	zend_declare_class_constant_long(uiGrid_ce, ZEND_STRL("Start"), uiAlignStart);
@@ -159,8 +147,6 @@ PHP_MINIT_FUNCTION(UI_Grid)
 	memcpy(&php_ui_grid_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_grid_handlers.offset = XtOffsetOf(php_ui_grid_t, std);
-	php_ui_grid_handlers.free_obj = php_ui_grid_free;
-	php_ui_grid_handlers.get_gc = php_ui_grid_gc;
 
 	return SUCCESS;
 } /* }}} */

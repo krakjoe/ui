@@ -29,6 +29,8 @@
 
 zend_object_handlers php_ui_window_handlers;
 
+extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+
 zend_class_entry *uiWindow_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
@@ -56,6 +58,8 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
 
 	zend_hash_init(&w->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
+
+	php_ui_set_controls(&w->std, ZEND_STRL("controls"), &w->controls);
 
 	return &w->std;
 }
@@ -87,23 +91,6 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	}
 
 	return result;
-}
-
-void php_ui_window_free(zend_object *o) {
-	php_ui_window_t *window = php_ui_window_from(o);
-
-	zend_hash_destroy(&window->controls);
-
-	zend_object_std_dtor(o);
-}
-
-HashTable* php_ui_window_gc(zval *object, zval **table, int *n) {
-	php_ui_window_t *window = php_ui_window_fetch(object);
-
-	*table = window->std.properties_table;
-	*n     = window->std.ce->default_properties_count;
-
-	return &window->controls;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
@@ -453,11 +440,11 @@ PHP_MINIT_FUNCTION(UI_Window)
 
 	uiWindow_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiWindow_ce->create_object = php_ui_window_create;
+	zend_declare_property_null(uiWindow_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
 
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_window_handlers.offset = XtOffsetOf(php_ui_window_t, std);
-	php_ui_window_handlers.free_obj = php_ui_window_free;
 
 	return SUCCESS;
 } /* }}} */
