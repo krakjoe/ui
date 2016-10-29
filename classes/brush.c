@@ -62,7 +62,7 @@ void php_ui_brush_free(zend_object *o) {
 	php_ui_brush_t *brush = php_ui_brush_from(o);
 
 	if (brush->b.NumStops) {
-		free(brush->b.Stops);
+		efree(brush->b.Stops);
 	}
 
 	zend_object_std_dtor(o);
@@ -213,9 +213,9 @@ PHP_METHOD(DrawBrush, addStop)
 	c = php_ui_color_fetch(color);
 
 	if (!brush->b.NumStops) {
-		brush->b.Stops = malloc(sizeof(uiDrawBrushGradientStop));
+		brush->b.Stops = emalloc(sizeof(uiDrawBrushGradientStop));
 	} else {
-		brush->b.Stops = realloc(brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
+		brush->b.Stops = erealloc(brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
 	}
 
 	brush->b.Stops[brush->b.NumStops].Pos = position;
