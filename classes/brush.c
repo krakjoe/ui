@@ -193,12 +193,12 @@ PHP_METHOD(DrawBrush, getColor)
 	color->a = brush->b.A;	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_stop_info, 0, 0, 2)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_add_stop_info, 0, 2, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
 	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void UI\Draw\Brush::addStop(double position, UI\Draw\Color color) */
+/* {{{ proto int UI\Draw\Brush::addStop(double position, UI\Draw\Color color) */
 PHP_METHOD(DrawBrush, addStop)
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
@@ -207,15 +207,16 @@ PHP_METHOD(DrawBrush, addStop)
 	php_ui_color_t *c;
 	
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dO", &position, &color, uiDrawColor_ce) != SUCCESS) {
-		return;
+		RETURN_LONG(-1);
 	}
 
 	c = php_ui_color_fetch(color);
 
 	if (!brush->b.NumStops) {
-		brush->b.Stops = emalloc(sizeof(uiDrawBrushGradientStop));
+		brush->b.Stops = (uiDrawBrushGradientStop*) emalloc(sizeof(uiDrawBrushGradientStop));
 	} else {
-		brush->b.Stops = erealloc(brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
+		brush->b.Stops = (uiDrawBrushGradientStop*) erealloc(
+			brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
 	}
 
 	brush->b.Stops[brush->b.NumStops].Pos = position;
@@ -223,7 +224,52 @@ PHP_METHOD(DrawBrush, addStop)
 	brush->b.Stops[brush->b.NumStops].G   = c->g;
 	brush->b.Stops[brush->b.NumStops].B   = c->b;
 	brush->b.Stops[brush->b.NumStops].A   = c->a;
-	brush->b.NumStops++;	
+	brush->b.NumStops++;
+
+	RETURN_LONG(brush->b.NumStops);	
+} /* }}} */
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_del_stop_info, 0, 1, IS_LONG, NULL, 0)
+	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto int UI\Draw\Brush::delStop(int index) */
+PHP_METHOD(DrawBrush, delStop)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	zend_long index = 0, stop  = 0;
+	uiDrawBrushGradientStop *stops;
+	uiDrawBrushGradientStop *next;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &index) != SUCCESS) {
+		RETURN_LONG(-1);
+	}
+
+	if (!brush->b.NumStops || index < 0) {
+		RETURN_LONG(-1);
+	}
+
+	if (brush->b.NumStops == 1) {
+		efree(brush->b.Stops);
+
+		brush->b.NumStops = 0;
+		brush->b.Stops = NULL;
+		RETURN_LONG(0);
+	}
+
+	stops = next = (uiDrawBrushGradientStop*) ecalloc(brush->b.NumStops - 1, sizeof(uiDrawBrushGradientStop));
+
+	for (stop = 0; stop < brush->b.NumStops; stop++) {
+		if (stop != index) {
+			memcpy(next, &brush->b.Stops[stop], sizeof(uiDrawBrushGradientStop));
+			next++;
+		}
+	}
+
+	brush->b.Stops = stops;
+	brush->b.NumStops--;
+
+	RETURN_LONG(brush->b.NumStops);
 } /* }}} */
 
 /* {{{ */
@@ -233,7 +279,8 @@ const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, setType,     php_ui_brush_set_type_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, setColor,    php_ui_brush_set_color_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, getColor,    php_ui_brush_get_color_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, addStop,     php_ui_brush_stop_info,        ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, addStop,     php_ui_brush_add_stop_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, delStop,     php_ui_brush_del_stop_info,    ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 

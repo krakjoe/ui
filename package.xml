@@ -32,7 +32,9 @@
    UI\Draw\Text\Font::getLeading
    UI\Draw\Text\Font::getUnderlinePosition
    UI\Draw\Text\Font::getUnderlineThickness
+   Radial and Linear Gradients
    UI\Draw\Brush::addStop
+   UI\Draw\Brush::delStop
  </notes>
  <contents>
   <dir name="/">
