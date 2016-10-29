@@ -35,6 +35,7 @@
    Radial and Linear Gradients
    UI\Draw\Brush::addStop
    UI\Draw\Brush::delStop
+   UI\Draw\Brush::setStop
  </notes>
  <contents>
   <dir name="/">

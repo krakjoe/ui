@@ -207,7 +207,7 @@ PHP_METHOD(DrawBrush, addStop)
 	php_ui_color_t *c;
 	
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dO", &position, &color, uiDrawColor_ce) != SUCCESS) {
-		RETURN_LONG(-1);
+		return;
 	}
 
 	c = php_ui_color_fetch(color);
@@ -242,7 +242,7 @@ PHP_METHOD(DrawBrush, delStop)
 	uiDrawBrushGradientStop *next;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &index) != SUCCESS) {
-		RETURN_LONG(-1);
+		return;
 	}
 
 	if (!brush->b.NumStops || index < 0) {
@@ -272,6 +272,40 @@ PHP_METHOD(DrawBrush, delStop)
 	RETURN_LONG(brush->b.NumStops);
 } /* }}} */
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_set_stop_info, 0, 3, _IS_BOOL, NULL, 0)
+	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
+	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto bool UI\Draw\Brush::setStop(int index, double position, UI\Draw\Color color) */
+PHP_METHOD(DrawBrush, setStop)
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	zend_long index = 0;
+	double position = 0;
+	zval *color = NULL;
+	php_ui_color_t *c;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ldO", &index, &position, &color, uiDrawColor_ce) != SUCCESS) {
+		return;
+	}
+
+	if (index < 0 || index >= brush->b.NumStops) {
+		RETURN_FALSE;
+	}
+
+	c = php_ui_color_fetch(color);
+
+	brush->b.Stops[index].Pos = position;
+	brush->b.Stops[index].R   = c->r;
+	brush->b.Stops[index].G   = c->g;
+	brush->b.Stops[index].B   = c->b;
+	brush->b.Stops[index].A   = c->a;
+
+	RETURN_TRUE;	
+} /* }}} */
+
 /* {{{ */
 const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info,   ZEND_ACC_PUBLIC)
@@ -281,6 +315,7 @@ const zend_function_entry php_ui_brush_methods[] = {
 	PHP_ME(DrawBrush, getColor,    php_ui_brush_get_color_info,   ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, addStop,     php_ui_brush_add_stop_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(DrawBrush, delStop,     php_ui_brush_del_stop_info,    ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, setStop,     php_ui_brush_set_stop_info,    ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
 
