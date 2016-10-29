@@ -5,9 +5,12 @@ php:
   - 7.0
   - nightly
 
+addons:
+  apt:
+    packages:
+      - libgtk-3-dev
+
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install libgtk-3-dev -y
   - mkdir deps
   - mkdir deps/lib
   - mkdir deps/include
@@ -15,7 +18,7 @@ before_script:
   - cd libui
   - mkdir build
   - cd build
-  - cmake .. -G "Unix Makefiles"
+  - cmake ..
   - make -j4
   - cp out/libui.* ../../deps/lib
   - cp ../ui*.h ../../deps/include
