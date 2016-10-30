@@ -67,41 +67,50 @@ static zval* php_ui_color_read(zval *object, zval *member, int type, void **cach
 	php_ui_color_t *color = php_ui_color_fetch(object);
 
 	if (Z_TYPE_P(member) != IS_STRING) {
-		return &EG(uninitialized_zval);
+		goto php_std_read_color;
 	}
 
 	if (Z_STRLEN_P(member) != 1) {
-		return &EG(uninitialized_zval);
+		goto php_std_read_color;
 	}
 
-	if (type == BP_VAR_RW || type == BP_VAR_W) {
-		zend_throw_exception_ex(NULL, 0, 
-			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
-		return &EG(uninitialized_zval);	
-	}
+#define php_ui_color_guard() do { \
+	if (type == BP_VAR_RW || type == BP_VAR_W) { \
+		zend_throw_exception_ex(NULL, 0, \
+			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member)); \
+		return &EG(uninitialized_zval);	 \
+	} \
+} while(0)
 
 	switch (Z_STRVAL_P(member)[0]) {
 		case 'r':
 		case 'R':
+			php_ui_color_guard();
 			ZVAL_DOUBLE(rv, color->r);
 			return rv;
 
 		case 'g':
 		case 'G':
+			php_ui_color_guard();
 			ZVAL_DOUBLE(rv, color->g);
 			return rv;
 
 		case 'b':
 		case 'B':
+			php_ui_color_guard();
 			ZVAL_DOUBLE(rv, color->b);
 			return rv;
 
 		case 'a':
 		case 'A':
+			php_ui_color_guard();
 			ZVAL_DOUBLE(rv, color->a);
 			return rv;
 	}
 
+#undef php_ui_color_guard
+
+php_std_read_color:
 	return php_std_handlers.read_property(object, member, type, cache, rv);
 } /* }}} */
 
@@ -115,11 +124,11 @@ void php_ui_color_write(zval *object, zval *member, zval *value, void **cache) {
 	php_ui_color_t *color = php_ui_color_fetch(object);
 
 	if (Z_TYPE_P(member) != IS_STRING) {
-		return;
+		goto php_std_write_color;
 	}
 
 	if (Z_STRLEN_P(member) != 1) {
-		return;
+		goto php_std_write_color;
 	}
 
 	switch (Z_STRVAL_P(member)[0]) {
@@ -144,7 +153,8 @@ void php_ui_color_write(zval *object, zval *member, zval *value, void **cache) {
 			return;
 	}
 
-	return php_std_handlers.write_property(object, member, value, cache);
+php_std_write_color:
+	php_std_handlers.write_property(object, member, value, cache);
 } /* }}} */
 
 zend_object* php_ui_color_create(zend_class_entry *ce) {
@@ -164,25 +174,37 @@ zend_object* php_ui_color_create(zend_class_entry *ce) {
 
 HashTable* php_ui_color_debug(zval *object, int *is_temp) {
 	php_ui_color_t *color = php_ui_color_fetch(object);
-	HashTable *table;
+	HashTable *table, *std;
 	zval tmp;
-	
+	int is_std_temp = 0;
+
 	*is_temp = 1;
-	
+
 	ALLOC_HASHTABLE(table);
 	zend_hash_init(table, 4, NULL, ZVAL_PTR_DTOR, 0);
+	
+	std = php_std_handlers.get_debug_info(object, &is_std_temp);
+
+	if (std) {
+		zend_hash_merge(table, std, zval_add_ref, 1);
+
+		if (is_std_temp) {
+			zend_hash_destroy(std);
+			FREE_HASHTABLE(std);
+		}
+	}
 
 	ZVAL_DOUBLE(&tmp, color->r);
-	zend_hash_str_add(table, "r", sizeof("r")-1, &tmp);
+	zend_hash_str_update(table, "r", sizeof("r")-1, &tmp);
 
 	ZVAL_DOUBLE(&tmp, color->g);
-	zend_hash_str_add(table, "g", sizeof("g")-1, &tmp);
+	zend_hash_str_update(table, "g", sizeof("g")-1, &tmp);
 
 	ZVAL_DOUBLE(&tmp, color->b);
-	zend_hash_str_add(table, "b", sizeof("b")-1, &tmp);
+	zend_hash_str_update(table, "b", sizeof("b")-1, &tmp);
 
 	ZVAL_DOUBLE(&tmp, color->a);
-	zend_hash_str_add(table, "a", sizeof("a")-1, &tmp);
+	zend_hash_str_update(table, "a", sizeof("a")-1, &tmp);
 
 	return table;
 }
