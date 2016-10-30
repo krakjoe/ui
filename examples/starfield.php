@@ -53,7 +53,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 	protected function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
 		$hSize = $size / 2;
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle(Point::at(0), $size);
 		$path->end();
 		$pen->fill($path, new Brush(0x000000FF));
@@ -72,7 +72,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 			if ($pos->x >= 0 && $pos->x <= $size->width && $pos->y >= 0 && $pos->y <= $size->height) {
 				$starSize = (1 - $star[1] / 32) * 5;
 
-				$path = new Path(Path::Winding);
+				$path = new Path();
 				if (PHP_OS == "WINNT") {
 					$path->addRectangle($pos, new Size($starSize, $starSize));
 				} else {

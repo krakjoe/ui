@@ -84,14 +84,14 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(DrawColor, __construct)
 {
 	php_ui_color_t *color = php_ui_color_fetch(getThis());
-	zval *rgb = NULL;
+	zval *rgba = NULL;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z", &rgb) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z", &rgba) != SUCCESS) {
 		return;
 	}
 
 	if (ZEND_NUM_ARGS() > 0) {
-		php_ui_color_set(rgb, 
+		php_ui_color_set(rgba, 
 			&color->r, &color->g, &color->b, &color->a);
 	}
 } /* }}} */
