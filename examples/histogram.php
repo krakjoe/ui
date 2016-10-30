@@ -114,9 +114,7 @@ $histogram = new class($dataSources) extends Area {
 		$path = $this->getGraphPath($points, $graphSize, false);
 
 		$strokeColor = $brush->getColor();
-		$strokeColor
-			->setChannel(Color::Alpha, 
-				$strokeColor->getChannel(Color::Alpha)/2);
+		$strokeColor->a /= 2;
 		$brush->setColor($strokeColor);
 
 		$pen->stroke($path, $brush, $stroke);
