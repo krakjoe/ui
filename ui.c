@@ -77,11 +77,11 @@
 
 void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table) {
 	zval obj;
-	zval *controls;
+	zval *controls, stacked;
 
 	ZVAL_OBJ(&obj, std);
 	
-	controls = zend_read_property(std->ce, &obj, name, nlength, 1, controls);
+	controls = zend_read_property(std->ce, &obj, name, nlength, 1, &stacked);
 
 	if (!controls) {
 		return;
