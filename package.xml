@@ -28,7 +28,10 @@
      UI\Draw\Brush\LinearGradient
      UI\Draw\Brush\RadialGradient
    UI\Draw\Color Improvements:
-     Allow the use of RGB integers in place of UI\Draw\Color
+     Direct access to channels by name (r, g, b, a) as properties, (case insensitive)
+     Allow the use of RRGGBBAA integers in place of UI\Draw\Color
+   UI\Draw\Path Improvements:
+     Use Path::Winding as default mode
  </notes>
  <contents>
   <dir name="/">

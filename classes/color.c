@@ -24,6 +24,7 @@
 #include <classes/control.h>
 #include <classes/color.h>
 
+zend_object_handlers php_std_handlers;
 zend_object_handlers php_ui_color_handlers;
 
 zend_class_entry *uiDrawColor_ce;
@@ -61,6 +62,91 @@ zend_bool php_ui_color_set(zval *color, double *r, double *g, double *b, double 
 	return 0;	
 }
 
+/* {{{ */
+static zval* php_ui_color_read(zval *object, zval *member, int type, void **cache, zval *rv) {
+	php_ui_color_t *color = php_ui_color_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (Z_STRLEN_P(member) != 1) {
+		return &EG(uninitialized_zval);
+	}
+
+	if (type == BP_VAR_RW || type == BP_VAR_W) {
+		zend_throw_exception_ex(NULL, 0, 
+			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
+		return &EG(uninitialized_zval);	
+	}
+
+	switch (Z_STRVAL_P(member)[0]) {
+		case 'r':
+		case 'R':
+			ZVAL_DOUBLE(rv, color->r);
+			return rv;
+
+		case 'g':
+		case 'G':
+			ZVAL_DOUBLE(rv, color->g);
+			return rv;
+
+		case 'b':
+		case 'B':
+			ZVAL_DOUBLE(rv, color->b);
+			return rv;
+
+		case 'a':
+		case 'A':
+			ZVAL_DOUBLE(rv, color->a);
+			return rv;
+	}
+
+	return php_std_handlers.read_property(object, member, type, cache, rv);
+} /* }}} */
+
+/* {{{ */
+zval* php_ui_color_noref(zval *object, zval *member, int type, void **cache) {
+	return NULL;
+} /* }}} */
+
+/* {{{ */
+void php_ui_color_write(zval *object, zval *member, zval *value, void **cache) {
+	php_ui_color_t *color = php_ui_color_fetch(object);
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		return;
+	}
+
+	if (Z_STRLEN_P(member) != 1) {
+		return;
+	}
+
+	switch (Z_STRVAL_P(member)[0]) {
+		case 'r':
+		case 'R':
+			color->r = zval_get_double(value);
+			return;
+
+		case 'g':
+		case 'G':
+			color->g = zval_get_double(value);
+			return;
+
+		case 'b':
+		case 'B':
+			color->b = zval_get_double(value);
+			return;
+
+		case 'a':
+		case 'A':
+			color->a = zval_get_double(value);
+			return;
+	}
+
+	return php_std_handlers.write_property(object, member, value, cache);
+} /* }}} */
+
 zend_object* php_ui_color_create(zend_class_entry *ce) {
 	php_ui_color_t *color = 
 		(php_ui_color_t*) ecalloc(1, sizeof(php_ui_color_t) + zend_object_properties_size(ce));
@@ -74,6 +160,31 @@ zend_object* php_ui_color_create(zend_class_entry *ce) {
 	color->a = 1;
 
 	return &color->std;
+}
+
+HashTable* php_ui_color_debug(zval *object, int *is_temp) {
+	php_ui_color_t *color = php_ui_color_fetch(object);
+	HashTable *table;
+	zval tmp;
+	
+	*is_temp = 1;
+	
+	ALLOC_HASHTABLE(table);
+	zend_hash_init(table, 4, NULL, ZVAL_PTR_DTOR, 0);
+
+	ZVAL_DOUBLE(&tmp, color->r);
+	zend_hash_str_add(table, "r", sizeof("r")-1, &tmp);
+
+	ZVAL_DOUBLE(&tmp, color->g);
+	zend_hash_str_add(table, "g", sizeof("g")-1, &tmp);
+
+	ZVAL_DOUBLE(&tmp, color->b);
+	zend_hash_str_add(table, "b", sizeof("b")-1, &tmp);
+
+	ZVAL_DOUBLE(&tmp, color->a);
+	zend_hash_str_add(table, "a", sizeof("a")-1, &tmp);
+
+	return table;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_construct_info, 0, 0, 0)
@@ -176,15 +287,24 @@ PHP_MINIT_FUNCTION(UI_DrawColor)
 
 	uiDrawColor_ce = zend_register_internal_class(&ce);
 	uiDrawColor_ce->create_object = php_ui_color_create;
+	zend_declare_property_double(uiDrawColor_ce, ZEND_STRL("r"), 0.0, ZEND_ACC_PUBLIC);
+	zend_declare_property_double(uiDrawColor_ce, ZEND_STRL("g"), 0.0, ZEND_ACC_PUBLIC);
+	zend_declare_property_double(uiDrawColor_ce, ZEND_STRL("b"), 0.0, ZEND_ACC_PUBLIC);
+	zend_declare_property_double(uiDrawColor_ce, ZEND_STRL("a"), 0.0, ZEND_ACC_PUBLIC);
 
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Red"), PHP_UI_COLOR_RED);
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Green"), PHP_UI_COLOR_GREEN);
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Blue"), PHP_UI_COLOR_BLUE);
 	zend_declare_class_constant_long(uiDrawColor_ce, ZEND_STRL("Alpha"), PHP_UI_COLOR_ALPHA);
 
-	memcpy(&php_ui_color_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+	memcpy(&php_std_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+	memcpy(&php_ui_color_handlers, &php_std_handlers, sizeof(zend_object_handlers));
 	
 	php_ui_color_handlers.offset = XtOffsetOf(php_ui_color_t, std);
+	php_ui_color_handlers.get_debug_info = php_ui_color_debug;
+	php_ui_color_handlers.read_property = php_ui_color_read;
+	php_ui_color_handlers.get_property_ptr_ptr = php_ui_color_noref;
+	php_ui_color_handlers.write_property = php_ui_color_write;
 
 	return SUCCESS;
 } /* }}} */
