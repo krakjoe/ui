@@ -30,11 +30,11 @@ PHP_MINIT_FUNCTION(UI_Exceptions)
 {
 	zend_class_entry ce;
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\Exception", "InvalidArgumentException", NULL);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Exception", "InvalidArgumentException", NULL);
 
 	uiInvalidArgumentException_ce = zend_register_internal_class_ex(&ce, spl_ce_InvalidArgumentException);
 
-	INIT_NS_CLASS_ENTRY(ce, "UI\Exception", "RuntimeException", NULL);
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Exception", "RuntimeException", NULL);
 
 	uiRuntimeException_ce = zend_register_internal_class_ex(&ce, spl_ce_RuntimeException);
 }

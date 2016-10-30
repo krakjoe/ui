@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/brush.h>
 #include <classes/color.h>
 
@@ -246,7 +247,9 @@ PHP_METHOD(DrawBrush, delStop)
 	}
 
 	if (!brush->b.NumStops || index < 0) {
-		RETURN_LONG(-1);
+		php_ui_exception_ex(InvalidArgumentException,
+			"the stop %ld is not valid", index);
+		return;
 	}
 
 	if (brush->b.NumStops == 1) {
