@@ -71,7 +71,7 @@ zend_object* php_ui_cbutton_create(zend_class_entry *ce) {
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_cbutton_set_color_info, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+	ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 
 /* {{{ proto void ColorButton::setColor(UI\Draw\Color color) */
@@ -79,15 +79,18 @@ PHP_METHOD(ColorButton, setColor)
 {
 	php_ui_cbutton_t *cbutton = php_ui_cbutton_fetch(getThis());
 	zval *color = NULL;
-	php_ui_color_t *c;
+	double r = 0, g = 0, b = 0, a = 1;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &color, uiDrawColor_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &color) != SUCCESS) {
 		return;
 	}
 	
-	c = php_ui_color_fetch(color);
+	if (!php_ui_color_set(color, &r, &g, &b, &a)) {
+		php_ui_exception("failed to set color");
+		return;
+	}
 
-	uiColorButtonSetColor(cbutton->b, c->r, c->g, c->b, c->a);
+	uiColorButtonSetColor(cbutton->b, r, g, b, a);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_cbutton_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)

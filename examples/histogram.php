@@ -82,7 +82,7 @@ $histogram = new class($dataSources) extends Area {
 		$path->addRectangle($clipPoint, $areaSize);
 		$path->end();
 
-		$pen->fill($path, new Brush(Brush::Solid, new Color(0xFFFFFF, 1)));
+		$pen->fill($path, new Brush(new Color(0xFFFFFF)));
 	
 		$graphSize = new Size($areaSize->width - 40, $areaSize->height - 40);
 
@@ -97,9 +97,9 @@ $histogram = new class($dataSources) extends Area {
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
 		
-		$black = new Color(0x000000, 1);
+		$black = new Color(0x000000);
 
-		$pen->stroke($path, new Brush(Brush::Solid, $black), $stroke);
+		$pen->stroke($path, new Brush($black), $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($zero);
@@ -110,7 +110,7 @@ $histogram = new class($dataSources) extends Area {
 
 		$path = $this->getGraphPath($points, $graphSize, true);
 
-		$brush = new Brush(Brush::Solid, $this->color->getColor());
+		$brush = new Brush($this->color->getColor());
 
 		$pen->fill($path, $brush);
 
@@ -165,11 +165,11 @@ $histogram = new class($dataSources) extends Area {
 $colorBox = new Entry();
 $colorBox->setText("0x8892BF");
 
-$colorButton = new class($histogram, $colorBox, new Color(0x8892BF, 1)) extends ColorButton {
+$colorButton = new class($histogram, $colorBox, new Color(0x8892BF)) extends ColorButton {
 
 	protected function onChange() {
 		$redrawColor = $this->getColor();
-
+		
 		$this->entry->setText(sprintf(
 			"0x%02X%02X%02X",
 				$redrawColor->getChannel(Color::Red) * 255,
@@ -233,7 +233,8 @@ $colorBoxButton = new class("Set Color", $colorButton, $colorBox, $redrawHistogr
 	protected function onClick() {
 		$this->button->setColor(
 			new Color(
-				hexdec($this->entry->getText()), 1));
+				hexdec($this->entry->getText())));
+
 		($this->redraw)();
 	}
 

@@ -89,12 +89,12 @@ $app->setGame(new class($box) extends Area{
 		$path->addRectangle($zero, $size);
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, new Color(0xf5f5f5, 1));
+		$brush = new Brush(0xf5f5f5);
+
 		$pen->fill($path, $brush);
 
 		$stroke = new Stroke();	
-		$brush->setColor(
-			new Color(0, 255));
+		$brush->setColor(0);
 		$pen->stroke($path, $brush, $stroke);
 
 		$path = new Path(Path::Winding);
@@ -188,12 +188,12 @@ $app->setGame(new class($box) extends Area{
 		$path->addRectangle($point * 10, new Size(10, 10));
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, new Color(0x0000FF, 1));
+		$brush = new Brush(0x0000FF);
 		$pen->fill($path, $brush);
 		
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		$brush->setColor(new Color(0x000000, 1));
+		$brush->setColor(0x000000);
 
 		$pen->stroke($path, $brush, $stroke);
 	}
@@ -205,7 +205,7 @@ $app->setGame(new class($box) extends Area{
 			$this->score
 		), new Font(new Descriptor("arial", 12)), $size->width);
 
-		$layout->setColor(new Color(0x000000, 1));
+		$layout->setColor(0x000000);
 
 		$pen->write(new Point(20, 10), $layout);
 	}
@@ -218,7 +218,7 @@ $app->setGame(new class($box) extends Area{
 			$this->score
 		), new Font(new Descriptor("arial", 12)), $size->width);
 
-		$layout->setColor(new Color(0x000000, 1));
+		$layout->setColor(0x000000);
 	
 		$pen->write(new Point(20, 10), $layout);
 	}

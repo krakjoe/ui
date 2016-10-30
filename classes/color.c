@@ -28,6 +28,39 @@ zend_object_handlers php_ui_color_handlers;
 
 zend_class_entry *uiDrawColor_ce;
 
+zend_bool php_ui_color_set(zval *color, double *r, double *g, double *b, double *a) {
+
+	if (Z_TYPE_P(color) == IS_OBJECT) {
+		php_ui_color_t *object;
+
+		if (!instanceof_function(Z_OBJCE_P(color), uiDrawColor_ce)) {
+			return 0;
+		}
+
+		object  = php_ui_color_fetch(color);
+
+		*r = object->r;
+		*g = object->g;
+		*b = object->b;
+		*a = object->a;
+
+		return 1;
+	}
+
+	if (Z_TYPE_P(color) == IS_LONG || Z_TYPE_P(color) == IS_DOUBLE) {
+		uint32_t components = zval_get_double(color);
+		
+		*r = ((double) (uint8_t) ((components >> 16) & 0xFF)) / 255;
+		*g = ((double) (uint8_t) ((components >> 8) & 0xFF)) / 255;
+		*b = ((double) (uint8_t) (components & 0xFF)) / 255;
+		*a = 1.0;
+
+		return 1;
+	}
+
+	return 0;	
+}
+
 zend_object* php_ui_color_create(zend_class_entry *ce) {
 	php_ui_color_t *color = 
 		(php_ui_color_t*) ecalloc(1, sizeof(php_ui_color_t) + zend_object_properties_size(ce));
@@ -38,37 +71,28 @@ zend_object* php_ui_color_create(zend_class_entry *ce) {
 
 	color->std.handlers = &php_ui_color_handlers;
 
+	color->a = 1;
+
 	return &color->std;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_construct_info, 0, 0, 0)
-	ZEND_ARG_TYPE_INFO(0, rgb, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, alpha, IS_DOUBLE, 0)
+	ZEND_ARG_INFO(0, rgb)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawColor DrawColor::__construct([int rgb = 0, double alpha = ]) */
+/* {{{ proto DrawColor DrawColor::__construct([int|double rgb = 0]) */
 PHP_METHOD(DrawColor, __construct)
 {
 	php_ui_color_t *color = php_ui_color_fetch(getThis());
-	zend_long rgb = 0;
-	double alpha = 0;
-	uint8_t component;
+	zval *rgb = NULL;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|ld", &rgb, &alpha) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z", &rgb) != SUCCESS) {
 		return;
 	}
 
-	if (rgb) {
-		component = (uint8_t) ((rgb >> 16) & 0xFF);
-		color->r = ((double) component) / 255;
-		component = (uint8_t) ((rgb >> 8) & 0xFF);
-		color->g = ((double) component) / 255;
-		component = (uint8_t) (rgb & 0xFF);
-		color->b = ((double) component) / 255;
-	}
-
-	if (ZEND_NUM_ARGS() > 1) {
-		color->a = alpha;
+	if (ZEND_NUM_ARGS() > 0) {
+		php_ui_color_set(rgb, 
+			&color->r, &color->g, &color->b, &color->a);
 	}
 } /* }}} */
 
