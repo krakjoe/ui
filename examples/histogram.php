@@ -167,10 +167,10 @@ $colorButton = new class($histogram, $colorBox, new Color(0x8892BFFF)) extends C
 		
 		$this->entry->setText(sprintf(
 			"0x%02X%02X%02X%02X",
-				$redrawColor->getChannel(Color::Red) * 255,
-				$redrawColor->getChannel(Color::Green) * 255,
-				$redrawColor->getChannel(Color::Blue) * 255,
-				$redrawColor->getChannel(Color::Alpha) * 255));
+				$redrawColor->r * 255,
+				$redrawColor->g * 255,
+				$redrawColor->b * 255,
+				$redrawColor->a * 255));
 
 		$this->histogram->redraw();
 	}
@@ -192,10 +192,10 @@ $redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
 
 	$colorBox->setText(sprintf(
 		"0x%02X%02X%02X%02X",
-			$redrawColor->getChannel(Color::Red) * 255,
-			$redrawColor->getChannel(Color::Green) * 255,
-			$redrawColor->getChannel(Color::Blue) * 255,
-			$redrawColor->getChannel(Color::Alpha) * 255));
+			$redrawColor->r * 255,
+			$redrawColor->g * 255,
+			$redrawColor->b * 255,
+			$redrawColor->a * 255));
 
 	$histogram->redraw();
 };
