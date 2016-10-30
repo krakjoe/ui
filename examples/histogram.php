@@ -56,7 +56,7 @@ $histogram = new class($dataSources) extends Area {
 	}
 
 	private function getGraphPath(array $locations, Size $size, bool $extend = false) : Path {
-		$path = new Path(Path::Winding);
+		$path = new Path();
 
 		$path->newFigure(array_shift($locations));
 
@@ -65,7 +65,7 @@ $histogram = new class($dataSources) extends Area {
 		}
 
 		if ($extend) {
-			$path->lineTo(new Point($size->width, $size->height));
+			$path->lineTo(Point::at($size));
 			$path->lineTo(new Point(0, $size->height));
 			$path->closeFigure();
 		}
@@ -78,28 +78,25 @@ $histogram = new class($dataSources) extends Area {
 	protected function onDraw(Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) {
 		$start = microtime(true);
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($clipPoint, $areaSize);
 		$path->end();
 
-		$pen->fill($path, new Brush(new Color(0xFFFFFFFF)));
+		$pen->fill($path, 0xFFFFFFFF);
 	
-		$graphSize = new Size($areaSize->width - 40, $areaSize->height - 40);
+		$graphSize = $areaSize - 40;
 
-		$zero = new Point(20, 20);
+		$zero = Point::at(20);
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->newFigure($zero);
 		$path->lineTo(new Point(20, 20 + $graphSize->height));
-		$path->lineTo(new Point(20 + $graphSize->width, 20 + $graphSize->height));	
+		$path->lineTo(Point::at($graphSize + 20));	
 		$path->end();
 
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		
-		$black = new Color(0x000000FF);
-
-		$pen->stroke($path, new Brush($black), $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($zero);
@@ -130,7 +127,7 @@ $histogram = new class($dataSources) extends Area {
 			$this->font->getFont(),
 			$clipSize->width
 		);
-		$layout->setColor($black);
+		$layout->setColor(0x000000FF);
 
 		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}

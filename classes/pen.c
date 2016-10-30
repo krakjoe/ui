@@ -21,9 +21,11 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/point.h>
 #include <classes/size.h>
 #include <classes/path.h>
+#include <classes/color.h>
 #include <classes/brush.h>
 #include <classes/matrix.h>
 #include <classes/stroke.h>
@@ -60,51 +62,81 @@ zval* php_ui_pen_construct(zval *object, uiDrawContext *c) {
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_fill_info, 0, 0, 2)
 	ZEND_ARG_OBJ_INFO(0, path, UI\\Draw\\Path, 0)
-	ZEND_ARG_OBJ_INFO(0, brush, UI\\Draw\\Brush, 0)
+	ZEND_ARG_INFO(0, with)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Pen::fill(UI\Draw\Path path, UI\Draw\Brush brush) */
+/* {{{ proto void Pen::fill(UI\Draw\Path path, UI\Draw\Brush with)
+       proto void Pen::fill(UI\Draw\Path path, UI\Draw\Color with) */
 PHP_METHOD(DrawPen, fill) 
 {
 	php_ui_pen_t *c = php_ui_pen_fetch(getThis());
-	zval *path = NULL, *brush = NULL;
+	zval *path = NULL, *with = NULL;
 	php_ui_path_t *p;
-	php_ui_brush_t *b;
-	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &path, uiDrawPath_ce, &brush, uiDrawBrush_ce) != SUCCESS) {
+	uiDrawBrush u;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Oz", &path, uiDrawPath_ce, &with) != SUCCESS) {
 		return;
 	}
 
-	p = php_ui_path_fetch(path);
-	b = php_ui_brush_fetch(brush);
+	if (Z_TYPE_P(with) == IS_OBJECT && instanceof_function(Z_OBJCE_P(with), uiDrawBrush_ce)) {
+		php_ui_brush_t *o = 
+			php_ui_brush_fetch(with);
 
-	uiDrawFill(c->c, p->p, &b->b);
+		u = o->b;
+	} else {
+		u.Type = uiDrawBrushTypeSolid;
+		
+		if (!php_ui_color_set(with, &u.R, &u.G, &u.B, &u.A)) {
+			php_ui_exception_ex(InvalidArgumentException, 
+				"failed to set color for brush");
+			return;
+		}
+	}
+
+	p = php_ui_path_fetch(path);
+
+	uiDrawFill(c->c, p->p, &u);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_stroke_info, 0, 0, 3)
 	ZEND_ARG_OBJ_INFO(0, path, UI\\Draw\\Path, 0)
-	ZEND_ARG_OBJ_INFO(0, brush, UI\\Draw\\Brush, 0)
+	ZEND_ARG_INFO(0, with)
 	ZEND_ARG_OBJ_INFO(0, stroke, UI\\Draw\\Stroke, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Pen::stroke(UI\Draw\Path path, UI\Draw\Brush brush, UI\Draw\Stroke stroke) */
+/* {{{ proto void Pen::stroke(UI\Draw\Path path, UI\Draw\Brush with, UI\Draw\Stroke stroke)
+	   proto void Pen::stroke(UI\Draw\Path peth, UI\Draw\Color with, UI\Draw\Stroke stroke) */
 PHP_METHOD(DrawPen, stroke)
 {
 	php_ui_pen_t *c = php_ui_pen_fetch(getThis());
-	zval *path = NULL, *brush = NULL, *stroke = NULL;
+	zval *path = NULL, *with = NULL, *stroke = NULL;
 	php_ui_path_t *p;
-	php_ui_brush_t *b;
 	php_ui_stroke_t *s;
+	uiDrawBrush u;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OOO", &path, uiDrawPath_ce, &brush, uiDrawBrush_ce, &stroke, uiDrawStroke_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OzO", &path, uiDrawPath_ce, &with, &stroke, uiDrawStroke_ce) != SUCCESS) {
 		return;
 	}
 
+	if (Z_TYPE_P(with) == IS_OBJECT && instanceof_function(Z_OBJCE_P(with), uiDrawBrush_ce)) {
+		php_ui_brush_t *o = 
+			php_ui_brush_fetch(with);
+
+		u = o->b;
+	} else {
+		u.Type = uiDrawBrushTypeSolid;
+
+		if (!php_ui_color_set(with, &u.R, &u.G, &u.B, &u.A)) {
+			php_ui_exception_ex(InvalidArgumentException, 
+				"failed to set color for brush");
+			return;
+		}
+	}
+
 	p = php_ui_path_fetch(path);
-	b = php_ui_brush_fetch(brush);
 	s = php_ui_stroke_fetch(stroke);
 
-	uiDrawStroke(c->c, p->p, &b->b, &s->s);
+	uiDrawStroke(c->c, p->p, &u, &s->s);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_pen_transform_info, 0, 0, 1)

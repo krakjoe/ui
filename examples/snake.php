@@ -85,23 +85,21 @@ $app->setGame(new class($box) extends Area{
 		$frame = $zero + 40;
 		$frameSize = $size - 80;
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($zero, $size);
 		$path->end();
 
-		$brush = new Brush(0xf5f5f5ff);
-
-		$pen->fill($path, $brush);
+		$pen->fill($path, 0xf5f5f5ff);
 
 		$stroke = new Stroke();	
-		$brush->setColor(0x000000FF);
-		$pen->stroke($path, $brush, $stroke);
 
-		$path = new Path(Path::Winding);
+		$pen->stroke($path, 0x000000FF, $stroke);
+
+		$path = new Path();
 		$path->addRectangle($frame, $frameSize);
 		$path->end();
 
-		$pen->stroke($path, $brush, $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($frame);
@@ -184,18 +182,16 @@ $app->setGame(new class($box) extends Area{
 	}
 
 	private function newCell(Pen $pen, Point $point) {
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($point * 10, new Size(10, 10));
 		$path->end();
 
-		$brush = new Brush(0x0000FFFF);
-		$pen->fill($path, $brush);
+		$pen->fill($path, 0x0000FFFF);
 		
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		$brush->setColor(0x000000FF);
 
-		$pen->stroke($path, $brush, $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 	}
 
 	private function drawPause(Pen $pen, Size $size) {

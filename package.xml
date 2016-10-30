@@ -32,6 +32,8 @@
      Allow the use of RRGGBBAA integers in place of UI\Draw\Color
    UI\Draw\Path Improvements:
      Use Path::Winding as default mode
+   UI\Draw\Pen Improvements:
+     Allow UI\Draw\Color (or RRGGBBAA integer) in place of UI\Draw\Brush (fill, stroke)
  </notes>
  <contents>
   <dir name="/">
