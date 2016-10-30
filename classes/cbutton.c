@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/control.h>
 #include <classes/cbutton.h>
 #include <classes/color.h>

@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/descriptor.h>
 #include <classes/layout.h>
 #include <classes/font.h>
