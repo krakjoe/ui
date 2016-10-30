@@ -81,12 +81,12 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$path->end();
 
 				$color = new Color();
-				$color->setChannel(Color::Red, $starSize);
-				$color->setChannel(Color::Green, $starSize);
-				$color->setChannel(Color::Blue, $starSize);
-
+				$color->r = $starSize;
+				$color->g = $starSize;
+				$color->b = $starSize;
+				
 				if ($star[2] && $star[3]++ % 3 == 0) {
-					$color->setChannel(Color::Alpha, mt_rand(0,10)/10);
+					$color->a = mt_rand(0,10) / 10;
 				}
 
 				$pen->fill($path, new Brush($color));
