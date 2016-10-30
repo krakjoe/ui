@@ -77,10 +77,10 @@ zend_object* php_ui_color_create(zend_class_entry *ce) {
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_color_construct_info, 0, 0, 0)
-	ZEND_ARG_INFO(0, rgb)
+	ZEND_ARG_INFO(0, rgba)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawColor DrawColor::__construct([int|double rgb = 0]) */
+/* {{{ proto DrawColor DrawColor::__construct([int|double rgba = 0]) */
 PHP_METHOD(DrawColor, __construct)
 {
 	php_ui_color_t *color = php_ui_color_fetch(getThis());
