@@ -50,10 +50,10 @@ zend_bool php_ui_color_set(zval *color, double *r, double *g, double *b, double 
 	if (Z_TYPE_P(color) == IS_LONG || Z_TYPE_P(color) == IS_DOUBLE) {
 		uint32_t components = zval_get_double(color);
 		
-		*r = ((double) (uint8_t) ((components >> 16) & 0xFF)) / 255;
-		*g = ((double) (uint8_t) ((components >> 8) & 0xFF)) / 255;
-		*b = ((double) (uint8_t) (components & 0xFF)) / 255;
-		*a = 1.0;
+		*r = ((double) (uint8_t) ((components >> 24) & 0xFF)) / 255;
+		*g = ((double) (uint8_t) ((components >> 16) & 0xFF)) / 255;
+		*b = ((double) (uint8_t) ((components >> 8) & 0xFF)) / 255;
+		*a = ((double) (uint8_t) (components & 0xFF)) / 255;
 
 		return 1;
 	}

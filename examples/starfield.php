@@ -56,7 +56,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 		$path = new Path(Path::Winding);
 		$path->addRectangle(Point::at(0), $size);
 		$path->end();
-		$pen->fill($path, new Brush(0x000000));
+		$pen->fill($path, new Brush(0x000000FF));
 
 		foreach ($this->stars as $idx => &$star) {
 			$star[1] -= $this->velocity / 10;
@@ -106,7 +106,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$this->frames[$now-1] : $this->frames[$now]
 		), $this->font, $size->width);
 
-		$layout->setColor(0xFFFFFF);
+		$layout->setColor(0xFFFFFFFF);
 	
 		$pen->write(new Point(20, 20), $layout);
 
