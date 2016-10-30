@@ -37,6 +37,8 @@
    UI\Draw\Brush::delStop
    UI\Draw\Brush::setStop
    Exceptions
+   Arrangement controls child list
+   Arrangement controls API improvements
  </notes>
  <contents>
   <dir name="/">
