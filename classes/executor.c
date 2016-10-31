@@ -112,6 +112,16 @@ php_ui_executor_handler_leave:
     pthread_mutex_unlock(&executor->monitors[1].m);
 }
 
+static inline void php_ui_executor_time_set(struct timespec *result, zend_long timeout) {
+	result->tv_sec = 0;
+	result->tv_nsec = timeout * 1000;
+	
+	while (result->tv_nsec >= 1000000000L) {
+		result->tv_sec++ ; 
+		result->tv_nsec -= 1000000000L ;
+	}
+}
+
 static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
 	result->tv_sec = a->tv_sec + b->tv_sec;
 	result->tv_nsec = a->tv_nsec + b->tv_nsec;
@@ -142,22 +152,21 @@ void* php_ui_executor_thread(void *arg) {
 
     while(!executor->monitors[0].flag) {
             if (executor->gap) {
-					struct timespec next;
+					struct timespec gap;
 
-					next.tv_sec = 0;
-					next.tv_nsec = executor->gap * 1000;
-
-                    php_ui_executor_time_add(&spec, &next, &spec);
+					php_ui_executor_time_set(&gap, executor->gap);
+                    php_ui_executor_time_add(&spec, &gap, &spec);
 
                     switch (pthread_cond_timedwait(&executor->monitors[0].c, &executor->monitors[0].m, &spec)) {
  						case SUCCESS:
-							/* we were notified to wake up */
-							continue;
+							if (!executor->gap || executor->monitors[0].flag) { /* new gap was set */
+								continue;
+							}
 					}
             } else {
                     switch (pthread_cond_wait(&executor->monitors[0].c, &executor->monitors[0].m)) {
 						case SUCCESS:
-							if (executor->gap) { /* new gap was set */
+							if (executor->gap || executor->monitors[0].flag) { /* new gap was set */
 								gettimeofday(&time, NULL);
 
 								spec.tv_sec = time.tv_sec;
