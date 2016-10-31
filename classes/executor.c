@@ -69,14 +69,12 @@ zend_object* php_ui_executor_create(zend_class_entry *ce) {
 void php_ui_executor_free(zend_object *o) {
 	php_ui_executor_t *executor = php_ui_executor_from(o);
 
-	if (executor->thread) {
-		if (pthread_mutex_lock(&executor->monitors[0].m) == SUCCESS) {
-			executor->monitors[0].flag = 1;
-			pthread_cond_signal(&executor->monitors[0].c);
-			pthread_mutex_unlock(&executor->monitors[0].m);
-		}
-		pthread_join(executor->thread, NULL);
+	if (pthread_mutex_lock(&executor->monitors[0].m) == SUCCESS) {
+		executor->monitors[0].flag = 1;
+		pthread_cond_signal(&executor->monitors[0].c);
+		pthread_mutex_unlock(&executor->monitors[0].m);
 	}
+	pthread_join(executor->thread, NULL);
 
 	php_ui_monitor_destroy(&executor->monitors[0]);
 	php_ui_monitor_destroy(&executor->monitors[1]);
