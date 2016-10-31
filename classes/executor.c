@@ -21,6 +21,10 @@
 
 #include "php.h"
 
+#ifdef _WIN32
+#	define HAVE_STRUCT_TIMESPEC
+#endif
+
 #include <pthread.h>
 
 #include <classes/exceptions.h>
@@ -30,6 +34,8 @@
 zend_object_handlers php_ui_executor_handlers;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
+#define php_ui_executor_has_gap(e) ((e)->gap.tv_sec || (e)->gap.tv_nsec)
 
 zend_class_entry *uiExecutor_ce;
 
@@ -112,10 +118,10 @@ php_ui_executor_handler_leave:
     pthread_mutex_unlock(&executor->monitors[1].m);
 }
 
-static inline void php_ui_executor_time_set(struct timespec *result, zend_long timeout) {
-	result->tv_sec = 0;
-	result->tv_nsec = timeout * 1000;
-	
+static inline void php_ui_executor_time_set(struct timespec *result, uint32_t seconds, uint32_t microseconds) {
+	result->tv_sec = seconds;
+	result->tv_nsec = microseconds * 1000;
+
 	while (result->tv_nsec >= 1000000000L) {
 		result->tv_sec++ ; 
 		result->tv_nsec -= 1000000000L ;
@@ -137,7 +143,7 @@ void* php_ui_executor_thread(void *arg) {
     struct timeval time;
     struct timespec spec;
 
-    if (executor->gap) {
+    if (php_ui_executor_has_gap(executor)) {
             if (gettimeofday(&time, NULL) != SUCCESS) {
                     pthread_exit(NULL);
             }
@@ -151,22 +157,21 @@ void* php_ui_executor_thread(void *arg) {
     }
 
     while(!executor->monitors[0].flag) {
-            if (executor->gap) {
+            if (php_ui_executor_has_gap(executor)) {
 					struct timespec gap;
 
-					php_ui_executor_time_set(&gap, executor->gap);
-                    php_ui_executor_time_add(&spec, &gap, &spec);
+                    php_ui_executor_time_add(&spec, &executor->gap, &spec);
 
                     switch (pthread_cond_timedwait(&executor->monitors[0].c, &executor->monitors[0].m, &spec)) {
  						case SUCCESS:
-							if (!executor->gap || executor->monitors[0].flag) { /* new gap was set */
+							if (!php_ui_executor_has_gap(executor) || executor->monitors[0].flag) { /* new gap was set */
 								continue;
 							}
 					}
             } else {
                     switch (pthread_cond_wait(&executor->monitors[0].c, &executor->monitors[0].m)) {
 						case SUCCESS:
-							if (executor->gap || executor->monitors[0].flag) { /* new gap was set */
+							if (php_ui_executor_has_gap(executor) || executor->monitors[0].flag) { /* new gap was set */
 								gettimeofday(&time, NULL);
 
 								spec.tv_sec = time.tv_sec;
@@ -195,66 +200,55 @@ void* php_ui_executor_thread(void *arg) {
     pthread_exit(NULL);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, gap, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Executor Executor::__construct(integer gap) */
+/* {{{ proto Executor Executor::__construct(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, __construct) 
 {
 	php_ui_executor_t *executor = php_ui_executor_fetch(getThis());
-	zend_long gap = 0;
+	zend_long seconds = 0;
+	zend_long microseconds = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &gap) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &seconds, &microseconds) != SUCCESS) {
 		return;
 	}
 
-	executor->gap = gap;
+	php_ui_executor_time_set(&executor->gap, (uint32_t) seconds, (uint32_t) microseconds);
 
 	if (pthread_create(&executor->thread, NULL, php_ui_executor_thread, executor) != SUCCESS) {
 		php_ui_exception("failed to create executor thread, panic");
 	}
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_set_gap_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, gap, IS_LONG, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_set_gap_info, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Executor::setGap(integer gap) */
+/* {{{ proto void Executor::setGap(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, setGap)
 {
 	php_ui_executor_t *executor = php_ui_executor_fetch(getThis());
-	zend_long gap = 0;
+	zend_long seconds = 0;
+	zend_long microseconds = 0;
 	zend_bool wakeup = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &gap) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &seconds, &microseconds) != SUCCESS) {
 		return;
 	}
 
-	if (!executor->gap) {
+	if (!php_executor_has_gap(executor)) {
 		wakeup = 1;
 	}
 
-	executor->gap = gap;
+	php_ui_executor_time_set(&executor->gap, (uint32_t) seconds, (uint32_t) microseconds);
 
 	if (wakeup) {
 		pthread_cond_signal(&executor->monitors[0].c);
 	}
-} /* }}} */
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_executor_get_gap_info, 0, 0, IS_LONG, NULL, 0)
-ZEND_END_ARG_INFO();
-
-/* {{{ proto integer Executor::getGap(void) */
-PHP_METHOD(Executor, getGap)
-{
-	php_ui_executor_t *executor = php_ui_executor_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		return;
-	}
-
-	RETURN_LONG(executor->gap);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_executor_stop_info, 0, 0, _IS_BOOL, NULL, 0)
@@ -282,7 +276,6 @@ PHP_METHOD(Executor, stop)
 const zend_function_entry php_ui_executor_methods[] = {
 	PHP_ME(Executor, __construct, php_ui_executor_construct_info, ZEND_ACC_PUBLIC)
 	PHP_ME(Executor, setGap,     php_ui_executor_set_gap_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(Executor, getGap,     php_ui_executor_get_gap_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Executor, stop,       php_ui_executor_stop_info,       ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
