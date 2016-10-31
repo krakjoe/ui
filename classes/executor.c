@@ -240,7 +240,7 @@ PHP_METHOD(Executor, setGap)
 		return;
 	}
 
-	if (!php_executor_has_gap(executor)) {
+	if (!php_ui_executor_has_gap(executor)) {
 		wakeup = 1;
 	}
 
