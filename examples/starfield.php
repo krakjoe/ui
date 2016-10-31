@@ -13,19 +13,9 @@ use UI\Draw\Brush;
 use UI\Draw\Path;
 use UI\Draw\Color;
 
-$app = new class extends App {
-	public function setStars(Area $stars) {
-		$this->stars = $stars;
+use UI\Executor;
 
-	}
-
-	protected function onTick() {
-		$this->stars->redraw();	
-	}
-
-	private $stars;
-};
-
+$app = new App;
 $win = new Window($app, "Starfield", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
@@ -34,7 +24,7 @@ $font = new UI\Draw\Text\Font(
 	new UI\Draw\Text\Font\Descriptor("arial", 12)			
 );
 
-$app->setStars(new class($box, 1024, 64, $font) extends Area {
+$stars = new class($box, 1024, 64, $font) extends Area {
 
 	protected function onKey(string $key, int $ext, int $flags) {
 		if ($flags & Area::Down) {
@@ -131,13 +121,23 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 
 		$this->box->append($this, true);
 	}
-});
+};
+
+$animator = new class(0, 1000000/60, $stars) extends Executor {
+
+	public function onExecute() {
+		$this->area->redraw();
+	}
+
+	public function __construct(int $seconds, int $microseconds, Area $area) {
+		$this->area = $area;
+
+		parent::__construct(
+			$seconds, $microseconds);
+	}
+};
 
 $win->show();
 
-do {
-	$app->run(App::Loop);
-} while($win->isVisible());
-
-$app->quit();
+$app->run();
 ?>
