@@ -118,22 +118,28 @@ php_ui_executor_handler_leave:
     pthread_mutex_unlock(&executor->monitors[1].m);
 }
 
-static inline void php_ui_executor_time_set(struct timespec *result, uint32_t seconds, uint32_t microseconds) {
+static inline void php_ui_executor_time_set(struct timespec *result, zend_long seconds, zend_long microseconds) {
+	if (seconds < 0 || microseconds < 0) {
+		php_ui_exception_ex(InvalidArgumentException, 
+			"seconds or microseconds must not be negative");
+		return;
+	}
+
+	while (microseconds >= 1000000L) {
+		seconds++;
+		microseconds -= 1000000L;
+	}
+
 	result->tv_sec = seconds;
 	result->tv_nsec = microseconds * 1000;
-
-	while (result->tv_nsec >= 1000000000L) {
-		result->tv_sec++ ; 
-		result->tv_nsec -= 1000000000L ;
-	}
 }
 
 static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
 	result->tv_sec = a->tv_sec + b->tv_sec;
 	result->tv_nsec = a->tv_nsec + b->tv_nsec;
 
-	while (result->tv_nsec >= 1000000000L) {
-		result->tv_sec++ ; 
+	if (result->tv_nsec >= 1000000000L) {
+		result->tv_sec++ ;
 		result->tv_nsec -= 1000000000L ;
 	}
 }
