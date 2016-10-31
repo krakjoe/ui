@@ -112,6 +112,16 @@ php_ui_executor_handler_leave:
     pthread_mutex_unlock(&executor->monitors[1].m);
 }
 
+static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
+	result->tv_sec = a->tv_sec + b->tv_sec;
+	result->tv_nsec = a->tv_nsec + b->tv_nsec;
+
+	while (result->tv_nsec >= 1000000000L) {
+		result->tv_sec++ ; 
+		result->tv_nsec -= 1000000000L ;
+	}
+}
+
 void* php_ui_executor_thread(void *arg) {
     php_ui_executor_t *executor = (php_ui_executor_t*) arg;
     struct timeval time;
@@ -121,6 +131,9 @@ void* php_ui_executor_thread(void *arg) {
             if (gettimeofday(&time, NULL) != SUCCESS) {
                     pthread_exit(NULL);
             }
+
+			spec.tv_sec = time.tv_sec;
+			spec.tv_nsec = time.tv_usec * 1000;
     }
 
     if (pthread_mutex_lock(&executor->monitors[0].m) != SUCCESS) {
@@ -129,12 +142,12 @@ void* php_ui_executor_thread(void *arg) {
 
     while(!executor->monitors[0].flag) {
             if (executor->gap) {
-                    time.tv_sec += (executor->gap / 1000000L);
-                    time.tv_sec += (time.tv_usec + (executor->gap % 1000000L)) / 1000000L;
-                    time.tv_usec = (time.tv_usec + (executor->gap % 1000000L)) % 1000000L;
+					struct timespec next;
 
-                    spec.tv_sec = time.tv_sec;
-                    spec.tv_nsec = time.tv_usec * 1000;
+					next.tv_sec = 0;
+					next.tv_nsec = executor->gap * 1000;
+
+                    php_ui_executor_time_add(&spec, &next, &spec);
 
                     switch (pthread_cond_timedwait(&executor->monitors[0].c, &executor->monitors[0].m, &spec)) {
  						case SUCCESS:
@@ -146,6 +159,9 @@ void* php_ui_executor_thread(void *arg) {
 						case SUCCESS:
 							if (executor->gap) { /* new gap was set */
 								gettimeofday(&time, NULL);
+
+								spec.tv_sec = time.tv_sec;
+								spec.tv_nsec = time.tv_usec * 1000;
 								continue;
 							}
                     }
