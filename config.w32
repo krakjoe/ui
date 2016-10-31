@@ -5,7 +5,10 @@ ARG_WITH("ui", "for ui support", "no");
 
 if (PHP_UI != "no") {
 	if (CHECK_HEADER_ADD_INCLUDE("ui.h", "CFLAGS_UI", PHP_UI + ";" + configure_module_dirname) &&
-		CHECK_LIB("libui.lib", "ui", PHP_UI)) {
+		CHECK_LIB("libui.lib", "ui", PHP_UI) &&
+		CHECK_HEADER_ADD_INCLUDE("pthread.h", "CFLAGS_UI", PHP_UI + ";" + configure_module_dirname) && 
+		CHECK_HEADER_ADD_INCLUDE("sched.h", "CFLAGS_UI", PHP_UI + ";" + configure_module_dirname) &&
+		CHECK_LIB("pthreadVC2.lib", "ui", PHP_UI)) {
 		EXTENSION("ui", "ui.c", PHP_UI_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 /I" + configure_module_dirname);
 		ADD_SOURCES(
 			configure_module_dirname + '/classes',

@@ -46,10 +46,13 @@ if test "$PHP_UI" != "no"; then
     AC_DEFINE(HAVE_UI_X_THREADS,1,[ ])
   fi
 
+  EXTRA_LDFLAGS="$EXTRA_LDFLAGS -pthread"
+
   PHP_ADD_BUILD_DIR($ext_builddir/classes, 1)
   PHP_ADD_INCLUDE($ext_builddir)
 
   PHP_SUBST(UI_SHARED_LIBADD)
+  PHP_SUBST(EXTRA_LDFLAGS)
 
-  PHP_NEW_EXTENSION(ui, ui.c classes/form.c classes/grid.c classes/app.c classes/window.c classes/control.c classes/tab.c classes/box.c classes/check.c classes/button.c classes/cbutton.c classes/label.c classes/entry.c classes/multi.c classes/group.c classes/spin.c classes/slider.c classes/progress.c classes/separator.c classes/combo.c classes/ecombo.c classes/radio.c classes/picker.c classes/menu.c classes/item.c classes/point.c classes/size.c classes/area.c classes/path.c classes/color.c classes/brush.c classes/pen.c classes/stroke.c classes/matrix.c classes/descriptor.c classes/font.c classes/layout.c classes/exceptions.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  PHP_NEW_EXTENSION(ui, ui.c classes/form.c classes/grid.c classes/app.c classes/window.c classes/control.c classes/tab.c classes/box.c classes/check.c classes/button.c classes/cbutton.c classes/label.c classes/entry.c classes/multi.c classes/group.c classes/spin.c classes/slider.c classes/progress.c classes/separator.c classes/combo.c classes/ecombo.c classes/radio.c classes/picker.c classes/menu.c classes/item.c classes/point.c classes/size.c classes/area.c classes/path.c classes/color.c classes/brush.c classes/pen.c classes/stroke.c classes/matrix.c classes/descriptor.c classes/font.c classes/layout.c classes/exceptions.c classes/executor.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
