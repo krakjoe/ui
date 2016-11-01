@@ -121,12 +121,6 @@ php_ui_executor_handler_leave:
 }
 
 static inline void php_ui_executor_time_set(struct timespec *result, zend_long seconds, zend_long microseconds) {
-	if (seconds < 0 || microseconds < 0) {
-		php_ui_exception_ex(InvalidArgumentException, 
-			"seconds or microseconds must not be negative");
-		return;
-	}
-
 	while (microseconds >= 1000000L) {
 		seconds++;
 		microseconds -= 1000000L;
@@ -156,8 +150,7 @@ void* php_ui_executor_thread(void *arg) {
                 pthread_exit(NULL);
         }
 
-		spec.tv_sec = time.tv_sec;
-		spec.tv_nsec = time.tv_usec * 1000;
+		php_ui_executor_time_set(&spec, time.tv_sec, time.tv_usec);
     }
 
     if (pthread_mutex_lock(&executor->monitors.main.m) != SUCCESS) {
@@ -184,8 +177,7 @@ void* php_ui_executor_thread(void *arg) {
 							break;
 						}
 
-						spec.tv_sec = time.tv_sec;
-						spec.tv_nsec = time.tv_usec * 1000;
+						php_ui_executor_time_set(&spec, time.tv_sec, time.tv_usec);
 						continue;
 					}
             }
@@ -236,7 +228,12 @@ PHP_METHOD(Executor, __construct)
 		seconds      = 0;
 	}
 
-	php_ui_executor_time_set(&executor->interval, (uint32_t) seconds, (uint32_t) microseconds);
+	if (seconds < 0 || microseconds < 0) {
+		php_ui_exception("seconds and microseconds are not allowed to be negative");
+		return;
+	}
+
+	php_ui_executor_time_set(&executor->interval, seconds, microseconds);
 
 	if (pthread_create(&executor->thread, NULL, php_ui_executor_thread, executor) != SUCCESS) {
 		php_ui_exception("failed to create executor thread, panic");
@@ -266,11 +263,16 @@ PHP_METHOD(Executor, setInterval)
 		seconds      = 0;
 	}
 
+	if (seconds < 0 || microseconds < 0) {
+		php_ui_exception("seconds and microseconds are not allowed to be negative");
+		return;
+	}
+
 	if (!php_ui_executor_has_interval(executor)) {
 		wakeup = 1;
 	}
 
-	php_ui_executor_time_set(&executor->interval, (uint32_t) seconds, (uint32_t) microseconds);
+	php_ui_executor_time_set(&executor->interval, seconds, microseconds);
 
 	if (wakeup) {
 		pthread_cond_signal(&executor->monitors.main.c);
