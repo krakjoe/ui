@@ -211,7 +211,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ 
        proto Executor Executor::__construct()
-       proto Executor Executor::__construct(integer seconds)
+       proto Executor Executor::__construct(integer microseconds)
        proto Executor Executor::__construct(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, __construct) 
 {
