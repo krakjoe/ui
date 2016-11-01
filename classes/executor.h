@@ -28,8 +28,11 @@ typedef struct _php_u_monitor_t {
 
 typedef struct _php_ui_executor_t {
 	pthread_t                    thread;
-	php_ui_monitor_t             monitors[2];
 	struct timespec             interval;
+	struct php_ui_executor_monitors_t {
+		php_ui_monitor_t		 main;
+		php_ui_monitor_t		 queue;
+	} monitors;
 	struct php_ui_executor_on_execute_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
