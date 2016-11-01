@@ -206,20 +206,26 @@ void* php_ui_executor_thread(void *arg) {
     pthread_exit(NULL);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Executor Executor::__construct(integer seconds, integer microseconds) */
+/* {{{ proto Executor Executor::__construct(integer seconds)
+       proto Executor Executor::__construct(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, __construct) 
 {
 	php_ui_executor_t *executor = php_ui_executor_fetch(getThis());
 	zend_long seconds = 0;
 	zend_long microseconds = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &seconds, &microseconds) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|l", &seconds, &microseconds) != SUCCESS) {
 		return;
+	}
+
+	if (ZEND_NUM_ARGS() == 1) {
+		microseconds = seconds;
+		seconds      = 0;
 	}
 
 	php_ui_executor_time_set(&executor->gap, (uint32_t) seconds, (uint32_t) microseconds);
@@ -229,12 +235,13 @@ PHP_METHOD(Executor, __construct)
 	}
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_set_gap_info, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_set_gap_info, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Executor::setGap(integer seconds, integer microseconds) */
+/* {{{ proto void Executor::setGap(integer microseconds)
+       proto void Executor::setGap(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, setGap)
 {
 	php_ui_executor_t *executor = php_ui_executor_fetch(getThis());
@@ -242,8 +249,13 @@ PHP_METHOD(Executor, setGap)
 	zend_long microseconds = 0;
 	zend_bool wakeup = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &seconds, &microseconds) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|l", &seconds, &microseconds) != SUCCESS) {
 		return;
+	}
+
+	if (ZEND_NUM_ARGS() == 1) {
+		microseconds = seconds;
+		seconds      = 0;
 	}
 
 	if (!php_ui_executor_has_gap(executor)) {

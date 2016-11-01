@@ -123,17 +123,16 @@ $stars = new class($box, 1024, 64, $font) extends Area {
 	}
 };
 
-$animator = new class(0, 1000000/60, $stars) extends Executor {
+$animator = new class(1000000/60, $stars) extends Executor {
 
 	public function onExecute() {
 		$this->area->redraw();
 	}
 
-	public function __construct(int $seconds, int $microseconds, Area $area) {
+	public function __construct(int $microseconds, Area $area) {
 		$this->area = $area;
 
-		parent::__construct(
-			$seconds, $microseconds);
+		parent::__construct($microseconds);
 	}
 };
 
