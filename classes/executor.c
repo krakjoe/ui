@@ -31,7 +31,9 @@
 #include <classes/control.h>
 #include <classes/executor.h>
 
-#define php_ui_executor_has_interval(e) ((e)->interval.tv_sec || (e)->interval.tv_nsec)
+#define php_ui_executor_has_interval(e)   ((e)->interval.tv_sec || (e)->interval.tv_nsec)
+#define php_ui_executor_has_flag(e, m)    ((e)->monitors.m.flag)
+#define php_ui_executor_set_flag(e, m, v) ((e)->monitors.m.flag = v)
 
 zend_object_handlers php_ui_executor_handlers;
 
@@ -76,7 +78,7 @@ void php_ui_executor_free(zend_object *o) {
 	php_ui_executor_t *executor = php_ui_executor_from(o);
 
 	if (pthread_mutex_lock(&executor->monitors.main.m) == SUCCESS) {
-		executor->monitors.main.flag = 1;
+		php_ui_executor_set_flag(executor, main, 1);
 		pthread_cond_signal(&executor->monitors.main.c);
 		pthread_mutex_unlock(&executor->monitors.main.m);
 	}
@@ -112,7 +114,7 @@ void php_ui_executor_handler(void *o) {
     }
 
 php_ui_executor_handler_leave:
-    executor->monitors.queue.flag = 1;
+	php_ui_executor_set_flag(executor, queue, 1);
 
     pthread_cond_signal(&executor->monitors.queue.c);
     pthread_mutex_unlock(&executor->monitors.queue.m);
@@ -131,7 +133,7 @@ static inline void php_ui_executor_time_set(struct timespec *result, zend_long s
 	}
 
 	result->tv_sec = seconds;
-	result->tv_nsec = microseconds * 1000;
+	result->tv_nsec = (double) microseconds * 1000;
 }
 
 static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
@@ -150,54 +152,60 @@ void* php_ui_executor_thread(void *arg) {
     struct timespec spec;
 
     if (php_ui_executor_has_interval(executor)) {
-            if (gettimeofday(&time, NULL) != SUCCESS) {
-                    pthread_exit(NULL);
-            }
+        if (gettimeofday(&time, NULL) != SUCCESS) {
+                pthread_exit(NULL);
+        }
 
-			spec.tv_sec = time.tv_sec;
-			spec.tv_nsec = time.tv_usec * 1000;
+		spec.tv_sec = time.tv_sec;
+		spec.tv_nsec = time.tv_usec * 1000;
     }
 
     if (pthread_mutex_lock(&executor->monitors.main.m) != SUCCESS) {
             pthread_exit(NULL);
     }
 
-    while(!executor->monitors.main.flag) {
-            if (php_ui_executor_has_interval(executor)) {
-                    php_ui_executor_time_add(&spec, &executor->interval, &spec);
+    while(!php_ui_executor_has_flag(executor, main)) {
+        if (php_ui_executor_has_interval(executor)) {
+            php_ui_executor_time_add(&spec, &executor->interval, &spec);
 
-                    switch (pthread_cond_timedwait(&executor->monitors.main.c, &executor->monitors.main.m, &spec)) {
- 						case SUCCESS:
-							if (!php_ui_executor_has_interval(executor) || executor->monitors.main.flag) { /* new interval was set */
-								continue;
-							}
+            switch (pthread_cond_timedwait(&executor->monitors.main.c, &executor->monitors.main.m, &spec)) {
+				case SUCCESS:
+					if (!php_ui_executor_has_interval(executor) ||  /* new interval was set */
+						php_ui_executor_has_flag(executor, main)) { /* killed */
+						continue;
 					}
-            } else {
-                    switch (pthread_cond_wait(&executor->monitors.main.c, &executor->monitors.main.m)) {
-						case SUCCESS:
-							if (php_ui_executor_has_interval(executor) || executor->monitors.main.flag) { /* new interval was set */
-								gettimeofday(&time, NULL);
+			}
+        } else {
+            switch (pthread_cond_wait(&executor->monitors.main.c, &executor->monitors.main.m)) {
+				case SUCCESS:
+					if (php_ui_executor_has_interval(executor) ||   /* new interval was set */
+						php_ui_executor_has_flag(executor, main)) { /* killed */
+						if (gettimeofday(&time, NULL) != SUCCESS) {
+							break;
+						}
 
-								spec.tv_sec = time.tv_sec;
-								spec.tv_nsec = time.tv_usec * 1000;
-								continue;
-							}
-                    }
+						spec.tv_sec = time.tv_sec;
+						spec.tv_nsec = time.tv_usec * 1000;
+						continue;
+					}
             }
+        }
 
-            pthread_mutex_lock(&executor->monitors.queue.m);
+        if (pthread_mutex_lock(&executor->monitors.queue.m)  != SUCCESS) {
+			break;
+		}
 
-            executor->monitors.queue.flag = 0;
+		php_ui_executor_set_flag(executor, queue, 0);
 
-            uiQueueMain(php_ui_executor_handler, executor);
+        uiQueueMain(php_ui_executor_handler, executor);
 
-            while (!executor->monitors.queue.flag) {
-                    if (pthread_cond_wait(&executor->monitors.queue.c, &executor->monitors.queue.m) != SUCCESS) {
-                            break;
-                    }
-            }
+        while (!php_ui_executor_has_flag(executor, queue)) {
+                if (pthread_cond_wait(&executor->monitors.queue.c, &executor->monitors.queue.m) != SUCCESS) {
+                        break;
+                }
+        }
 
-            pthread_mutex_unlock(&executor->monitors.queue.m);
+        pthread_mutex_unlock(&executor->monitors.queue.m);
     }
 
     pthread_mutex_unlock(&executor->monitors.main.m);
@@ -281,11 +289,11 @@ PHP_METHOD(Executor, kill)
 		return;
 	}
 
-	if (executor->monitors.main.flag) {
+	if (php_ui_executor_has_flag(executor, main)) {
 		RETURN_FALSE;
 	}
 
-	executor->monitors.main.flag = 1;
+	php_ui_executor_set_flag(executor, main, 1);
 
 	RETURN_BOOL(pthread_cond_signal(&executor->monitors.main.c) == SUCCESS);
 } /* }}} */
