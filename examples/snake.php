@@ -71,13 +71,13 @@ $snake = new class($box) extends Area{
 				default:
 					if ($char == " ") {
 						$this->pause = !$this->pause;
-						
+
 						if ($this->pause) {
 							/* this allows the CPU to idle while paused */
-							$this->executor->setGap(0);
+							$this->executor->setInterval(0);
 						} else {
 							/* this will (re)start the game */
-							$this->executor->setGap(PHP_UI_SECOND/PHP_UI_SNAKE_FPS);
+							$this->executor->setInterval(PHP_UI_SECOND/PHP_UI_SNAKE_FPS);
 						}
 					}
 				break;
@@ -232,12 +232,13 @@ $snake = new class($box) extends Area{
 	private $run = 0;
 };
 
-$snake->setExecutor(new class (0, 0, $snake) extends Executor {
+$snake->setExecutor(new class ($snake) extends Executor {
 
-	public function __construct(int $seconds, int $microseconds, Area $area) {
+	public function __construct(Area $area) {
 		$this->area = $area;
 
-		parent::__construct($seconds, $microseconds);
+		/* construct executor with infinite timeout */
+		parent::__construct(0);
 	}
 
 	protected function onExecute() {
