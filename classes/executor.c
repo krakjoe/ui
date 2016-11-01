@@ -133,7 +133,7 @@ static inline void php_ui_executor_time_set(struct timespec *result, zend_long s
 	}
 
 	result->tv_sec = seconds;
-	result->tv_nsec = (double) microseconds * 1000;
+	result->tv_nsec = microseconds * 1000;
 }
 
 static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
