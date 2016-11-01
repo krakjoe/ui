@@ -288,11 +288,17 @@ PHP_METHOD(Executor, kill)
 	RETURN_BOOL(pthread_cond_signal(&executor->monitors[0].c) == SUCCESS);
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_execute_info, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Executor, onExecute) {}
+
 /* {{{ */
 const zend_function_entry php_ui_executor_methods[] = {
 	PHP_ME(Executor, __construct,     php_ui_executor_construct_info,       ZEND_ACC_PUBLIC)
 	PHP_ME(Executor, setInterval,     php_ui_executor_set_interval_info,    ZEND_ACC_PUBLIC)
 	PHP_ME(Executor, kill,            php_ui_executor_kill_info,            ZEND_ACC_PUBLIC)
+	PHP_ME(Executor, onExecute,       php_ui_executor_execute_info,         ZEND_ACC_PROTECTED|ZEND_ACC_ABSTRACT)
 	PHP_FE_END
 }; /* }}} */
 
@@ -305,6 +311,7 @@ PHP_MINIT_FUNCTION(UI_Executor)
 
 	uiExecutor_ce = zend_register_internal_class(&ce);
 	uiExecutor_ce->create_object = php_ui_executor_create;
+	uiExecutor_ce->ce_flags |= ZEND_ACC_ABSTRACT;
 
 	memcpy(&php_ui_executor_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	

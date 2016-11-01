@@ -125,7 +125,7 @@ $stars = new class($box, 1024, 64, $font) extends Area {
 
 $animator = new class(1000000/60, $stars) extends Executor {
 
-	public function onExecute() {
+	protected function onExecute() {
 		$this->area->redraw();
 	}
 
