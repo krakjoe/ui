@@ -1,4 +1,7 @@
 <?php
+define ("PHP_UI_SECOND",    1000000);
+define ("PHP_UI_SNAKE_FPS", 30);
+
 use UI\App;
 use UI\Window;
 use UI\Point;
@@ -18,29 +21,23 @@ use UI\Draw\Matrix;
 use UI\Draw\Text\Font;
 use UI\Draw\Text\Font\Descriptor;
 
-$app = new class extends App {
+use UI\Executor;
 
-	public function setGame(Area $game) {
-		$this->game = $game;
-	}
-
-	protected function onTick() {
-		if ($this->game) {
-			$this->game->redraw();
-		}
-	}
-};
-
+$app = new App;
 $win = new Window($app, "Snake", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
 
-$app->setGame(new class($box) extends Area{
+$snake = new class($box) extends Area{
 
 	public function __construct(Box $box) {
 		$this->newSnake();
 
 		$box->append($this, true);
+	}
+
+	public function setExecutor(Executor $executor) {
+		$this->executor = $executor;
 	}
 
 	protected function onKey(string $char, int $key, int $flags) {
@@ -74,6 +71,14 @@ $app->setGame(new class($box) extends Area{
 				default:
 					if ($char == " ") {
 						$this->pause = !$this->pause;
+						
+						if ($this->pause) {
+							/* this allows the CPU to idle while paused */
+							$this->executor->setGap(0, 0);
+						} else {
+							/* this will (re)start the game */
+							$this->executor->setGap(0, PHP_UI_SECOND/PHP_UI_SNAKE_FPS);
+						}
 					}
 				break;
 			}
@@ -207,7 +212,6 @@ $app->setGame(new class($box) extends Area{
 	}
 
 	private function drawScore(Pen $pen, Size $size) {
-
 		$layout = new UI\Draw\Text\Layout(sprintf(
 			"Level: %d Score: %d",
 			$this->level,
@@ -226,12 +230,21 @@ $app->setGame(new class($box) extends Area{
 	private $score = 0;
 	private $pause = true;
 	private $run = 0;
+};
+
+$snake->setExecutor(new class (0, 0, $snake) extends UI\Executor {
+
+	public function __construct(int $seconds, int $microseconds, Area $area) {
+		$this->area = $area;
+
+		parent::__construct($seconds, $microseconds);
+	}
+
+	protected function onExecute() {
+		$this->area->redraw();
+	}
 });
 
 $win->show();
 
-do {
-	$app->run(App::Loop);
-} while($win->isVisible());
-
-$app->quit();
+$app->run();

@@ -26,10 +26,6 @@ typedef struct _php_ui_app_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
 	} quit;
-	struct php_ui_app_tick_t {
-		zend_fcall_info fci;
-		zend_fcall_info_cache fcc;
-	} tick;
 	zend_long ticks;
 	zend_object std;
 } php_ui_app_t;

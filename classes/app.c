@@ -72,28 +72,6 @@ int php_ui_app_should_quit_handler(void *arg) {
 	return result;
 }
 
-void php_ui_app_tick_handler(void *o) {
-	php_ui_app_t *app = (php_ui_app_t *) o;
-	zval rv;
-
-	if (!app->tick.fci.size) {
-		return;
-	}
-
-	ZVAL_UNDEF(&rv);
-	app->tick.fci.retval = &rv;
-
-	if (zend_call_function(&app->tick.fci, &app->tick.fcc) != SUCCESS) {
-		return;
-	}
-
-	if (Z_TYPE(rv) != IS_UNDEF) {
-		zval_ptr_dtor(&rv);
-	}
-
-	app->ticks--;
-}
-
 zend_object* php_ui_app_create(zend_class_entry *ce) {
 	php_ui_app_t *app = 
 		(php_ui_app_t*) ecalloc(1, sizeof(php_ui_app_t) + zend_object_properties_size(ce));
@@ -109,7 +87,6 @@ zend_object* php_ui_app_create(zend_class_entry *ce) {
 	uiOnShouldQuit(php_ui_app_should_quit_handler, app);
 
 	php_ui_set_call(&app->std, ZEND_STRL("onshouldquit"), &app->quit.fci, &app->quit.fcc);
-	php_ui_set_call(&app->std, ZEND_STRL("ontick"), &app->tick.fci, &app->tick.fcc);
 
 	return &app->std;
 }
@@ -148,16 +125,6 @@ PHP_METHOD(App, run)
 		uiMain();
 		return;
 	}
-
-	if (app->tick.fci.size && !app->ticks) {
-#ifndef _WIN32
-		uiQueueMain(
-			php_ui_app_tick_handler, app);
-#else
-		php_ui_app_tick_handler(app);
-#endif
-		app->ticks++;
-	}
 	
 	uiMainStep((flags & PHP_UI_APP_WAIT) == PHP_UI_APP_WAIT);
 } /* }}} */
@@ -181,20 +148,10 @@ PHP_METHOD(App, onShouldQuit)
 	
 } /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_app_tick_info, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto void App::onTick() */
-PHP_METHOD(App, onTick) 
-{
-	
-} /* }}} */
-
 /* {{{ */
 const zend_function_entry php_ui_app_methods[] = {
 	PHP_ME(App, run,           php_ui_app_run_info,         ZEND_ACC_PUBLIC)
 	PHP_ME(App, quit,          php_ui_app_quit_info,        ZEND_ACC_PUBLIC)
-	PHP_ME(App, onTick,        php_ui_app_tick_info,        ZEND_ACC_PROTECTED)
 	PHP_ME(App, onShouldQuit,  php_ui_app_should_quit_info, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
