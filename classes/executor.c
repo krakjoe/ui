@@ -204,12 +204,14 @@ void* php_ui_executor_thread(void *arg) {
     pthread_exit(NULL);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_executor_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Executor Executor::__construct(integer seconds)
+/* {{{ 
+       proto Executor Executor::__construct()
+       proto Executor Executor::__construct(integer seconds)
        proto Executor Executor::__construct(integer seconds, integer microseconds) */
 PHP_METHOD(Executor, __construct) 
 {
@@ -217,7 +219,7 @@ PHP_METHOD(Executor, __construct)
 	zend_long seconds = 0;
 	zend_long microseconds = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|l", &seconds, &microseconds) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|ll", &seconds, &microseconds) != SUCCESS) {
 		return;
 	}
 

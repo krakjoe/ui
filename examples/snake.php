@@ -238,7 +238,7 @@ $snake->setExecutor(new class ($snake) extends Executor {
 		$this->area = $area;
 
 		/* construct executor with infinite timeout */
-		parent::__construct(0);
+		parent::__construct();
 	}
 
 	protected function onExecute() {
