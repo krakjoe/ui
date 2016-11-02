@@ -16,7 +16,25 @@ use UI\Draw\Color;
 use UI\Executor;
 
 $app = new App;
-$win = new Window($app, "Starfield", new Size(640, 480), false);
+
+$win = new class($app, "Starfield", new Size(640, 480), false) extends Window {
+
+	public function addExecutor(Executor $executor) {
+		$this->executors[] = $executor;
+	}
+
+	protected function onClosing() {
+		foreach ($this->executors as $executor) {
+			$executor->kill();
+		}
+
+		$this->destroy();
+		$this->app->quit();
+
+		unset($this->app); # not sure why, yet
+	}
+};
+
 $box = new Box(Box::Vertical);
 $win->add($box);
 
@@ -135,6 +153,8 @@ $animator = new class(1000000/60, $stars) extends Executor {
 		parent::__construct($microseconds);
 	}
 };
+
+$win->addExecutor($animator);
 
 $win->show();
 

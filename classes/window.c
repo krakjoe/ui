@@ -69,7 +69,7 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	php_ui_window_t *window = (php_ui_window_t *) arg;
 	zval rv;
-	int result = 1;
+	int result = 0;
 
 	if (!window->closing.fci.size) {
 		uiControlDestroy(uiControl(window->w));
@@ -83,7 +83,10 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	window->closing.fci.retval = &rv;
 
 	if (zend_call_function(&window->closing.fci, &window->closing.fcc) != SUCCESS) {
-		return 1;
+		uiControlDestroy(uiControl(window->w));
+		uiQuit();
+
+		return 0;
 	}
 
 	if (Z_TYPE(rv) != IS_UNDEF) {
@@ -123,6 +126,8 @@ PHP_METHOD(Window, __construct)
 	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
 
 	php_ui_app_window(app, getThis());
+
+	zend_update_property(win->std.ce, getThis(), ZEND_STRL("app"), app);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
@@ -443,6 +448,7 @@ PHP_MINIT_FUNCTION(UI_Window)
 	uiWindow_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiWindow_ce->create_object = php_ui_window_create;
 	zend_declare_property_null(uiWindow_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
+	zend_declare_property_null(uiWindow_ce, ZEND_STRL("app"), ZEND_ACC_PROTECTED);
 
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
