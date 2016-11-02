@@ -10,7 +10,7 @@
   <email>krakjoe@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-10-30</date>
+ <date>2016-11-02</date>
  <time>07:00:00</time>
  <version>
   <release>2.0.0</release>
@@ -36,95 +36,103 @@
      Allow UI\Draw\Color (or RRGGBBAA integer) in place of UI\Draw\Brush (fill, stroke)
    UI\Executor:
      Scheduled executor service for animations superceeds and replaces App::onTick mechanism
+   UI\App:
+     Removed, it should be obvious that run/quit are global functions
+   UI\Window:
+     Fixed onClosing
  </notes>
  <contents>
-  <dir name="/">
-	<file name="examples/histogram.php" role="doc" />
-	<file name="examples/gallery.php" role="doc" />
-    <file name="examples/snake.php" role="doc"/>
-    <file name="examples/starfield.php" role="doc"/>
-    <file name="classes/common.h" role="src" />
-    <file name="classes/app.c" role="src" />
-    <file name="classes/app.h" role="src" />
-    <file name="classes/area.c" role="src" />
-    <file name="classes/area.h" role="src" />
-    <file name="classes/box.c" role="src" />
-    <file name="classes/box.h" role="src" />
-    <file name="classes/brush.c" role="src" />
-    <file name="classes/brush.h" role="src" />
-    <file name="classes/button.c" role="src" />
-    <file name="classes/button.h" role="src" />
-    <file name="classes/cbutton.c" role="src" />
-    <file name="classes/cbutton.h" role="src" />
-    <file name="classes/check.c" role="src" />
-    <file name="classes/check.h" role="src" />
-    <file name="classes/color.c" role="src" />
-    <file name="classes/color.h" role="src" />
-    <file name="classes/combo.c" role="src" />
-    <file name="classes/combo.h" role="src" />
-    <file name="classes/control.c" role="src" />
-    <file name="classes/control.h" role="src" />
-    <file name="classes/descriptor.c" role="src" />
-    <file name="classes/descriptor.h" role="src" />
-    <file name="classes/ecombo.c" role="src" />
-    <file name="classes/ecombo.h" role="src" />
-    <file name="classes/exceptions.c" role="src" />
-    <file name="classes/exceptions.h" role="src" />
-    <file name="classes/entry.c" role="src" />
-    <file name="classes/entry.h" role="src" />
-    <file name="classes/font.c" role="src" />
-    <file name="classes/font.h" role="src" />
-    <file name="classes/form.c" role="src" />
-    <file name="classes/form.h" role="src" />
-    <file name="classes/grid.c" role="src" />
-    <file name="classes/grid.h" role="src" />
-    <file name="classes/group.c" role="src" />
-    <file name="classes/group.h" role="src" />
-    <file name="classes/item.c" role="src" />
-    <file name="classes/item.h" role="src" />
-    <file name="classes/label.c" role="src" />
-    <file name="classes/label.h" role="src" />
-    <file name="classes/layout.c" role="src" />
-    <file name="classes/layout.h" role="src" />
-    <file name="classes/matrix.c" role="src" />
-    <file name="classes/matrix.h" role="src" />
-    <file name="classes/menu.c" role="src" />
-    <file name="classes/menu.h" role="src" />
-    <file name="classes/multi.c" role="src" />
-    <file name="classes/multi.h" role="src" />
-    <file name="classes/path.c" role="src" />
-    <file name="classes/path.h" role="src" />
-    <file name="classes/pen.c" role="src" />
-    <file name="classes/pen.h" role="src" />
-    <file name="classes/picker.c" role="src" />
-    <file name="classes/picker.h" role="src" />
-    <file name="classes/point.c" role="src" />
-    <file name="classes/point.h" role="src" />
-    <file name="classes/progress.c" role="src" />
-    <file name="classes/progress.h" role="src" />
-    <file name="classes/radio.c" role="src" />
-    <file name="classes/radio.h" role="src" />
-    <file name="classes/separator.c" role="src" />
-    <file name="classes/separator.h" role="src" />
-    <file name="classes/size.c" role="src" />
-    <file name="classes/size.h" role="src" />
-    <file name="classes/slider.c" role="src" />
-    <file name="classes/slider.h" role="src" />
-    <file name="classes/spin.c" role="src" />
-    <file name="classes/spin.h" role="src" />
-    <file name="classes/stroke.c" role="src" />
-    <file name="classes/stroke.h" role="src" />
-    <file name="classes/tab.c" role="src" />
-    <file name="classes/tab.h" role="src" />
-    <file name="classes/window.c" role="src" />
-    <file name="classes/window.h" role="src" />
+	<dir name="/">
+	  <dir name="examples">
+		<file name="histogram.php" role="doc" />
+		<file name="gallery.php" role="doc" />
+		<file name="snake.php" role="doc"/>
+		<file name="starfield.php" role="doc"/>
+	  </dir>
+	  <dir name="classes">
+		<file name="common.h" role="src" />
+		<file name="area.c" role="src" />
+		<file name="area.h" role="src" />
+		<file name="box.c" role="src" />
+		<file name="box.h" role="src" />
+		<file name="brush.c" role="src" />
+		<file name="brush.h" role="src" />
+		<file name="button.c" role="src" />
+		<file name="button.h" role="src" />
+		<file name="cbutton.c" role="src" />
+		<file name="cbutton.h" role="src" />
+		<file name="check.c" role="src" />
+		<file name="check.h" role="src" />
+		<file name="color.c" role="src" />
+		<file name="color.h" role="src" />
+		<file name="combo.c" role="src" />
+		<file name="combo.h" role="src" />
+		<file name="control.c" role="src" />
+		<file name="control.h" role="src" />
+		<file name="descriptor.c" role="src" />
+		<file name="descriptor.h" role="src" />
+		<file name="ecombo.c" role="src" />
+		<file name="ecombo.h" role="src" />
+		<file name="exceptions.c" role="src" />
+		<file name="exceptions.h" role="src" />
+		<file name="executor.c" role="src" />
+		<file name="executor.h" role="src" />
+		<file name="entry.c" role="src" />
+		<file name="entry.h" role="src" />
+		<file name="font.c" role="src" />
+		<file name="font.h" role="src" />
+		<file name="form.c" role="src" />
+		<file name="form.h" role="src" />
+		<file name="grid.c" role="src" />
+		<file name="grid.h" role="src" />
+		<file name="group.c" role="src" />
+		<file name="group.h" role="src" />
+		<file name="item.c" role="src" />
+		<file name="item.h" role="src" />
+		<file name="label.c" role="src" />
+		<file name="label.h" role="src" />
+		<file name="layout.c" role="src" />
+		<file name="layout.h" role="src" />
+		<file name="matrix.c" role="src" />
+		<file name="matrix.h" role="src" />
+		<file name="menu.c" role="src" />
+		<file name="menu.h" role="src" />
+		<file name="multi.c" role="src" />
+		<file name="multi.h" role="src" />
+		<file name="path.c" role="src" />
+		<file name="path.h" role="src" />
+		<file name="pen.c" role="src" />
+		<file name="pen.h" role="src" />
+		<file name="picker.c" role="src" />
+		<file name="picker.h" role="src" />
+		<file name="point.c" role="src" />
+		<file name="point.h" role="src" />
+		<file name="progress.c" role="src" />
+		<file name="progress.h" role="src" />
+		<file name="radio.c" role="src" />
+		<file name="radio.h" role="src" />
+		<file name="separator.c" role="src" />
+		<file name="separator.h" role="src" />
+		<file name="size.c" role="src" />
+		<file name="size.h" role="src" />
+		<file name="slider.c" role="src" />
+		<file name="slider.h" role="src" />
+		<file name="spin.c" role="src" />
+		<file name="spin.h" role="src" />
+		<file name="stroke.c" role="src" />
+		<file name="stroke.h" role="src" />
+		<file name="tab.c" role="src" />
+		<file name="tab.h" role="src" />
+		<file name="window.c" role="src" />
+		<file name="window.h" role="src" />
+	 </dir>
 	<file name="config.m4" role="src" />
 	<file name="config.w32" role="src" />
 	<file name="LICENSE" role="doc" />
 	<file name="ui.c" role="src" />
 	<file name="php_ui.h" role="src" />
 	<file name="README.md" role="doc" />
-  </dir>
+ </dir>
  </contents>
  <dependencies>
   <required>
