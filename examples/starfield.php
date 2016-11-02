@@ -1,5 +1,4 @@
 <?php
-use UI\App;
 use UI\Window;
 use UI\Point;
 use UI\Size;
@@ -13,20 +12,25 @@ use UI\Draw\Brush;
 use UI\Draw\Path;
 use UI\Draw\Color;
 
-$app = new class extends App {
-	public function setStars(Area $stars) {
-		$this->stars = $stars;
+use UI\Executor;
 
+$win = new class("Starfield", new Size(640, 480), false) extends Window {
+
+	public function addExecutor(Executor $executor) {
+		$this->executors[] = $executor;
 	}
 
-	protected function onTick() {
-		$this->stars->redraw();	
-	}
+	protected function onClosing() {
+		foreach ($this->executors as $executor) {
+			$executor->kill();
+		}
 
-	private $stars;
+		$this->destroy();
+
+		UI\quit();
+	}
 };
 
-$win = new Window($app, "Starfield", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
 
@@ -34,7 +38,7 @@ $font = new UI\Draw\Text\Font(
 	new UI\Draw\Text\Font\Descriptor("arial", 12)			
 );
 
-$app->setStars(new class($box, 1024, 64, $font) extends Area {
+$stars = new class($box, 1024, 64, $font) extends Area {
 
 	protected function onKey(string $key, int $ext, int $flags) {
 		if ($flags & Area::Down) {
@@ -53,10 +57,10 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 	protected function onDraw(UI\Draw\Pen $pen, UI\Size $size, UI\Point $clip, UI\Size $clipSize) {
 		$hSize = $size / 2;
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle(Point::at(0), $size);
 		$path->end();
-		$pen->fill($path, new Brush(Brush::Solid, new Color(0, 1)));
+		$pen->fill($path, 0x000000FF);
 
 		foreach ($this->stars as $idx => &$star) {
 			$star[1] -= $this->velocity / 10;
@@ -72,7 +76,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 			if ($pos->x >= 0 && $pos->x <= $size->width && $pos->y >= 0 && $pos->y <= $size->height) {
 				$starSize = (1 - $star[1] / 32) * 5;
 
-				$path = new Path(Path::Winding);
+				$path = new Path();
 				if (PHP_OS == "WINNT") {
 					$path->addRectangle($pos, new Size($starSize, $starSize));
 				} else {
@@ -80,16 +84,16 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				}
 				$path->end();
 
-				$color = new Color(0 ,1);
-				$color->setChannel(Color::Red, $starSize);
-				$color->setChannel(Color::Green, $starSize);
-				$color->setChannel(Color::Blue, $starSize);
-
+				$color = new Color();
+				$color->r = $starSize;
+				$color->g = $starSize;
+				$color->b = $starSize;
+				
 				if ($star[2] && $star[3]++ % 3 == 0) {
-					$color->setChannel(Color::Alpha, mt_rand(0,10)/10);
+					$color->a = mt_rand(0,10) / 10;
 				}
 
-				$pen->fill($path, new Brush(Brush::Solid, $color));
+				$pen->fill($path, $color);
 			}
 		}
 
@@ -106,7 +110,7 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 				$this->frames[$now-1] : $this->frames[$now]
 		), $this->font, $size->width);
 
-		$layout->setColor(new Color(0xFFFFFF, 1));
+		$layout->setColor(0xFFFFFFFF);
 	
 		$pen->write(new Point(20, 20), $layout);
 
@@ -131,13 +135,24 @@ $app->setStars(new class($box, 1024, 64, $font) extends Area {
 
 		$this->box->append($this, true);
 	}
-});
+};
+
+$animator = new class(1000000/60, $stars) extends Executor {
+
+	protected function onExecute() {
+		$this->area->redraw();
+	}
+
+	public function __construct(int $microseconds, Area $area) {
+		$this->area = $area;
+
+		parent::__construct($microseconds);
+	}
+};
+
+$win->addExecutor($animator);
 
 $win->show();
 
-do {
-	$app->run(App::Loop);
-} while($win->isVisible());
-
-$app->quit();
+UI\run();
 ?>

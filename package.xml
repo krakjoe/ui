@@ -13,8 +13,8 @@
  <date>2016-10-30</date>
  <time>07:00:00</time>
  <version>
-  <release>1.0.3</release>
-  <api>1.0.3</api>
+  <release>2.0.0</release>
+  <api>2.0.0</api>
  </version>
  <stability>
   <release>beta</release>
@@ -22,23 +22,20 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-   UI\Draw\Text\Font\Descriptor::getFamily
-   UI\Draw\Text\Font\Descriptor::getSize
-   UI\Draw\Text\Font\Descriptor::getWeight
-   UI\Draw\Text\Font\Descriptor::getItalic
-   UI\Draw\Text\Font\Descriptor::getStretch
-   UI\Draw\Text\Font::getAscent
-   UI\Draw\Text\Font::getDescent
-   UI\Draw\Text\Font::getLeading
-   UI\Draw\Text\Font::getUnderlinePosition
-   UI\Draw\Text\Font::getUnderlineThickness
-   Radial and Linear Gradients
-   UI\Draw\Brush::addStop
-   UI\Draw\Brush::delStop
-   UI\Draw\Brush::setStop
-   Exceptions
-   Arrangement controls child list
-   Arrangement controls API improvements
+   Refactor of Brushes:
+     UI\Draw\Brush
+     abstract UI\Draw\Brush\Gradient
+     UI\Draw\Brush\LinearGradient
+     UI\Draw\Brush\RadialGradient
+   UI\Draw\Color Improvements:
+     Direct access to channels by name (r, g, b, a) as properties, (case insensitive)
+     Allow the use of RRGGBBAA integers in place of UI\Draw\Color
+   UI\Draw\Path Improvements:
+     Use Path::Winding as default mode
+   UI\Draw\Pen Improvements:
+     Allow UI\Draw\Color (or RRGGBBAA integer) in place of UI\Draw\Brush (fill, stroke)
+   UI\Executor:
+     Scheduled executor service for animations superceeds and replaces App::onTick mechanism
  </notes>
  <contents>
   <dir name="/">

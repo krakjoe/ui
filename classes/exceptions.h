@@ -18,6 +18,8 @@
 #ifndef HAVE_PHP_UI_EXCEPTIONS_H
 #define HAVE_PHP_UI_EXCEPTIONS_H
 
+#include "zend_exceptions.h"
+
 extern zend_class_entry *uiInvalidArgumentException_ce;
 extern zend_class_entry *uiRuntimeException_ce;
 

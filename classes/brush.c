@@ -23,28 +23,15 @@
 
 #include <classes/exceptions.h>
 #include <classes/brush.h>
+#include <classes/point.h>
 #include <classes/color.h>
 
 zend_object_handlers php_ui_brush_handlers;
 
 zend_class_entry *uiDrawBrush_ce;
-
-static inline uiDrawBrushType php_ui_brush_type(zend_long type) {
-	switch (type) {
-		case PHP_UI_BRUSH_SOLID: return uiDrawBrushTypeSolid;
-		case PHP_UI_BRUSH_LINEAR_GRADIENT: return uiDrawBrushTypeLinearGradient;
-		case PHP_UI_BRUSH_RADIAL_GRADIENT: return uiDrawBrushTypeRadialGradient;
-		case PHP_UI_BRUSH_IMAGE: return uiDrawBrushTypeImage;
-	}
-	return uiDrawBrushTypeSolid;
-}
-
-static inline void php_ui_brush_color(php_ui_brush_t *brush, php_ui_color_t *color) {
-	brush->b.R = color->r;
-	brush->b.G = color->g;
-	brush->b.B = color->b;
-	brush->b.A = color->a;
-}
+zend_class_entry *uiDrawBrushGradient_ce;
+zend_class_entry *uiDrawBrushLinearGradient_ce;
+zend_class_entry *uiDrawBrushRadialGradient_ce;
 
 zend_object* php_ui_brush_create(zend_class_entry *ce) {
 	php_ui_brush_t *brush = 
@@ -70,42 +57,30 @@ void php_ui_brush_free(zend_object *o) {
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_construct_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 1)
-	ZEND_ARG_TYPE_INFO(0, X0, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, Y0, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, X1, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, Y1, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, radius, IS_DOUBLE, 0)
+	ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawBrush DrawBrush::__construct(int type [, UI\Draw\Color color, double X0, double, Y0, double X1, double Y1, double radius]) */
+/* {{{ proto UI\Draw\Brush::__construct(UI\Draw\Color color)
+       proto UI\Draw\Brush::__construct(int rgb) */
 PHP_METHOD(DrawBrush, __construct) 
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
-	zend_long type = PHP_UI_BRUSH_SOLID;
 	zval *color = NULL;
-	double X0 = 0, Y0 = 0, X1 = 0, Y1 = 0, radius = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|O!ddddd", &type, &color, uiDrawColor_ce, &X0, &Y0, &X1, &Y1, &radius) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &color) != SUCCESS) {
 		return;
 	}
 
-	brush->b.Type = php_ui_brush_type(type);
+	brush->b.Type = uiDrawBrushTypeSolid;
 
-	if (color) {
-		php_ui_brush_color(brush, php_ui_color_fetch(color));
+	if (!php_ui_color_set(color, 
+			&brush->b.R, &brush->b.G, &brush->b.B, &brush->b.A)) {
+		php_ui_exception("could not set the color of the brush");
 	}
-
-	brush->b.X0 = X0;
-	brush->b.Y0 = Y0;
-	brush->b.X1 = X1;
-	brush->b.Y1 = Y1;
-	brush->b.OuterRadius = radius;
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_set_color_info, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+	ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 
 /* {{{ proto void DrawBrush::setColor(UI\Draw\Color color) */
@@ -114,73 +89,36 @@ PHP_METHOD(DrawBrush, setColor)
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	zval *color = NULL;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &color, uiDrawColor_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z", &color) != SUCCESS) {
 		return;
 	}
 
-	php_ui_brush_color(brush, php_ui_color_fetch(color));	
-} /* }}} */
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_type_info, 0, 0, IS_LONG, NULL, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto int DrawBrush::getType(void) */
-PHP_METHOD(DrawBrush, getType) 
-{
-	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
-
-	if (zend_parse_parameters_none() != SUCCESS) {
-		RETURN_LONG(-1);
-	}
-
-	switch (brush->b.Type) {
-		case uiDrawBrushTypeSolid:
-			RETURN_LONG(PHP_UI_BRUSH_SOLID);
-		break;
-
-		case uiDrawBrushTypeLinearGradient:
-			RETURN_LONG(PHP_UI_BRUSH_LINEAR_GRADIENT);
-		break;
-
-		case uiDrawBrushTypeRadialGradient:
-			RETURN_LONG(PHP_UI_BRUSH_RADIAL_GRADIENT);
-		break;
-
-		case uiDrawBrushTypeImage:
-			RETURN_LONG(PHP_UI_BRUSH_IMAGE);
-		break;
-	}
-	
-	RETURN_LONG(PHP_UI_BRUSH_SOLID);
-} /* }}} */
-
-ZEND_BEGIN_ARG_INFO_EX(php_ui_brush_set_type_info, 0, 0, 1)
-	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
-ZEND_END_ARG_INFO()
-
-/* {{{ proto void DrawBrush::setType(int type) */
-PHP_METHOD(DrawBrush, setType)
-{
-	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
-	zend_long type = 0;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &type) != SUCCESS) {
+	if (brush->b.Type != uiDrawBrushTypeSolid) {
+		php_ui_exception("this brush does not have a color");
 		return;
 	}
 
-	brush->b.Type = php_ui_brush_type(type);
+	if (!php_ui_color_set(color, 
+			&brush->b.R, &brush->b.G, &brush->b.B, &brush->b.A)) {
+		php_ui_exception("could not set the color of the brush");
+	}
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Color Brush::getColor(void) */
+/* {{{ proto UI\Draw\Color Brush::getColor(void) */
 PHP_METHOD(DrawBrush, getColor)
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	php_ui_color_t *color;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
+		return;
+	}
+
+	if (brush->b.Type != uiDrawBrushTypeSolid) {
+		php_ui_exception("this brush does not have a color");
 		return;
 	}
 
@@ -194,24 +132,29 @@ PHP_METHOD(DrawBrush, getColor)
 	color->a = brush->b.A;	
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_add_stop_info, 0, 2, IS_LONG, NULL, 0)
+/* {{{ */
+const zend_function_entry php_ui_brush_methods[] = {
+	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, setColor,    php_ui_brush_set_color_info,   ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrush, getColor,    php_ui_brush_get_color_info,   ZEND_ACC_PUBLIC)
+	PHP_FE_END
+}; /* }}} */
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_add_stop_info, 0, 2, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+	ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto int UI\Draw\Brush::addStop(double position, UI\Draw\Color color) */
-PHP_METHOD(DrawBrush, addStop)
+/* {{{ proto int UI\Draw\Brush\Gradient::addStop(double position, UI\Draw\Color color) */
+PHP_METHOD(DrawBrushGradient, addStop)
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	double position = 0;
 	zval *color = NULL;
-	php_ui_color_t *c;
 	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dO", &position, &color, uiDrawColor_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "dz", &position, &color) != SUCCESS) {
 		return;
 	}
-
-	c = php_ui_color_fetch(color);
 
 	if (!brush->b.NumStops) {
 		brush->b.Stops = (uiDrawBrushGradientStop*) emalloc(sizeof(uiDrawBrushGradientStop));
@@ -220,22 +163,27 @@ PHP_METHOD(DrawBrush, addStop)
 			brush->b.Stops, sizeof(uiDrawBrushGradientStop) * (brush->b.NumStops + 1));
 	}
 
+	if (!php_ui_color_set(color, 
+		&brush->b.Stops[brush->b.NumStops].R, 
+		&brush->b.Stops[brush->b.NumStops].G, 
+		&brush->b.Stops[brush->b.NumStops].B, 
+		&brush->b.Stops[brush->b.NumStops].A)) {
+		php_ui_exception("could not set the color of the stop");
+		return;
+	}
+
 	brush->b.Stops[brush->b.NumStops].Pos = position;
-	brush->b.Stops[brush->b.NumStops].R   = c->r;
-	brush->b.Stops[brush->b.NumStops].G   = c->g;
-	brush->b.Stops[brush->b.NumStops].B   = c->b;
-	brush->b.Stops[brush->b.NumStops].A   = c->a;
 	brush->b.NumStops++;
 
 	RETURN_LONG(brush->b.NumStops);	
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_del_stop_info, 0, 1, IS_LONG, NULL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_del_stop_info, 0, 1, IS_LONG, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto int UI\Draw\Brush::delStop(int index) */
-PHP_METHOD(DrawBrush, delStop)
+/* {{{ proto int UI\Draw\Brush\Gradient::delStop(int index) */
+PHP_METHOD(DrawBrushGradient, delStop)
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	zend_long index = 0, stop  = 0;
@@ -275,52 +223,121 @@ PHP_METHOD(DrawBrush, delStop)
 	RETURN_LONG(brush->b.NumStops);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_set_stop_info, 0, 3, _IS_BOOL, NULL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_set_stop_info, 0, 3, _IS_BOOL, NULL, 0)
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
 	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto bool UI\Draw\Brush::setStop(int index, double position, UI\Draw\Color color) */
-PHP_METHOD(DrawBrush, setStop)
+/* {{{ proto bool UI\Draw\Draw\Brush\Gradient::setStop(int index, double position, UI\Draw\Color color) */
+PHP_METHOD(DrawBrushGradient, setStop)
 {
 	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
 	zend_long index = 0;
 	double position = 0;
 	zval *color = NULL;
-	php_ui_color_t *c;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ldO", &index, &position, &color, uiDrawColor_ce) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ldz", &index, &position, &color) != SUCCESS) {
 		return;
 	}
 
 	if (index < 0 || index >= brush->b.NumStops) {
-		RETURN_FALSE;
+		php_ui_exception_ex(InvalidArgumentException,
+			"the stop %ld is not valid", index);
+		return;
 	}
 
-	c = php_ui_color_fetch(color);
+	if (php_ui_color_set(color, 
+		&brush->b.Stops[index].R, 
+		&brush->b.Stops[index].G, 
+		&brush->b.Stops[index].B, 
+		&brush->b.Stops[index].A)) {
+		php_ui_exception(
+			"could not set the color of stop %ld", index);
+		return;
+	}
 
 	brush->b.Stops[index].Pos = position;
-	brush->b.Stops[index].R   = c->r;
-	brush->b.Stops[index].G   = c->g;
-	brush->b.Stops[index].B   = c->b;
-	brush->b.Stops[index].A   = c->a;
-
 	RETURN_TRUE;	
 } /* }}} */
 
 /* {{{ */
-const zend_function_entry php_ui_brush_methods[] = {
-	PHP_ME(DrawBrush, __construct, php_ui_brush_construct_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, getType,     php_ui_brush_get_type_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, setType,     php_ui_brush_set_type_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, setColor,    php_ui_brush_set_color_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, getColor,    php_ui_brush_get_color_info,   ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, addStop,     php_ui_brush_add_stop_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, delStop,     php_ui_brush_del_stop_info,    ZEND_ACC_PUBLIC)
-	PHP_ME(DrawBrush, setStop,     php_ui_brush_set_stop_info,    ZEND_ACC_PUBLIC)
+const zend_function_entry php_ui_gradient_methods[] = {
+	PHP_ME(DrawBrushGradient, addStop,       php_ui_gradient_add_stop_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrushGradient, delStop,       php_ui_gradient_del_stop_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(DrawBrushGradient, setStop,       php_ui_gradient_set_stop_info,       ZEND_ACC_PUBLIC)
 	PHP_FE_END
 }; /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_linear_gradient_construct_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, start, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, end, UI\\Point, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto LinearGradient UI\Draw\Brush\LinearGradient::__construct(UI\Point start, UI\Point end) */
+PHP_METHOD(DrawBrushLinearGradient, __construct) 
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	zval *start = NULL, *end = NULL;
+	php_ui_point_t *s, *e;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OO", &start, uiPoint_ce, &end, uiPoint_ce) != SUCCESS) {
+		return;
+	}
+
+	brush->b.Type = uiDrawBrushTypeLinearGradient;
+
+	s = php_ui_point_fetch(start);
+	e = php_ui_point_fetch(end);
+
+	brush->b.X0 = s->x;
+	brush->b.Y0 = s->y;
+
+	brush->b.X1 = e->x;
+	brush->b.Y1 = e->y;
+} /* }}} */
+
+const zend_function_entry php_ui_linear_gradient_methods[] = {
+	PHP_ME(DrawBrushLinearGradient, __construct,   php_ui_linear_gradient_construct_info,      ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_radial_gradient_construct_info, 0, 0, 3)
+	ZEND_ARG_OBJ_INFO(0, start, UI\\Point, 0)
+	ZEND_ARG_OBJ_INFO(0, outer, UI\\Point, 0)
+	ZEND_ARG_TYPE_INFO(0, radius, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto RadialGradient UI\Draw\Brush\RadialGradient::__construct(UI\Point start, UI\Point outer, double radius) */
+PHP_METHOD(DrawBrushRadialGradient, __construct) 
+{
+	php_ui_brush_t *brush = php_ui_brush_fetch(getThis());
+	zval *start = NULL, *outer = NULL;
+	double radius = 0;
+	php_ui_point_t *s, *o;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OOd", &start, uiPoint_ce, &outer, uiPoint_ce, &radius) != SUCCESS) {
+		return;
+	}
+
+	brush->b.Type = uiDrawBrushTypeRadialGradient;
+
+	s = php_ui_point_fetch(start);
+	o = php_ui_point_fetch(outer);
+
+	brush->b.X0 = s->x;
+	brush->b.Y0 = s->y;
+
+	brush->b.X1 = o->x;
+	brush->b.Y1 = o->y;
+
+	brush->b.OuterRadius = radius;
+} /* }}} */
+
+const zend_function_entry php_ui_radial_gradient_methods[] = {
+	PHP_ME(DrawBrushRadialGradient, __construct,   php_ui_radial_gradient_construct_info,      ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
 
 /* {{{ */
 PHP_MINIT_FUNCTION(UI_DrawBrush) 
@@ -332,15 +349,23 @@ PHP_MINIT_FUNCTION(UI_DrawBrush)
 	uiDrawBrush_ce = zend_register_internal_class(&ce);
 	uiDrawBrush_ce->create_object = php_ui_brush_create;
 
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("Solid"), PHP_UI_BRUSH_SOLID);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("LinearGradient"), PHP_UI_BRUSH_LINEAR_GRADIENT);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("RadialGradient"), PHP_UI_BRUSH_RADIAL_GRADIENT);
-	zend_declare_class_constant_long(uiDrawBrush_ce, ZEND_STRL("Image"), PHP_UI_BRUSH_IMAGE);
-
 	memcpy(&php_ui_brush_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	
 	php_ui_brush_handlers.offset = XtOffsetOf(php_ui_brush_t, std);
 	php_ui_brush_handlers.free_obj = php_ui_brush_free;
+
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw\\Brush", "Gradient", php_ui_gradient_methods);
+
+	uiDrawBrushGradient_ce = zend_register_internal_class_ex(&ce, uiDrawBrush_ce);
+	uiDrawBrushGradient_ce->ce_flags |= ZEND_ACC_ABSTRACT;
+
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw\\Brush", "LinearGradient", php_ui_linear_gradient_methods);
+
+	uiDrawBrushLinearGradient_ce = zend_register_internal_class_ex(&ce, uiDrawBrushGradient_ce);
+
+	INIT_NS_CLASS_ENTRY(ce, "UI\\Draw\\Brush", "RadialGradient", php_ui_radial_gradient_methods);
+
+	uiDrawBrushRadialGradient_ce = zend_register_internal_class_ex(&ce, uiDrawBrushGradient_ce);
 
 	return SUCCESS;
 } /* }}} */

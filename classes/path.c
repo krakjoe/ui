@@ -52,17 +52,17 @@ void php_ui_path_free(zend_object *o) {
 	zend_object_std_dtor(o);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_path_construct_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_path_construct_info, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, mode, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto DrawPath UI\Draw\Path::__construct(int mode = UI\Draw\Path::Winding) */
+/* {{{ proto DrawPath UI\Draw\Path::__construct([int mode = UI\Draw\Path::Winding]) */
 PHP_METHOD(DrawPath, __construct) 
 {
 	php_ui_path_t *path = php_ui_path_fetch(getThis());
 	zend_long mode = uiDrawFillModeWinding;
 	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &mode) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|l", &mode) != SUCCESS) {
 		return;
 	}
 

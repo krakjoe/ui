@@ -33,12 +33,14 @@
 #	include <X11/Xlib.h>
 #endif
 
+#include <pthread.h>
+
 #include <classes/exceptions.h>
+#include <classes/executor.h>
 
 #include <classes/point.h>
 #include <classes/size.h>
 
-#include <classes/app.h>
 #include <classes/control.h>
 #include <classes/window.h>
 #include <classes/tab.h>
@@ -74,6 +76,9 @@
 #include <classes/descriptor.h>
 #include <classes/font.h>
 #include <classes/layout.h>
+
+#define PHP_UI_LOOP	1<<0
+#define PHP_UI_WAIT	1<<1
 
 void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table) {
 	zval obj;
@@ -116,9 +121,12 @@ PHP_MINIT_FUNCTION(ui)
 	XInitThreads();
 #endif
 
-	PHP_MINIT(UI_Exceptions)(INIT_FUNC_ARGS_PASSTHRU);
+	REGISTER_NS_LONG_CONSTANT("UI", "Loop", PHP_UI_LOOP, CONST_CS|CONST_PERSISTENT);
+	REGISTER_NS_LONG_CONSTANT("UI", "Wait", PHP_UI_WAIT, CONST_CS|CONST_PERSISTENT);
 
-	PHP_MINIT(UI_App)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Exceptions)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(UI_Executor)(INIT_FUNC_ARGS_PASSTHRU);
+
 	PHP_MINIT(UI_Point)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(UI_Size)(INIT_FUNC_ARGS_PASSTHRU);
 
@@ -273,6 +281,36 @@ int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *
 	return SUCCESS;
 } /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_run_info, 0, 0, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto void UI\run([int flags = 0])*/
+PHP_FUNCTION(UI_run)
+{
+	zend_long flags = 0;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|l", &flags) != SUCCESS) {
+		return;
+	}
+	
+	if (!(flags & PHP_UI_LOOP)) {
+		uiMain();
+		return;
+	}
+	
+	uiMainStep((flags & PHP_UI_WAIT) == PHP_UI_WAIT);
+} /* }}} */
+
+ZEND_BEGIN_ARG_INFO_EX(php_ui_quit_info, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ */
+PHP_FUNCTION(UI_quit)
+{
+	uiQuit();
+} /* }}} */
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_draw_font_families_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -299,6 +337,8 @@ PHP_FUNCTION(fontFamilies)
 /* {{{ ui_functions[]
  */
 const zend_function_entry ui_functions[] = {
+	ZEND_NS_NAMED_FE("UI", run, zif_UI_run, php_ui_run_info)
+	ZEND_NS_NAMED_FE("UI", quit, zif_UI_quit, php_ui_quit_info)
 	ZEND_NS_FE("UI\\Draw\\Text\\Font", fontFamilies, php_ui_draw_font_families_info)
 	PHP_FE_END
 };

@@ -36,5 +36,7 @@ typedef struct _php_ui_color_t {
 #define PHP_UI_COLOR_BLUE 3
 #define PHP_UI_COLOR_ALPHA 4
 
+zend_bool php_ui_color_set(zval *color, double *r, double *g, double *b, double *a);
+
 PHP_MINIT_FUNCTION(UI_DrawColor);
 #endif

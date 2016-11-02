@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/descriptor.h>
 #include <classes/layout.h>
 #include <classes/font.h>
@@ -96,7 +97,7 @@ PHP_METHOD(DrawTextLayout, setWidth)
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_layout_set_color_info, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)
+	ZEND_ARG_INFO(0, color)
 	ZEND_ARG_TYPE_INFO(0, start, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, end, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -107,19 +108,23 @@ PHP_METHOD(DrawTextLayout, setColor)
 	php_ui_layout_t *layout = php_ui_layout_fetch(getThis());
 	zend_long start = 0, end = 0;
 	zval *color = NULL;
-	php_ui_color_t *c;
-	
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O|ll", &color, uiDrawColor_ce, &start, &end) != SUCCESS) {
+	double r = 0, g = 0, b = 0, a = 1;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "z|ll", &color, &start, &end) != SUCCESS) {
 		return;
 	}
 
 	if (ZEND_NUM_ARGS() < 3) {
 		end = layout->end;
 	}
-	
-	c = php_ui_color_fetch(color);
 
-	uiDrawTextLayoutSetColor(layout->l, start, end, c->r, c->g, c->b, c->a);
+	if (!php_ui_color_set(color, &r, &g, &b, &a)) {
+		php_ui_exception(
+			"failed to set color of layout");
+		return;
+	}
+
+	uiDrawTextLayoutSetColor(layout->l, start, end, r, g, b, a);
 } /* }}} */
 
 /* {{{ */

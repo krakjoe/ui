@@ -1,5 +1,4 @@
 <?php
-use UI\App;
 use UI\Point;
 use UI\Size;
 use UI\Window;
@@ -22,9 +21,7 @@ use UI\Draw\Text\Font\Descriptor;
 use UI\Draw\Text\Font;
 use UI\Draw\Text\Layout;
 
-$app = new App();
-
-$window = new Window($app, "libui Histogram Example", new Size(640, 480), true);
+$window = new Window("libui Histogram Example", new Size(640, 480), true);
 
 $window->setMargin(true);
 
@@ -56,7 +53,7 @@ $histogram = new class($dataSources) extends Area {
 	}
 
 	private function getGraphPath(array $locations, Size $size, bool $extend = false) : Path {
-		$path = new Path(Path::Winding);
+		$path = new Path();
 
 		$path->newFigure(array_shift($locations));
 
@@ -65,7 +62,7 @@ $histogram = new class($dataSources) extends Area {
 		}
 
 		if ($extend) {
-			$path->lineTo(new Point($size->width, $size->height));
+			$path->lineTo(Point::at($size));
 			$path->lineTo(new Point(0, $size->height));
 			$path->closeFigure();
 		}
@@ -78,28 +75,25 @@ $histogram = new class($dataSources) extends Area {
 	protected function onDraw(Pen $pen, Size $areaSize, Point $clipPoint, Size $clipSize) {
 		$start = microtime(true);
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($clipPoint, $areaSize);
 		$path->end();
 
-		$pen->fill($path, new Brush(Brush::Solid, new Color(0xFFFFFF, 1)));
+		$pen->fill($path, 0xFFFFFFFF);
 	
-		$graphSize = new Size($areaSize->width - 40, $areaSize->height - 40);
+		$graphSize = $areaSize - 40;
 
-		$zero = new Point(20, 20);
+		$zero = Point::at(20);
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->newFigure($zero);
 		$path->lineTo(new Point(20, 20 + $graphSize->height));
-		$path->lineTo(new Point(20 + $graphSize->width, 20 + $graphSize->height));	
+		$path->lineTo(Point::at($graphSize + 20));	
 		$path->end();
 
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		
-		$black = new Color(0x000000, 1);
-
-		$pen->stroke($path, new Brush(Brush::Solid, $black), $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($zero);
@@ -110,16 +104,14 @@ $histogram = new class($dataSources) extends Area {
 
 		$path = $this->getGraphPath($points, $graphSize, true);
 
-		$brush = new Brush(Brush::Solid, $this->color->getColor());
+		$brush = new Brush($this->color->getColor());
 
 		$pen->fill($path, $brush);
 
 		$path = $this->getGraphPath($points, $graphSize, false);
 
 		$strokeColor = $brush->getColor();
-		$strokeColor
-			->setChannel(Color::Alpha, 
-				$strokeColor->getChannel(Color::Alpha)/2);
+		$strokeColor->a /= 2;
 		$brush->setColor($strokeColor);
 
 		$pen->stroke($path, $brush, $stroke);
@@ -130,7 +122,7 @@ $histogram = new class($dataSources) extends Area {
 			$this->font->getFont(),
 			$clipSize->width
 		);
-		$layout->setColor($black);
+		$layout->setColor(0x000000FF);
 
 		$pen->write(new Point(10, $graphSize->height - 30), $layout);
 	}
@@ -163,18 +155,19 @@ $histogram = new class($dataSources) extends Area {
 };
 
 $colorBox = new Entry();
-$colorBox->setText("0x8892BF");
+$colorBox->setText("0x8892BFFF");
 
-$colorButton = new class($histogram, $colorBox, new Color(0x8892BF, 1)) extends ColorButton {
+$colorButton = new class($histogram, $colorBox, new Color(0x8892BFFF)) extends ColorButton {
 
 	protected function onChange() {
 		$redrawColor = $this->getColor();
-
+		
 		$this->entry->setText(sprintf(
-			"0x%02X%02X%02X",
-				$redrawColor->getChannel(Color::Red) * 255,
-				$redrawColor->getChannel(Color::Green) * 255,
-				$redrawColor->getChannel(Color::Blue) * 255));
+			"0x%02X%02X%02X%02X",
+				$redrawColor->r * 255,
+				$redrawColor->g * 255,
+				$redrawColor->b * 255,
+				$redrawColor->a * 255));
 
 		$this->histogram->redraw();
 	}
@@ -195,10 +188,11 @@ $redrawHistogram = function() use($histogram, $colorBox, $colorButton) {
 	$redrawColor = $colorButton->getColor();
 
 	$colorBox->setText(sprintf(
-		"0x%02X%02X%02X",
-			$redrawColor->getChannel(Color::Red) * 255,
-			$redrawColor->getChannel(Color::Green) * 255,
-			$redrawColor->getChannel(Color::Blue) * 255));
+		"0x%02X%02X%02X%02X",
+			$redrawColor->r * 255,
+			$redrawColor->g * 255,
+			$redrawColor->b * 255,
+			$redrawColor->a * 255));
 
 	$histogram->redraw();
 };
@@ -233,7 +227,8 @@ $colorBoxButton = new class("Set Color", $colorButton, $colorBox, $redrawHistogr
 	protected function onClick() {
 		$this->button->setColor(
 			new Color(
-				hexdec($this->entry->getText()), 1));
+				hexdec($this->entry->getText())));
+
 		($this->redraw)();
 	}
 
@@ -292,5 +287,5 @@ $hBox->append($histogram, true);
 
 $window->show();
 
-$app->run();
+UI\run();
 ?>

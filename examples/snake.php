@@ -1,5 +1,7 @@
 <?php
-use UI\App;
+define ("PHP_UI_SECOND",    1000000);
+define ("PHP_UI_SNAKE_FPS", 30);
+
 use UI\Window;
 use UI\Point;
 use UI\Size;
@@ -18,29 +20,37 @@ use UI\Draw\Matrix;
 use UI\Draw\Text\Font;
 use UI\Draw\Text\Font\Descriptor;
 
-$app = new class extends App {
+use UI\Executor;
 
-	public function setGame(Area $game) {
-		$this->game = $game;
+$win = new class("Snake", new Size(640, 480), false) extends Window {
+	public function addExecutor(Executor $executor) {
+		$this->executors[] = $executor;
 	}
 
-	protected function onTick() {
-		if ($this->game) {
-			$this->game->redraw();
+	protected function onClosing() {
+		foreach ($this->executors as $executor) {
+			$executor->kill();
 		}
+
+		$this->destroy();
+
+		UI\quit();
 	}
 };
 
-$win = new Window($app, "Snake", new Size(640, 480), false);
 $box = new Box(Box::Vertical);
 $win->add($box);
 
-$app->setGame(new class($box) extends Area{
+$snake = new class($box) extends Area{
 
 	public function __construct(Box $box) {
 		$this->newSnake();
 
 		$box->append($this, true);
+	}
+
+	public function setExecutor(Executor $executor) {
+		$this->executor = $executor;
 	}
 
 	protected function onKey(string $char, int $key, int $flags) {
@@ -74,6 +84,14 @@ $app->setGame(new class($box) extends Area{
 				default:
 					if ($char == " ") {
 						$this->pause = !$this->pause;
+
+						if ($this->pause) {
+							/* this allows the CPU to idle while paused */
+							$this->executor->setInterval(0);
+						} else {
+							/* this will (re)start the game */
+							$this->executor->setInterval(PHP_UI_SECOND/PHP_UI_SNAKE_FPS);
+						}
 					}
 				break;
 			}
@@ -85,23 +103,21 @@ $app->setGame(new class($box) extends Area{
 		$frame = $zero + 40;
 		$frameSize = $size - 80;
 
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($zero, $size);
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, new Color(0xf5f5f5, 1));
-		$pen->fill($path, $brush);
+		$pen->fill($path, 0xf5f5f5ff);
 
 		$stroke = new Stroke();	
-		$brush->setColor(
-			new Color(0, 255));
-		$pen->stroke($path, $brush, $stroke);
 
-		$path = new Path(Path::Winding);
+		$pen->stroke($path, 0x000000FF, $stroke);
+
+		$path = new Path();
 		$path->addRectangle($frame, $frameSize);
 		$path->end();
 
-		$pen->stroke($path, $brush, $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 
 		$matrix = new Matrix();
 		$matrix->translate($frame);
@@ -184,18 +200,16 @@ $app->setGame(new class($box) extends Area{
 	}
 
 	private function newCell(Pen $pen, Point $point) {
-		$path = new Path(Path::Winding);
+		$path = new Path();
 		$path->addRectangle($point * 10, new Size(10, 10));
 		$path->end();
 
-		$brush = new Brush(Brush::Solid, new Color(0x0000FF, 1));
-		$pen->fill($path, $brush);
+		$pen->fill($path, 0x0000FFFF);
 		
 		$stroke = new Stroke();
 		$stroke->setThickness(2);
-		$brush->setColor(new Color(0x000000, 1));
 
-		$pen->stroke($path, $brush, $stroke);
+		$pen->stroke($path, 0x000000FF, $stroke);
 	}
 
 	private function drawPause(Pen $pen, Size $size) {
@@ -205,20 +219,19 @@ $app->setGame(new class($box) extends Area{
 			$this->score
 		), new Font(new Descriptor("arial", 12)), $size->width);
 
-		$layout->setColor(new Color(0x000000, 1));
+		$layout->setColor(0x000000FF);
 
 		$pen->write(new Point(20, 10), $layout);
 	}
 
 	private function drawScore(Pen $pen, Size $size) {
-
 		$layout = new UI\Draw\Text\Layout(sprintf(
 			"Level: %d Score: %d",
 			$this->level,
 			$this->score
 		), new Font(new Descriptor("arial", 12)), $size->width);
 
-		$layout->setColor(new Color(0x000000, 1));
+		$layout->setColor(0x000000FF);
 	
 		$pen->write(new Point(20, 10), $layout);
 	}
@@ -230,12 +243,26 @@ $app->setGame(new class($box) extends Area{
 	private $score = 0;
 	private $pause = true;
 	private $run = 0;
-});
+};
+
+$animator = new class ($snake) extends Executor {
+
+	public function __construct(Area $area) {
+		$this->area = $area;
+
+		/* construct executor with infinite timeout */
+		parent::__construct();
+	}
+
+	protected function onExecute() {
+		$this->area->redraw();
+	}
+};
+
+$win->addExecutor($animator);
+
+$snake->setExecutor($animator);
 
 $win->show();
 
-do {
-	$app->run(App::Loop);
-} while($win->isVisible());
-
-$app->quit();
+UI\run();

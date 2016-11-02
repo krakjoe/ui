@@ -15,32 +15,33 @@
   | Author: krakjoe                                                      |
   +----------------------------------------------------------------------+
 */
-#ifndef HAVE_PHP_UI_APP_H
-#define HAVE_PHP_UI_APP_H
+#ifndef HAVE_PHP_UI_EXECUTOR_H
+#define HAVE_PHP_UI_EXECUTOR_H
 
-extern zend_class_entry *uiApp_ce;
+extern zend_class_entry *uiExecutor_ce;
 
-typedef struct _php_ui_app_t {
-	HashTable windows;
-	struct php_ui_app_quit_t {
+typedef struct _php_u_monitor_t {
+	pthread_mutex_t           m;
+	pthread_cond_t            c;
+	volatile zend_bool       flag;
+} php_ui_monitor_t;
+
+typedef struct _php_ui_executor_t {
+	pthread_t                    thread;
+	struct timespec             interval;
+	struct php_ui_executor_monitors_t {
+		php_ui_monitor_t		 main;
+		php_ui_monitor_t		 queue;
+	} monitors;
+	struct php_ui_executor_on_execute_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
-	} quit;
-	struct php_ui_app_tick_t {
-		zend_fcall_info fci;
-		zend_fcall_info_cache fcc;
-	} tick;
-	zend_long ticks;
+	} execute;
 	zend_object std;
-} php_ui_app_t;
+} php_ui_executor_t;
 
-#define php_ui_app_from(o) ((php_ui_app_t*) ((char*) o - XtOffsetOf(php_ui_app_t, std)))
-#define php_ui_app_fetch(z) php_ui_app_from(Z_OBJ_P(z))
+#define php_ui_executor_from(o) ((php_ui_executor_t*) ((char*) o - XtOffsetOf(php_ui_executor_t, std)))
+#define php_ui_executor_fetch(z) php_ui_executor_from(Z_OBJ_P(z))
 
-void php_ui_app_window(zval *app, zval *window);
-
-#define PHP_UI_APP_LOOP	1<<0
-#define PHP_UI_APP_WAIT	1<<1
-
-PHP_MINIT_FUNCTION(UI_App);
+PHP_MINIT_FUNCTION(UI_Executor);
 #endif
