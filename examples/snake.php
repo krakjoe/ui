@@ -2,7 +2,6 @@
 define ("PHP_UI_SECOND",    1000000);
 define ("PHP_UI_SNAKE_FPS", 30);
 
-use UI\App;
 use UI\Window;
 use UI\Point;
 use UI\Size;
@@ -23,8 +22,22 @@ use UI\Draw\Text\Font\Descriptor;
 
 use UI\Executor;
 
-$app = new App;
-$win = new Window($app, "Snake", new Size(640, 480), false);
+$win = new class("Snake", new Size(640, 480), false) extends Window {
+	public function addExecutor(Executor $executor) {
+		$this->executors[] = $executor;
+	}
+
+	protected function onClosing() {
+		foreach ($this->executors as $executor) {
+			$executor->kill();
+		}
+
+		$this->destroy();
+
+		UI\quit();
+	}
+};
+
 $box = new Box(Box::Vertical);
 $win->add($box);
 
@@ -232,7 +245,7 @@ $snake = new class($box) extends Area{
 	private $run = 0;
 };
 
-$snake->setExecutor(new class ($snake) extends Executor {
+$animator = new class ($snake) extends Executor {
 
 	public function __construct(Area $area) {
 		$this->area = $area;
@@ -244,8 +257,12 @@ $snake->setExecutor(new class ($snake) extends Executor {
 	protected function onExecute() {
 		$this->area->redraw();
 	}
-});
+};
+
+$win->addExecutor($animator);
+
+$snake->setExecutor($animator);
 
 $win->show();
 
-$app->run();
+UI\run();

@@ -1,6 +1,5 @@
 <?php
 use UI\Size;
-use UI\App;
 use UI\Menu;
 use UI\MenuItem;
 use UI\Window;
@@ -25,9 +24,7 @@ use UI\Controls\Label;
 use UI\Controls\Separator;
 use UI\Controls\ColorButton;
 
-$app = new App();
-
-$window = new Window($app, "libui Control Gallery", new Size(640, 480), true);
+$window = new Window("libui Control Gallery", new Size(640, 480), true);
 $window->setMargin(true);
 
 $tab = new Tab();
@@ -292,5 +289,5 @@ $tab->setMargin(2, true);
 
 $window->show();
 
-$app->run();
+UI\run();
 ?>

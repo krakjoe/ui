@@ -24,7 +24,6 @@
 #include <classes/control.h>
 #include <classes/point.h>
 #include <classes/size.h>
-#include <classes/app.h>
 #include <classes/window.h>
 
 zend_object_handlers php_ui_window_handlers;
@@ -98,36 +97,31 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	return result;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 4)
-	ZEND_ARG_OBJ_INFO(0, app, UI\\App, 0)
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
 	ZEND_ARG_TYPE_INFO(0, menu, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto Window Window::__construct(App app, string title, Size size, bool menu) */
+/* {{{ proto Window Window::__construct(string title, Size size, bool menu) */
 PHP_METHOD(Window, __construct) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	zval *app = NULL;
 	zend_string *title = NULL;
 	zval *size = NULL;
 	php_ui_size_t *s;
 	zend_bool menu = 0;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "OSO|b", &app, uiApp_ce, &title, &size, uiSize_ce, &menu) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO|b", &title, &size, uiSize_ce, &menu) != SUCCESS) {
 		return;
 	}
 
 	s = php_ui_size_fetch(size);
 
-	win->w = uiNewWindow(ZSTR_VAL(title), (int) s->width, (int) s->height, menu);
+	win->w = uiNewWindow(ZSTR_VAL(title), 
+		(int) s->width, (int) s->height, menu);
 
 	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
-
-	php_ui_app_window(app, getThis());
-
-	zend_update_property(win->std.ce, getThis(), ZEND_STRL("app"), app);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
@@ -448,7 +442,6 @@ PHP_MINIT_FUNCTION(UI_Window)
 	uiWindow_ce = zend_register_internal_class_ex(&ce, uiControl_ce);
 	uiWindow_ce->create_object = php_ui_window_create;
 	zend_declare_property_null(uiWindow_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
-	zend_declare_property_null(uiWindow_ce, ZEND_STRL("app"), ZEND_ACC_PROTECTED);
 
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

@@ -1,5 +1,4 @@
 <?php
-use UI\App;
 use UI\Window;
 use UI\Point;
 use UI\Size;
@@ -15,9 +14,7 @@ use UI\Draw\Color;
 
 use UI\Executor;
 
-$app = new App;
-
-$win = new class($app, "Starfield", new Size(640, 480), false) extends Window {
+$win = new class("Starfield", new Size(640, 480), false) extends Window {
 
 	public function addExecutor(Executor $executor) {
 		$this->executors[] = $executor;
@@ -29,9 +26,8 @@ $win = new class($app, "Starfield", new Size(640, 480), false) extends Window {
 		}
 
 		$this->destroy();
-		$this->app->quit();
 
-		unset($this->app); # not sure why, yet
+		UI\quit();
 	}
 };
 
@@ -158,5 +154,5 @@ $win->addExecutor($animator);
 
 $win->show();
 
-$app->run();
+UI\run();
 ?>
