@@ -12,6 +12,7 @@ use UI\Controls\Box;
 
 use UI\Draw\Pen;
 use UI\Draw\Brush;
+use UI\Draw\Brush\LinearGradient;
 use UI\Draw\Path;
 use UI\Draw\Color;
 use UI\Draw\Stroke;
@@ -41,11 +42,24 @@ $win = new class("Snake", new Size(640, 480), false) extends Window {
 $box = new Box(Box::Vertical);
 $win->add($box);
 
+class Cell {
+
+	public function __construct(Point $point, $color) {
+		$this->point = $point;
+		$this->color = $color;
+	}
+
+	public function __clone() {
+		$this->point = clone $this->point;
+	}
+
+	public $point;
+	public $color;
+}
+
 $snake = new class($box) extends Area{
 
 	public function __construct(Box $box) {
-		$this->newSnake();
-
 		$box->append($this, true);
 	}
 
@@ -117,6 +131,14 @@ $snake = new class($box) extends Area{
 		$path->addRectangle($frame, $frameSize);
 		$path->end();
 
+		$gradient = new LinearGradient(
+			Point::at(0), new Point(0, $frameSize->height));
+
+		$gradient->addStop(0, 0x000000FF);
+		$gradient->addStop(1.0, 0x303030F1);
+
+		$pen->fill($path, $gradient);
+
 		$pen->stroke($path, 0x000000FF, $stroke);
 
 		$matrix = new Matrix();
@@ -124,32 +146,36 @@ $snake = new class($box) extends Area{
 
 		$pen->transform($matrix);
 
+		if (!$this->snake) {
+			$this->newSnake($frameSize);
+		}
+
 		if (!$this->food) {
 			$this->newFood($frameSize);
 		}
 
-		if (!$this->pause && ($run = microtime(true)) - $this->run > 0.1 / $this->level * 2) {
+		if (!$this->pause && ($run = microtime(true)) - $this->run > 0.2) {
 			$this->run = $run;
 
-			$next = clone $this->snake[0];
+			$head = clone $this->snake[0];
 
 			switch ($this->direction) {
-				case Key::Right: $next->x++; break;
-				case Key::Left:  $next->x--; break;
-				case Key::Up: $next->y--; break;
-				case Key::Down: $next->y++; break;
+				case Key::Right: $head->x++; break;
+				case Key::Left:  $head->x--; break;
+				case Key::Up: $head->y--; break;
+				case Key::Down: $head->y++; break;
 			}
 
-			if ($next->x < 0 || $next->x >= ($frameSize->width)/10 || 
-				$next->y < 0 || $next->y >= ($frameSize->height)/10) {
-				$this->newSnake();
+			if ($head->x < 0 || $head->x >= ($frameSize->width)/20 || 
+				$head->y < 0 || $head->y >= ($frameSize->height)/20) {
+				$this->newSnake($frameSize);
 				$this->newFood($frameSize);
 
-				foreach ($this->snake as $body) {
-					$this->newCell($pen, $body);
+				foreach ($this->snake as $color => $body) {
+					$this->newCell($pen, $body, $color);
 				}
 
-				$this->newCell($pen, $this->food);
+				$this->newCell($pen, $this->food, count($this->snake)-1);
 
 				$this->pause = true;
 				$this->direction = Key::Right;
@@ -158,25 +184,25 @@ $snake = new class($box) extends Area{
 				return;
 			}
 
-			if ($this->food == $next) {
-				$tail = $next;
-				$this->newFood($frameSize);
+			if ($this->food == $head) {
+				$this->snake[] = $this->food;
 				$this->score += 10;
 				$this->level = ceil($this->score / 100);
-			} else {
-				$tail = array_pop($this->snake);
-				$tail->x = $next->x;
-				$tail->y = $next->y;
+				$this->newFood($frameSize);
 			}
 
-			array_unshift($this->snake, $tail);
+			$tail = array_pop($this->snake);
+			$tail->x = $head->x;
+			$tail->y = $head->y;
+
+			array_unshift($this->snake, $tail);		
 		}
 
-		foreach ($this->snake as $body) {
-			$this->newCell($pen, $body);
+		foreach ($this->snake as $color => $body) {
+			$this->newCell($pen, $body, $color);
 		}
 		
-		$this->newCell($pen, $this->food);
+		$this->newCell($pen, $this->food, count($this->snake));
 
 		$matrix = new Matrix();
 		$matrix->translate($zero - 40);
@@ -187,29 +213,46 @@ $snake = new class($box) extends Area{
 		} else $this->drawScore($pen, $size);
 	}
 
-	private function newSnake() {
+	private function newColor() {
+		if (self::$nextColor == count(self::$availableColors))
+			self::$nextColor = 0;
+
+		return self::$availableColors[self::$nextColor++];
+	}
+
+	private function newSnake($size) {
+		self::$nextColor = 0;
+		shuffle(self::$availableColors);
+
 		$this->snake = [];
-		for ($i = 0; $i < 5; $i++)
-			$this->snake[$i] = new Point($i, 0);
+		$this->colors = [];
+
+		for ($i = 4; $i >= 0; $i--) {
+			$this->snake[] = new Point($i, 0);
+			$this->colors[] = $this->newColor();
+		}
 	}
 
 	private function newFood(Size $size) {
 		$this->food = new Point(
-			floor(mt_rand(40, ($size->width ) - 10) / 10), 
-			floor(mt_rand(40, ($size->height) - 10) / 10));
+			floor(mt_rand(40, ($size->width ) - 20) / 20), 
+			floor(mt_rand(40, ($size->height) - 20) / 20));
+
+		$this->colors[count($this->snake)] = $this->newColor();
 	}
 
-	private function newCell(Pen $pen, Point $point) {
+	private function newCell(Pen $pen, Point $point, int $color) {
 		$path = new Path();
-		$path->addRectangle($point * 10, new Size(10, 10));
+		$path->addRectangle(
+			$point * 20, new Size(20, 20));
 		$path->end();
 
-		$pen->fill($path, 0x0000FFFF);
-		
-		$stroke = new Stroke();
-		$stroke->setThickness(2);
+		$pen->fill($path, $this->colors[$color]);
 
-		$pen->stroke($path, 0x000000FF, $stroke);
+		$stroke = new Stroke();
+		$stroke->setThickness(3);
+
+		$pen->stroke($path, 0xFFFFFFFF, $stroke);
 	}
 
 	private function drawPause(Pen $pen, Size $size) {
@@ -243,6 +286,17 @@ $snake = new class($box) extends Area{
 	private $score = 0;
 	private $pause = true;
 	private $run = 0;
+	private $colors = [];
+
+	private static $availableColors = [
+		0x8F3AA4FF,
+		0xCD116AFF,
+		0x119ACDFF,
+		0x65CD11FF,
+		0xE64C00FF,
+		0xE2B500FF
+	];
+	private static $nextColor = 0;
 };
 
 $animator = new class ($snake) extends Executor {
