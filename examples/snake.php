@@ -181,6 +181,7 @@ $snake = new class($box) extends Area{
 				$this->direction = Key::Right;
 				$this->score = 0;
 				$this->level = 1;
+				$this->executor->setInterval(0);
 				return;
 			}
 
