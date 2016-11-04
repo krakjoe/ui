@@ -1,10 +1,8 @@
-ui
-==
-*Cross platform UI development in PHP 7*
+[![ui](http://i.imgur.com/DhQZHD5.png)](http://github.com/krakjoe/ui)
 
 [![Build Status](https://travis-ci.org/krakjoe/ui.svg?branch=develop)](https://travis-ci.org/krakjoe/ui)
 
-[libui](https://github.com/andlabs/libui) is a very excellent cross platform ui development library written in C: This extension provides an interface to [libui](https://github.com/andlabs/libui).
+This extension wraps the very excellent [libui](https://github.com/andlabs/libui) to provide PHP 7 with an API for the creation of cross platform native look-and-feel interfaces.
 
 TODO
 ====
@@ -15,7 +13,7 @@ Requirements
 ===========
 
   - PHP 7
-  - [libui](https://github.com/andlabs/libui) (ce37d12d230cea529bf6f5ac1d3bc76b9a75bbbd)
+  - [libui](https://github.com/andlabs/libui) (use current master)
   - Windows/MacOSX/Linux (GTK-3)
   - patience
 
@@ -28,3 +26,12 @@ Contributions
 ============
 
 Pull requests are welcome, and should target the develop branch.
+
+Captures
+========
+
+There are screenshots in the libui repository for normal form controls, here are captures of examples you can find in this repository:
+
+| Snake    | Starfield |
+|:--------:|:---------:|
+|[![snake](http://i.imgur.com/zodOILZ.gif)](https://github.com/krakjoe/ui/blob/develop/examples/snake.php)|[![starfield](http://i.imgur.com/VKBJ7fx.gif)](https://github.com/krakjoe/ui/blob/develop/examples/starfield.php)|
