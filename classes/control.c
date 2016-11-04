@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/control.h>
 
 zend_class_entry *uiControl_ce;
