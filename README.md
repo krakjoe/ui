@@ -34,4 +34,4 @@ There are screenshots in the libui repository for normal form controls, here are
 
 | Snake    | Starfield |
 |:--------:|:---------:|
-|[![snake](http://i.imgur.com/zodOILZ.gif)](https://github.com/krakjoe/ui/blob/develop/examples/snake.php)|[![starfield](http://i.imgur.com/VKBJ7fx.gif)](https://github.com/krakjoe/ui/blob/develop/examples/starfield.php)|
+|[![snake](http://i.imgur.com/Fk45Toj.gif)](https://github.com/krakjoe/ui/blob/develop/examples/snake.php)|[![starfield](http://i.imgur.com/Rj2Lk1M.gif)](https://github.com/krakjoe/ui/blob/develop/examples/starfield.php)|
