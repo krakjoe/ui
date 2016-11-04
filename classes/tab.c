@@ -26,6 +26,7 @@
 #include <classes/tab.h>
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+extern void php_ui_set_parent(zval *child, zval *control);
 
 #define PHP_UI_TAB_PAGE_CHECK(tab, page) do { \
 	if (page < 0 || page >= zend_hash_num_elements(tab->controls)) { \
@@ -70,7 +71,7 @@ PHP_METHOD(Tab, append)
 	php_ui_tab_t *tab = php_ui_tab_fetch(getThis());
 	zend_string *name = NULL;
 	zval *control = NULL;
-	uiControl *ctrl = NULL;
+	php_ui_control_t *ctrl = NULL;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO", &name, &control, uiControl_ce) != SUCCESS) {
 		return;
@@ -78,7 +79,9 @@ PHP_METHOD(Tab, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl);
+	uiTabAppend(tab->t, ZSTR_VAL(name), ctrl->control);
+
+	ctrl->parent = &tab->std;
 
 	if (zend_hash_next_index_insert(tab->controls, control)) {
 		Z_ADDREF_P(control);
@@ -141,7 +144,7 @@ PHP_METHOD(Tab, insertAt)
 	zend_string *name = NULL;
 	zend_long page = 0;
 	zval *control = NULL;
-	uiControl *ctrl = NULL;
+	php_ui_control_t *ctrl = NULL;
 	
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SlO", &name, &page, &control, uiControl_ce) != SUCCESS) {
 		return;
@@ -149,7 +152,9 @@ PHP_METHOD(Tab, insertAt)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl);
+	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl->control);
+
+	php_ui_set_parent(control, getThis());
 
 	RETURN_LONG(uiTabNumPages(tab->t));
 }

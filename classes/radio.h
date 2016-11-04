@@ -22,6 +22,7 @@ extern zend_class_entry *uiRadio_ce;
 
 typedef struct _php_ui_radio_t {
 	uiRadioButtons *r;
+	php_ui_control_t *parent;
 	struct php_ui_radio_selected_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;

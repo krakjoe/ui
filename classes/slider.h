@@ -22,6 +22,7 @@ extern zend_class_entry *uiSlider_ce;
 
 typedef struct _php_ui_slider_t {
 	uiSlider *s;
+	php_ui_control_t *parent;
 	struct php_ui_slider_change_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;

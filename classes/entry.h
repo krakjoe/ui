@@ -22,6 +22,7 @@ extern zend_class_entry *uiEntry_ce;
 
 typedef struct _php_ui_entry_t {
 	uiEntry *e;
+	php_ui_control_t *parent;
 	zend_long type;
 	struct php_ui_entry_change_t {
 		zend_fcall_info fci;

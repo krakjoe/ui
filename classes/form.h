@@ -22,6 +22,7 @@ extern zend_class_entry *uiForm_ce;
 
 typedef struct _php_ui_form_t {
 	uiForm *f;
+	php_ui_control_t *parent;
 	HashTable *controls;
 	zend_object std;
 } php_ui_form_t;

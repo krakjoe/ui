@@ -22,6 +22,7 @@ extern zend_class_entry *uiGrid_ce;
 
 typedef struct _php_ui_grid_t {
 	uiGrid *g;
+	php_ui_control_t *parent;
 	HashTable *controls;
 	zend_object std;
 } php_ui_grid_t;

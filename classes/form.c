@@ -28,6 +28,7 @@
 zend_object_handlers php_ui_form_handlers;
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+extern void php_ui_set_parent(zval *child, zval *control);
 
 #define PHP_UI_FORM_CONTROL_CHECK(form, control) do { \
 	if (control < 0 || control >= zend_hash_num_elements(form->controls)) { \
@@ -109,7 +110,7 @@ PHP_METHOD(Form, append)
 	zend_string *label = NULL;
 	zval *control = NULL;
 	zend_bool stretchy = 0;
-	uiControl *ctrl;
+	php_ui_control_t *ctrl;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SO|b", &label, &control, uiControl_ce, &stretchy) != SUCCESS) {
 		return;
@@ -117,7 +118,9 @@ PHP_METHOD(Form, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiFormAppend(form->f, ZSTR_VAL(label), ctrl, stretchy);
+	uiFormAppend(form->f, ZSTR_VAL(label), ctrl->control, stretchy);
+
+	php_ui_set_parent(control, getThis());
 
 	if (zend_hash_next_index_insert(form->controls, control)) {
 		Z_ADDREF_P(control);

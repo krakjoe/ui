@@ -22,6 +22,7 @@ extern zend_class_entry *uiBox_ce;
 
 typedef struct _php_ui_box_t {
 	uiBox *b;
+	php_ui_control_t *parent;
 	HashTable *controls;
 	zend_long orientation;
 	zend_object std;

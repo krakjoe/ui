@@ -23,6 +23,7 @@ extern zend_class_entry *uiKey_ce;
 
 typedef struct _php_ui_area_t {
 	uiArea *a;
+	zend_object *parent;
 	struct php_ui_area_draw_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;

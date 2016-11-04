@@ -27,6 +27,7 @@
 zend_object_handlers php_ui_grid_handlers;
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+extern void php_ui_set_parent(zval *child, zval *control);
 
 zend_class_entry *uiGrid_ce;
 
@@ -102,7 +103,7 @@ PHP_METHOD(Grid, append)
 	zval *control = NULL;
 	zend_long top = 0, left = 0, xspan = 0, yspan = 0, halign = 0, valign = 0;
 	zend_bool hexpand = 0, vexpand = 0;
-	uiControl *ctrl;
+	php_ui_control_t *ctrl;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Ollllblbl", &control, uiControl_ce, &left, &top, &xspan, &yspan, &hexpand, &halign, &vexpand, &valign) != SUCCESS) {
 		return;
@@ -110,7 +111,9 @@ PHP_METHOD(Grid, append)
 
 	ctrl = php_ui_control_fetch(control);
 	
-	uiGridAppend(grid->g, ctrl, left, top, xspan, yspan, hexpand, halign, vexpand, valign);
+	uiGridAppend(grid->g, ctrl->control, left, top, xspan, yspan, hexpand, halign, vexpand, valign);
+
+	php_ui_set_parent(control, getThis());
 
 	if (zend_hash_next_index_insert(grid->controls, control)) {
 		Z_ADDREF_P(control);

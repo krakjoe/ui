@@ -95,6 +95,25 @@ void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, Has
 	ZVAL_ARR(controls, table);
 }
 
+void php_ui_set_parent(zval *child, zval *control) {
+	zval *parent, stacked;
+
+	parent = zend_read_property(Z_OBJCE_P(child), child, ZEND_STRL("parent"), 1, &stacked);
+
+	if (!parent) {
+		return;
+	}
+
+	ZVAL_COPY(parent, control);
+
+	{
+		php_ui_control_t *set = 
+			php_ui_control_fetch(child);
+
+		set->parent = Z_OBJ_P(control);
+	}	
+}
+
 void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
 	zend_function *function = zend_hash_str_find_ptr(&object->ce->function_table, name, nlength);
 

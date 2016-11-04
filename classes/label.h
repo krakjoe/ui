@@ -22,6 +22,7 @@ extern zend_class_entry *uiLabel_ce;
 
 typedef struct _php_ui_label_t {
 	uiLabel *l;
+	php_ui_control_t *parent;
 	zend_object std;
 } php_ui_label_t;
 

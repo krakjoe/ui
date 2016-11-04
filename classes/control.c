@@ -41,22 +41,18 @@ void php_ui_control_finalize(void) {
 /* {{{ proto Control Control::getParent(void) */
 PHP_METHOD(Control, getParent)
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
-	php_ui_control_t *parent;
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 	
-	if (!uiControlParent(ctrl)) {
+	if (!ctrl->parent) {
 		return;
 	}
 
-	object_init_ex(return_value, uiControl_ce);
-
-	parent = (php_ui_control_t*) php_ui_control_fetch(return_value);
-
-	parent->c = uiControlParent(ctrl);
+	ZVAL_OBJ(return_value, ctrl->parent);
+	Z_ADDREF_P(return_value);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_control_set_parent_info, 0, 0, 1)
@@ -66,17 +62,19 @@ ZEND_END_ARG_INFO()
 /* {{{ proto void Control::setParent(Control parent) */
 PHP_METHOD(Control, setParent)
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis()),
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis()),
 					 *pctrl;
 	zval *parent = NULL;
-	
+
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "O", &parent, uiControl_ce) != SUCCESS) {
 		return;
 	}
 
 	pctrl = php_ui_control_fetch(parent);
 
-	uiControlSetParent(ctrl, pctrl);
+	uiControlSetParent(ctrl->control, pctrl->control);
+
+	ctrl->parent = Z_OBJ_P(parent);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_top_level_info, 0, 0, IS_LONG, NULL, 0)
@@ -85,13 +83,13 @@ ZEND_END_ARG_INFO()
 /* {{{ proto int Control::getTopLevel(void) */
 PHP_METHOD(Control, getTopLevel) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	RETURN_LONG(uiControlToplevel(ctrl));
+	RETURN_LONG(uiControlToplevel(ctrl->control));
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_visible_info, 0, 0, _IS_BOOL, NULL, 0)
@@ -100,13 +98,13 @@ ZEND_END_ARG_INFO()
 /* {{{ proto bool Control::isVisible(void) */
 PHP_METHOD(Control, isVisible) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	if (uiControlVisible(ctrl)) {
+	if (uiControlVisible(ctrl->control)) {
 		RETURN_TRUE;
 	} else {
 		RETURN_FALSE;
@@ -116,25 +114,25 @@ PHP_METHOD(Control, isVisible)
 /* {{{ proto void Control::show(void) */
 PHP_METHOD(Control, show) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	uiControlShow(ctrl);
+	uiControlShow(ctrl->control);
 } /* }}} */
 
 /* {{{ proto void Control::hide(void) */
 PHP_METHOD(Control, hide) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	uiControlHide(ctrl);
+	uiControlHide(ctrl->control);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_enabled_info, 0, 0, _IS_BOOL, NULL, 0)
@@ -143,13 +141,13 @@ ZEND_END_ARG_INFO()
 /* {{{ proto bool Control::isEnabled(void) */
 PHP_METHOD(Control, isEnabled) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	if (uiControlEnabled(ctrl)) {
+	if (uiControlEnabled(ctrl->control)) {
 		RETURN_TRUE;
 	} else {
 		RETURN_FALSE;
@@ -159,37 +157,37 @@ PHP_METHOD(Control, isEnabled)
 /* {{{ proto void Control::enable(void) */
 PHP_METHOD(Control, enable) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	uiControlEnable(ctrl);
+	uiControlEnable(ctrl->control);
 } /* }}} */
 
 /* {{{ proto void Control::disable(void) */
 PHP_METHOD(Control, disable) 
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	uiControlDisable(ctrl);
+	uiControlDisable(ctrl->control);
 } /* }}} */
 
 /* {{{ proto void Control::destroy(void) */
 PHP_METHOD(Control, destroy)
 {
-	uiControl *ctrl = php_ui_control_fetch(getThis());
+	php_ui_control_t *ctrl = php_ui_control_fetch(getThis());
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
 	}
 
-	uiControlDestroy(ctrl);
+	uiControlDestroy(ctrl->control);
 } /* }}} */
 
 /* {{{ */
@@ -217,6 +215,8 @@ PHP_MINIT_FUNCTION(UI_Control)
 	uiControl_ce = zend_register_internal_class(&ce);
 	uiControl_ce->serialize = php_ui_serialize;
 	uiControl_ce->unserialize = php_ui_unserialize;
+
+	zend_declare_property_null(uiControl_ce, ZEND_STRL("parent"), ZEND_ACC_PROTECTED);
 
 	return SUCCESS;
 } /* }}} */

@@ -22,6 +22,7 @@ extern zend_class_entry *uiSpin_ce;
 
 typedef struct _php_ui_spin_t {
 	uiSpinbox *s;
+	php_ui_control_t *parent;
 	struct php_ui_spin_change_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;

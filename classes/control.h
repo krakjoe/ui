@@ -20,11 +20,15 @@
 
 extern zend_class_entry *uiControl_ce;
 
-typedef struct _php_ui_control_t {
-	uiControl *c;
-} php_ui_control_t;
+typedef struct php_ui_control_t php_ui_control_t;
 
-#define php_ui_control_from(o) ((uiControl*) (((php_ui_control_t*) ((char*) (o) - (o)->handlers->offset)))->c)
+struct php_ui_control_t {
+	uiControl             *control;
+	zend_object           *parent;
+	HashTable             *children;
+};
+
+#define php_ui_control_from(o) ((php_ui_control_t*) ((char*) (o) - (o)->handlers->offset))
 #define php_ui_control_fetch(z) php_ui_control_from(Z_OBJ_P(z))
 
 PHP_MINIT_FUNCTION(UI_Control);

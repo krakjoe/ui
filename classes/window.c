@@ -29,6 +29,7 @@
 zend_object_handlers php_ui_window_handlers;
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
+extern void php_ui_set_parent(zval *child, zval *control);
 
 zend_class_entry *uiWindow_ce;
 
@@ -316,7 +317,7 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Window, add)
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	uiControl *ctrl;
+	php_ui_control_t *ctrl;
 
 	zval *control = NULL;
 
@@ -326,11 +327,13 @@ PHP_METHOD(Window, add)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiWindowSetChild(win->w, ctrl);
+	uiWindowSetChild(win->w, ctrl->control);
 
 	if (zend_hash_next_index_insert(win->controls, control)) {
 		Z_ADDREF_P(control);
 	}
+
+	php_ui_set_parent(control, getThis());
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_box_info, 0, 0, 2)

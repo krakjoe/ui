@@ -22,6 +22,7 @@ extern zend_class_entry *uiPicker_ce;
 
 typedef struct _php_ui_picker_t {
 	uiDateTimePicker *p;
+	php_ui_control_t *parent;
 	zend_long type;
 	zend_object std;
 } php_ui_picker_t;

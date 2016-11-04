@@ -22,6 +22,7 @@ extern zend_class_entry *uiSeparator_ce;
 
 typedef struct _php_ui_separator_t {
 	uiSeparator *s;
+	php_ui_control_t *parent;
 	zend_long type;
 	zend_object std;
 } php_ui_separator_t;
