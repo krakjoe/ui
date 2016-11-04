@@ -22,7 +22,7 @@ extern zend_class_entry *uiMulti_ce;
 
 typedef struct _php_ui_multi_t {
 	uiMultilineEntry *e;
-	php_ui_control_t *parent;
+	zend_object *parent;
 	zend_long type;
 	struct php_ui_multi_change_t {
 		zend_fcall_info fci;

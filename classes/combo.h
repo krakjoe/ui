@@ -22,7 +22,7 @@ extern zend_class_entry *uiCombo_ce;
 
 typedef struct _php_ui_combo_t {
 	uiCombobox *c;
-	php_ui_control_t *parent;
+	zend_object *parent;
 	struct php_ui_combo_change_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
