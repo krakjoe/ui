@@ -72,9 +72,11 @@ PHP_METHOD(Control, setParent)
 
 	pctrl = php_ui_control_fetch(parent);
 
-	uiControlSetParent(ctrl->control, pctrl->control);
+	if (!php_ui_set_parent(getThis(), parent)) {
+		return;
+	}
 
-	ctrl->parent = Z_OBJ_P(parent);
+	uiControlSetParent(ctrl->control, pctrl->control);
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_top_level_info, 0, 0, IS_LONG, NULL, 0)
