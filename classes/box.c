@@ -28,7 +28,7 @@
 zend_object_handlers php_ui_box_handlers;
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
-extern void php_ui_set_parent(zval *child, zval *control);
+extern zend_bool php_ui_set_parent(zval *child, zval *control);
 
 zend_class_entry *uiBox_ce;
 
@@ -121,9 +121,11 @@ PHP_METHOD(Box, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiBoxAppend(box->b, ctrl->control, stretchy);
+	if (!php_ui_set_parent(control, getThis())) {
+		return;
+	}
 
-	php_ui_set_parent(control, getThis());
+	uiBoxAppend(box->b, ctrl->control, stretchy);
 
 	if (zend_hash_next_index_insert(box->controls, control)) {
 		Z_ADDREF_P(control);

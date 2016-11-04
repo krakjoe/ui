@@ -95,8 +95,9 @@ void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, Has
 	ZVAL_ARR(controls, table);
 }
 
-void php_ui_set_parent(zval *child, zval *control) {
+zend_bool php_ui_set_parent(zval *child, zval *control) {
 	zval *parent, stacked;
+	php_ui_control_t *set;
 
 	parent = zend_read_property(Z_OBJCE_P(child), child, ZEND_STRL("parent"), 1, &stacked);
 
@@ -104,14 +105,18 @@ void php_ui_set_parent(zval *child, zval *control) {
 		return;
 	}
 
+	set = php_ui_control_fetch(child);
+
+	if (set->parent) {
+		php_ui_exception("cannot set parent on control which already has a parent");
+		return 0;
+	}
+
 	ZVAL_COPY(parent, control);
 
-	{
-		php_ui_control_t *set = 
-			php_ui_control_fetch(child);
+	set->parent = Z_OBJ_P(control);
 
-		set->parent = Z_OBJ_P(control);
-	}	
+	return 1;
 }
 
 void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc) {

@@ -26,7 +26,7 @@
 #include <classes/tab.h>
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
-extern void php_ui_set_parent(zval *child, zval *control);
+extern zend_bool php_ui_set_parent(zval *child, zval *control);
 
 #define PHP_UI_TAB_PAGE_CHECK(tab, page) do { \
 	if (page < 0 || page >= zend_hash_num_elements(tab->controls)) { \
@@ -152,9 +152,11 @@ PHP_METHOD(Tab, insertAt)
 
 	ctrl = php_ui_control_fetch(control);
 
-	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl->control);
+	if (!php_ui_set_parent(control, getThis())) {
+		return;
+	}
 
-	php_ui_set_parent(control, getThis());
+	uiTabInsertAt(tab->t, ZSTR_VAL(name), (int) page, ctrl->control);
 
 	RETURN_LONG(uiTabNumPages(tab->t));
 }

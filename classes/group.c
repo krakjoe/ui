@@ -27,7 +27,7 @@
 zend_object_handlers php_ui_group_handlers;
 
 extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
-extern void php_ui_set_parent(zval *child, zval *control);
+extern zend_bool php_ui_set_parent(zval *child, zval *control);
 
 zend_class_entry *uiGroup_ce;
 
@@ -153,13 +153,15 @@ PHP_METHOD(Group, append)
 
 	ctrl = php_ui_control_fetch(control);
 
+	if (!php_ui_set_parent(control, getThis())) {
+		return;
+	}
+
 	uiGroupSetChild(group->g, ctrl->control);
 
 	if (zend_hash_next_index_insert(group->controls, control)) {
 		Z_ADDREF_P(control);
 	}
-
-	php_ui_set_parent(control, getThis());
 } /* }}} */
 
 /* {{{ */
