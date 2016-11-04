@@ -256,6 +256,7 @@ PHP_MINIT_FUNCTION(UI_Control)
 	uiControl_ce = zend_register_internal_class(&ce);
 	uiControl_ce->serialize = php_ui_serialize;
 	uiControl_ce->unserialize = php_ui_unserialize;
+	uiControl_ce->ce_flags |= ZEND_ACC_ABSTRACT;
 
 	zend_declare_property_null(uiControl_ce, ZEND_STRL("parent"), ZEND_ACC_PROTECTED);
 

@@ -23,7 +23,6 @@ extern zend_class_entry *uiControl_ce;
 typedef struct _php_ui_control_t {
 	uiControl             *control;
 	zend_object           *parent;
-	HashTable             *children;
 } php_ui_control_t;
 
 #define php_ui_control_from(o) ((php_ui_control_t*) ((char*) (o) - (o)->handlers->offset))
