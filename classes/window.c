@@ -28,9 +28,6 @@
 
 zend_object_handlers php_ui_window_handlers;
 
-extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
-extern zend_bool php_ui_set_parent(zval *child, zval *control);
-
 zend_class_entry *uiWindow_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
@@ -61,7 +58,7 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 
 	zend_hash_init(w->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
 
-	php_ui_set_controls(&w->std, ZEND_STRL("controls"), w->controls);
+	php_ui_control_set_controls(&w->std, w->controls);
 
 	return &w->std;
 }
@@ -327,7 +324,7 @@ PHP_METHOD(Window, add)
 
 	ctrl = php_ui_control_fetch(control);
 
-	if (!php_ui_set_parent(control, getThis())) {
+	if (!php_ui_control_set_parent(control, getThis())) {
 		return;
 	}
 

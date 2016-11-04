@@ -28,15 +28,54 @@ zend_class_entry *uiControl_ce;
 extern int php_ui_unserialize(zval *object, zend_class_entry *ce, const unsigned char *buffer, size_t blen, zend_unserialize_data *data);
 extern int php_ui_serialize(zval *object, unsigned char **buffer, size_t *buflen, zend_serialize_data *data);
 
+void php_ui_control_set_controls(zend_object *std, HashTable *table) {
+	zval obj;
+	zval *controls, stacked;
+
+	ZVAL_OBJ(&obj, std);
+	
+	controls = zend_read_property(std->ce, &obj, ZEND_STRL("controls"), 1, &stacked);
+
+	if (!controls) {
+		return;
+	}
+
+	ZVAL_ARR(controls, table);
+}
+
+zend_bool php_ui_control_set_parent(zval *child, zval *control) {
+	zval *parent, stacked;
+	php_ui_control_t *set;
+
+	parent = zend_read_property(Z_OBJCE_P(child), child, ZEND_STRL("parent"), 1, &stacked);
+
+	if (!parent) {
+		return;
+	}
+
+	set = php_ui_control_fetch(child);
+
+	if (set->parent) {
+		php_ui_exception("cannot set parent on control which already has a parent");
+		return 0;
+	}
+
+	ZVAL_COPY(parent, control);
+
+	set->parent = Z_OBJ_P(control);
+
+	return 1;
+}
+
+void php_ui_control_finalize(void) {
+	uiControl_ce->ce_flags |= ZEND_ACC_FINAL;
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_control_void_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_parent_info, 0, 0, IS_OBJECT, "UI\\Control", 1)
 ZEND_END_ARG_INFO()
-
-void php_ui_control_finalize(void) {
-	uiControl_ce->ce_flags |= ZEND_ACC_FINAL;
-}
 
 /* {{{ proto Control Control::getParent(void) */
 PHP_METHOD(Control, getParent)

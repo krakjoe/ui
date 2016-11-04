@@ -31,5 +31,9 @@ struct php_ui_control_t {
 #define php_ui_control_from(o) ((php_ui_control_t*) ((char*) (o) - (o)->handlers->offset))
 #define php_ui_control_fetch(z) php_ui_control_from(Z_OBJ_P(z))
 
+zend_bool php_ui_control_set_parent(zval *child, zval *control);
+void php_ui_control_set_controls(zend_object *std, HashTable *table);
+void php_ui_control_finalize(void);
+
 PHP_MINIT_FUNCTION(UI_Control);
 #endif

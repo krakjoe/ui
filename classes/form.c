@@ -27,9 +27,6 @@
 
 zend_object_handlers php_ui_form_handlers;
 
-extern void php_ui_set_controls(zend_object *std, const char *name, size_t nlength, HashTable *table);
-extern zend_bool php_ui_set_parent(zval *child, zval *control);
-
 #define PHP_UI_FORM_CONTROL_CHECK(form, control) do { \
 	if (control < 0 || control >= zend_hash_num_elements(form->controls)) { \
 		php_ui_exception_ex( \
@@ -54,7 +51,7 @@ zend_object* php_ui_form_create(zend_class_entry *ce) {
 
 	zend_hash_init(form->controls, 8, NULL, ZVAL_PTR_DTOR, 0);
 
-	php_ui_set_controls(&form->std, ZEND_STRL("controls"), form->controls);
+	php_ui_control_set_controls(&form->std, form->controls);
 
 	form->f = uiNewForm();
 
@@ -118,7 +115,7 @@ PHP_METHOD(Form, append)
 
 	ctrl = php_ui_control_fetch(control);
 
-	if (!php_ui_set_parent(control, getThis())) {
+	if (!php_ui_control_set_parent(control, getThis())) {
 		return;
 	}
 
