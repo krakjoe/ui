@@ -112,7 +112,7 @@ PHP_METHOD(Control, setParent)
 
 	pctrl = php_ui_control_fetch(parent);
 
-	if (!php_ui_set_parent(getThis(), parent)) {
+	if (!php_ui_control_set_parent(getThis(), parent)) {
 		return;
 	}
 
