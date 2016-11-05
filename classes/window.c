@@ -54,6 +54,7 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 	w->std.handlers = &php_ui_window_handlers;
 
 	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
+	php_ui_set_call(&w->std, ZEND_STRL("onuncaughtexception"), &w->uncaught.fci, &w->uncaught.fcc);
 
 	ALLOC_HASHTABLE(w->controls);
 
@@ -413,25 +414,33 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Window, onClosing) {}
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_uncaught_info, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
+	ZEND_ARG_OBJ_INFO(0, exception, Throwable, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Window, onUncaughtException) {}
+
 /* {{{ */
 const zend_function_entry php_ui_window_methods[] = {
-	PHP_ME(Window, __construct,    php_ui_window_construct_info,       ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setTitle,       php_ui_window_set_title_info,       ZEND_ACC_PUBLIC)
-	PHP_ME(Window, getTitle,       php_ui_window_get_title_info,       ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setSize,        php_ui_window_set_size_info,        ZEND_ACC_PUBLIC)
-	PHP_ME(Window, getSize,        php_ui_window_get_size_info,        ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setFullScreen,  php_ui_window_set_full_screen_info, ZEND_ACC_PUBLIC)
-	PHP_ME(Window, isFullScreen,   php_ui_window_is_full_screen_info,  ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setBorders,     php_ui_window_set_borders_info,     ZEND_ACC_PUBLIC)
-	PHP_ME(Window, hasBorders,     php_ui_window_has_borders_info,     ZEND_ACC_PUBLIC)
-	PHP_ME(Window, setMargin,      php_ui_window_set_margin_info,      ZEND_ACC_PUBLIC)
-	PHP_ME(Window, hasMargin,      php_ui_window_has_margin_info,      ZEND_ACC_PUBLIC)
-	PHP_ME(Window, add,            php_ui_window_add_info,             ZEND_ACC_PUBLIC)
-	PHP_ME(Window, msg,            php_ui_window_box_info,             ZEND_ACC_PUBLIC)
-	PHP_ME(Window, error,          php_ui_window_box_info,             ZEND_ACC_PUBLIC)
-	PHP_ME(Window, open,           php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
-	PHP_ME(Window, save,           php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
-	PHP_ME(Window, onClosing,      php_ui_window_closing_info,         ZEND_ACC_PROTECTED)
+	PHP_ME(Window, __construct,             php_ui_window_construct_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(Window, setTitle,                php_ui_window_set_title_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(Window, getTitle,                php_ui_window_get_title_info,       ZEND_ACC_PUBLIC)
+	PHP_ME(Window, setSize,                 php_ui_window_set_size_info,        ZEND_ACC_PUBLIC)
+	PHP_ME(Window, getSize,                 php_ui_window_get_size_info,        ZEND_ACC_PUBLIC)
+	PHP_ME(Window, setFullScreen,           php_ui_window_set_full_screen_info, ZEND_ACC_PUBLIC)
+	PHP_ME(Window, isFullScreen,            php_ui_window_is_full_screen_info,  ZEND_ACC_PUBLIC)
+	PHP_ME(Window, setBorders,              php_ui_window_set_borders_info,     ZEND_ACC_PUBLIC)
+	PHP_ME(Window, hasBorders,              php_ui_window_has_borders_info,     ZEND_ACC_PUBLIC)
+	PHP_ME(Window, setMargin,               php_ui_window_set_margin_info,      ZEND_ACC_PUBLIC)
+	PHP_ME(Window, hasMargin,               php_ui_window_has_margin_info,      ZEND_ACC_PUBLIC)
+	PHP_ME(Window, add,                     php_ui_window_add_info,             ZEND_ACC_PUBLIC)
+	PHP_ME(Window, msg,                     php_ui_window_box_info,             ZEND_ACC_PUBLIC)
+	PHP_ME(Window, error,                   php_ui_window_box_info,             ZEND_ACC_PUBLIC)
+	PHP_ME(Window, open,                    php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
+	PHP_ME(Window, save,                    php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
+	PHP_ME(Window, onClosing,               php_ui_window_closing_info,         ZEND_ACC_PROTECTED)
+	PHP_ME(Window, onUncaughtException,     php_ui_window_uncaught_info,        ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 

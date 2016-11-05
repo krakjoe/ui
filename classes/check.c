@@ -56,7 +56,7 @@ void php_ui_check_toggle_handler(uiCheckbox *u, void *_check) {
 
 		check->toggle.fci.retval = &rv;
 
-		if (zend_call_function(&check->toggle.fci, &check->toggle.fcc) != SUCCESS) {
+		if (php_ui_call(&check->toggle.fci, &check->toggle.fcc) != SUCCESS) {
 			return;
 		}
 

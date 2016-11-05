@@ -98,8 +98,82 @@ void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend
 	fcc->called_scope = object->ce;
 }
 
+static inline zend_object* php_ui_top(zend_object *object) {
+	if (!object) {
+		return NULL;
+	}
+
+	do {
+		php_ui_control_t *control = php_ui_control_from(object);
+
+		if (instanceof_function(object->ce, uiWindow_ce)) {
+			return object;
+		}
+		
+		if (!control->parent) {
+			break;
+		}
+
+		object = php_ui_control_from(object)->parent;
+	} while (object);
+
+	return NULL;
+}
+
 int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
-	return zend_call_function(fci, fcc);
+	int result = zend_call_function(fci, fcc);
+
+	if (0) {
+_php_ui_call_zend_exception_handler:
+		zend_try_exception_handler();
+
+		return result;
+	}
+
+	if (result != SUCCESS) {
+		if (EG(exception)) {
+			zend_object *top = php_ui_top(fci->object);
+
+			if (top) {
+				php_ui_window_t *window = php_ui_window_from(top);
+
+				if (window->uncaught.fci.size) {
+					zval ctrl, ex, rv;
+					zend_object *exception = EG(exception);
+
+					EG(exception) = NULL;
+
+					ZVAL_OBJ(&ctrl, fci->object);
+					ZVAL_OBJ(&ex, exception);
+					ZVAL_UNDEF(&rv);
+
+					window->uncaught.fci.retval = &rv;
+
+					zend_fcall_info_argn(&window->uncaught.fci, 2, &ctrl, &ex);
+
+					if (php_ui_call(&window->uncaught.fci, &window->uncaught.fcc) != SUCCESS) {
+						EG(exception) = exception;
+					} else {
+						if (EG(exception)) {
+							OBJ_RELEASE(EG(exception));
+							EG(exception) = NULL;
+						}
+
+						OBJ_RELEASE(exception);
+						zend_fcall_info_args_clear(&window->uncaught.fci, 1);
+						zval_ptr_dtor(&rv);
+
+						return SUCCESS;
+					}
+
+					return result;
+				}
+			}
+			goto _php_ui_call_zend_exception_handler;
+		}
+	}
+
+	return result;
 }
 
 /* {{{ PHP_MINIT_FUNCTION

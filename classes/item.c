@@ -45,7 +45,7 @@ void php_ui_item_click_handler(uiMenuItem *i, uiWindow *w,  void *_item) {
 		zend_fcall_info_argn(&item->click.fci, 1, &window);
 		item->click.fci.retval = &rv;
 
-		if (zend_call_function(&item->click.fci, &item->click.fcc) != SUCCESS) {
+		if (php_ui_call(&item->click.fci, &item->click.fcc) != SUCCESS) {
 			return;
 		}
 
