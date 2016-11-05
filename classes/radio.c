@@ -29,6 +29,7 @@ zend_object_handlers php_ui_radio_handlers;
 zend_class_entry *uiRadio_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 void php_ui_radio_selected_handler(uiRadioButtons *m,  void *_radio) {
 	php_ui_radio_t *radio = (php_ui_radio_t*) _radio;
@@ -40,7 +41,7 @@ void php_ui_radio_selected_handler(uiRadioButtons *m,  void *_radio) {
 
 		radio->selected.fci.retval = &rv;
 
-		if (zend_call_function(&radio->selected.fci, &radio->selected.fcc) != SUCCESS) {
+		if (php_ui_call(&radio->selected.fci, &radio->selected.fcc) != SUCCESS) {
 			return;
 		}
 

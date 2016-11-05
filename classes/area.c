@@ -33,6 +33,7 @@ zend_class_entry *uiArea_ce;
 zend_class_entry *uiKey_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawParams *p) {
 	php_ui_area_t *area = 
@@ -54,7 +55,7 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 
 		zend_fcall_info_argn(&area->draw.fci, 4, &pen, &areaSize, &clipPoint, &clipSize);
 
-		if (zend_call_function(&area->draw.fci, &area->draw.fcc) != SUCCESS) {
+		if (php_ui_call(&area->draw.fci, &area->draw.fcc) != SUCCESS) {
 			return;
 		}
 
@@ -100,7 +101,7 @@ static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouse
 
 		zend_fcall_info_argn(&area->mouse.fci, 3, &areaPoint, &areaSize, &flags);
 
-		if (zend_call_function(&area->mouse.fci, &area->mouse.fcc) != SUCCESS) {
+		if (php_ui_call(&area->mouse.fci, &area->mouse.fcc) != SUCCESS) {
 			return;
 		}
 
@@ -142,7 +143,7 @@ static int php_ui_area_key(uiAreaHandler *handler, uiArea *_area, uiAreaKeyEvent
 
 		zend_fcall_info_argn(&area->key.fci, 3, &key, &ext, &flags);
 
-		if (zend_call_function(&area->key.fci, &area->key.fcc) != SUCCESS) {
+		if (php_ui_call(&area->key.fci, &area->key.fcc) != SUCCESS) {
 			return ret;
 		}
 

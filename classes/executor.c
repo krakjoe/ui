@@ -31,15 +31,16 @@
 #include <classes/control.h>
 #include <classes/executor.h>
 
+zend_object_handlers php_ui_executor_handlers;
+
+zend_class_entry *uiExecutor_ce;
+
+extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+
 #define php_ui_executor_has_interval(e)   ((e)->interval.tv_sec || (e)->interval.tv_nsec)
 #define php_ui_executor_has_flag(e, m)    ((e)->monitors.m.flag)
 #define php_ui_executor_set_flag(e, m, v) ((e)->monitors.m.flag = v)
-
-zend_object_handlers php_ui_executor_handlers;
-
-extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
-
-zend_class_entry *uiExecutor_ce;
 
 static inline void php_ui_monitor_init(php_ui_monitor_t *monitor) {
 	if (pthread_mutex_init(&monitor->m, NULL) != SUCCESS) {
@@ -105,7 +106,7 @@ void php_ui_executor_handler(void *o) {
     ZVAL_UNDEF(&rv);
     executor->execute.fci.retval = &rv;
 
-    if (zend_call_function(&executor->execute.fci, &executor->execute.fcc) != SUCCESS) {
+    if (php_ui_call(&executor->execute.fci, &executor->execute.fcc) != SUCCESS) {
             goto php_ui_executor_handler_leave;
     }
 

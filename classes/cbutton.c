@@ -31,6 +31,7 @@ zend_object_handlers php_ui_cbutton_handlers;
 zend_class_entry *uiColorButton_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 void php_ui_cbutton_change_handler(uiColorButton *u, void *_button) {
 	php_ui_cbutton_t *button = (php_ui_cbutton_t*) _button;
@@ -42,7 +43,7 @@ void php_ui_cbutton_change_handler(uiColorButton *u, void *_button) {
 
 		button->change.fci.retval = &rv;
 
-		if (zend_call_function(&button->change.fci, &button->change.fcc) != SUCCESS) {
+		if (php_ui_call(&button->change.fci, &button->change.fcc) != SUCCESS) {
 			return;
 		}
 

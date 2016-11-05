@@ -98,6 +98,10 @@ void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend
 	fcc->called_scope = object->ce;
 }
 
+int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc) {
+	return zend_call_function(fci, fcc);
+}
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(ui)

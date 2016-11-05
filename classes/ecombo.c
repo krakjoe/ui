@@ -29,6 +29,7 @@ zend_object_handlers php_ui_ecombo_handlers;
 zend_class_entry *uiEditableCombo_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 void php_ui_ecombo_change_handler(uiEditableCombobox *u, void *_ecombo) {
 	php_ui_ecombo_t *ecombo = (php_ui_ecombo_t*) _ecombo;
@@ -40,7 +41,7 @@ void php_ui_ecombo_change_handler(uiEditableCombobox *u, void *_ecombo) {
 
 		ecombo->change.fci.retval = &rv;
 
-		if (zend_call_function(&ecombo->change.fci, &ecombo->change.fcc) != SUCCESS) {
+		if (php_ui_call(&ecombo->change.fci, &ecombo->change.fcc) != SUCCESS) {
 			return;
 		}
 

@@ -29,6 +29,7 @@ zend_object_handlers php_ui_entry_handlers;
 zend_class_entry *uiEntry_ce;
 
 extern void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend_fcall_info *fci, zend_fcall_info_cache *fcc);
+extern int php_ui_call(zend_fcall_info *fci, zend_fcall_info_cache *fcc);
 
 zend_object* php_ui_entry_create(zend_class_entry *ce) {
 	php_ui_entry_t *entry = 
@@ -55,7 +56,7 @@ void php_ui_entry_change_handler(uiEntry *u, void *_entry) {
 
 		entry->change.fci.retval = &rv;
 
-		if (zend_call_function(&entry->change.fci, &entry->change.fcc) != SUCCESS) {
+		if (php_ui_call(&entry->change.fci, &entry->change.fcc) != SUCCESS) {
 			return;
 		}
 
