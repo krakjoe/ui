@@ -22,24 +22,9 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-   Refactor of Brushes:
-     UI\Draw\Brush
-     abstract UI\Draw\Brush\Gradient
-     UI\Draw\Brush\LinearGradient
-     UI\Draw\Brush\RadialGradient
-   UI\Draw\Color Improvements:
-     Direct access to channels by name (r, g, b, a) as properties, (case insensitive)
-     Allow the use of RRGGBBAA integers in place of UI\Draw\Color
-   UI\Draw\Path Improvements:
-     Use Path::Winding as default mode
-   UI\Draw\Pen Improvements:
-     Allow UI\Draw\Color (or RRGGBBAA integer) in place of UI\Draw\Brush (fill, stroke)
-   UI\Executor:
-     Scheduled executor service for animations superceeds and replaces App::onTick mechanism
-   UI\App:
-     Removed, it should be obvious that run/quit are global functions
-   UI\Window:
-     Fixed onClosing
+   Add protected parent property for controls
+   Fix Control::getParent
+   Fix Control::destroy faulting when parent is still set
  </notes>
  <contents>
 	<dir name="/">
