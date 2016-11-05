@@ -229,6 +229,11 @@ PHP_METHOD(Control, destroy)
 		return;
 	}
 
+	if (ctrl->parent) {
+		php_ui_exception("cannot destroy control that still has parent");
+		return;
+	}
+
 	uiControlDestroy(ctrl->control);
 } /* }}} */
 
