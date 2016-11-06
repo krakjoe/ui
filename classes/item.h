@@ -32,5 +32,5 @@ typedef struct _php_ui_item_t {
 #define php_ui_item_from(o) ((php_ui_item_t*) ((char*) o - XtOffsetOf(php_ui_item_t, std)))
 #define php_ui_item_fetch(z) php_ui_item_from(Z_OBJ_P(z))
 
-PHP_MINIT_FUNCTION(UI_Item);
+PHP_MINIT_FUNCTION(UI_MenuItem);
 #endif

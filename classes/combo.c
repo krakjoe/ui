@@ -94,7 +94,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Combo, getSelected) 
 {
 	php_ui_combo_t *combo = php_ui_combo_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

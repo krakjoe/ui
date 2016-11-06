@@ -28,5 +28,5 @@ typedef struct _php_ui_matrix_t {
 #define php_ui_matrix_from(o) ((php_ui_matrix_t*) ((char*) o - XtOffsetOf(php_ui_matrix_t, std)))
 #define php_ui_matrix_fetch(z) php_ui_matrix_from(Z_OBJ_P(z))
 
-PHP_MINIT_FUNCTION(UI_Label);
+PHP_MINIT_FUNCTION(UI_DrawMatrix);
 #endif

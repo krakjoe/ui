@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/common.h>
 
 zend_object_handlers php_ui_size_handlers;
@@ -212,8 +213,7 @@ static zval* php_ui_size_read(zval *object, zval *member, int type, void **cache
 	}
 
 	if (type == BP_VAR_RW || type == BP_VAR_W) {
-		zend_throw_exception_ex(NULL, 0, 
-			"Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
+		php_ui_exception("Failed to fetch reference to %s, not allowed", Z_STRVAL_P(member));
 		return &EG(uninitialized_zval);	
 	}
 
@@ -227,9 +227,7 @@ static zval* php_ui_size_read(zval *object, zval *member, int type, void **cache
 		return rv;
 	}
 
-	zend_throw_exception_ex(NULL, 0,
-		"Failed to fetch %s, does not exist", Z_STRVAL_P(member));
-
+	php_ui_exception("Failed to fetch %s, does not exist", Z_STRVAL_P(member));
 	return &EG(uninitialized_zval);
 } /* }}} */
 
@@ -256,8 +254,7 @@ void php_ui_size_write(zval *object, zval *member, zval *value, void **cache) {
 		return;
 	}
 
-	zend_throw_exception_ex(NULL, 0,
-		"Failed to write %s, does not exist", Z_STRVAL_P(member));
+	php_ui_exception("Failed to write %s, does not exist", Z_STRVAL_P(member));
 } /* }}} */
 
 /* {{{ */

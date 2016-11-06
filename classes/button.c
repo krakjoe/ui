@@ -109,7 +109,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Button, getText)
 {
 	php_ui_button_t *button = php_ui_button_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

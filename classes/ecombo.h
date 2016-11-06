@@ -33,5 +33,5 @@ typedef struct _php_ui_ecombo_t {
 #define php_ui_ecombo_from(o) ((php_ui_ecombo_t*) ((char*) o - XtOffsetOf(php_ui_ecombo_t, std)))
 #define php_ui_ecombo_fetch(z) php_ui_ecombo_from(Z_OBJ_P(z))
 
-PHP_MINIT_FUNCTION(UI_Ecombo);
+PHP_MINIT_FUNCTION(UI_EditableCombo);
 #endif

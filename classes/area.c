@@ -39,8 +39,6 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
 	
-	int ret = 0;
-
 	if (area->draw.fci.size) {
 		zval rv;
 		zval pen, areaSize, clipPoint, clipSize;
@@ -75,8 +73,6 @@ static void php_ui_area_draw(uiAreaHandler *handler, uiArea *_area, uiAreaDrawPa
 static void php_ui_area_mouse(uiAreaHandler *handler, uiArea *_area, uiAreaMouseEvent *e) {
 	php_ui_area_t *area = 
 		php_ui_area_from_handler(handler);
-
-	int ret = 0;
 
 	if (area->mouse.fci.size) {
 		zval rv;

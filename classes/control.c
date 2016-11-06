@@ -51,7 +51,7 @@ zend_bool php_ui_control_set_parent(zval *child, zval *control) {
 	parent = zend_read_property(Z_OBJCE_P(child), child, ZEND_STRL("parent"), 1, &stacked);
 
 	if (!parent) {
-		return;
+		return 0;
 	}
 
 	set = php_ui_control_fetch(child);

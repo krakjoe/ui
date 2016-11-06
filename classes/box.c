@@ -64,7 +64,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Box, __construct) 
 {
 	php_ui_box_t *box = php_ui_box_fetch(getThis());
-	zend_long orientation = PHP_UI_BOX_HORIZONTAL;
 
 	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l", &box->orientation) != SUCCESS) {
 		return;

@@ -123,7 +123,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Multi, getText) 
 {
 	php_ui_multi_t *multi = php_ui_multi_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

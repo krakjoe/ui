@@ -109,7 +109,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Check, getText) 
 {
 	php_ui_check_t *check = php_ui_check_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

@@ -88,7 +88,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Group, getTitle) 
 {
 	php_ui_group_t *group = php_ui_group_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

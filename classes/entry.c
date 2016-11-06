@@ -127,7 +127,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Entry, getText) 
 {
 	php_ui_entry_t *entry = php_ui_entry_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;

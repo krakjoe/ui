@@ -94,7 +94,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Radio, getSelected) 
 {
 	php_ui_radio_t *radio = php_ui_radio_fetch(getThis());
-	char *text = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
