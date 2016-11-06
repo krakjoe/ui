@@ -7,6 +7,7 @@ use UI\Point;
 use UI\Size;
 use UI\Area;
 use UI\Key;
+use UI\Control;
 
 use UI\Controls\Box;
 
@@ -24,6 +25,18 @@ use UI\Draw\Text\Font\Descriptor;
 use UI\Executor;
 
 $win = new class("Snake", new Size(640, 480), false) extends Window {
+
+	protected function onUncaughtException(Control $control, Throwable $ex) {
+		$this->error(sprintf(
+			"Uncaught Exception from %s",
+			get_class($control)
+		), (string) $ex);	
+	}
+
+	protected function onResized() {
+		$this->setSize(new Size(640, 480)); # not working
+	}
+
 	public function addExecutor(Executor $executor) {
 		$this->executors[] = $executor;
 	}
@@ -41,21 +54,6 @@ $win = new class("Snake", new Size(640, 480), false) extends Window {
 
 $box = new Box(Box::Vertical);
 $win->add($box);
-
-class Cell {
-
-	public function __construct(Point $point, $color) {
-		$this->point = $point;
-		$this->color = $color;
-	}
-
-	public function __clone() {
-		$this->point = clone $this->point;
-	}
-
-	public $point;
-	public $color;
-}
 
 $snake = new class($box) extends Area{
 

@@ -55,6 +55,7 @@ zend_object* php_ui_window_create(zend_class_entry *ce) {
 
 	php_ui_set_call(&w->std, ZEND_STRL("onclosing"), &w->closing.fci, &w->closing.fcc);
 	php_ui_set_call(&w->std, ZEND_STRL("onuncaughtexception"), &w->uncaught.fci, &w->uncaught.fcc);
+	php_ui_set_call(&w->std, ZEND_STRL("onresized"), &w->resized.fci, &w->resized.fcc);
 
 	ALLOC_HASHTABLE(w->controls);
 
@@ -97,6 +98,27 @@ int php_ui_window_closing_handler(uiWindow *w, void *arg) {
 	return result;
 }
 
+void php_ui_window_resized_handler(uiWindow *w, void *arg) {
+	php_ui_window_t *window = (php_ui_window_t *) arg;
+	zval rv;
+
+	if (!window->resized.fci.size) {
+		return;
+	}
+
+	ZVAL_UNDEF(&rv);
+
+	window->resized.fci.retval = &rv;
+
+	if (php_ui_call(&window->resized.fci, &window->resized.fcc) != SUCCESS) {
+		return;
+	}
+
+	if (Z_TYPE(rv) != IS_UNDEF) {
+		zval_ptr_dtor(&rv);
+	}
+}
+
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_construct_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, title, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, size, UI\\Size, 0)
@@ -122,6 +144,7 @@ PHP_METHOD(Window, __construct)
 		(int) s->width, (int) s->height, menu);
 
 	uiWindowOnClosing(win->w, php_ui_window_closing_handler, win);
+	uiWindowOnContentSizeChanged(win->w, php_ui_window_resized_handler, win);
 } /* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_set_title_info, 0, 0, 1)
@@ -148,7 +171,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getTitle) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	char *title = NULL;
 
 	if (zend_parse_parameters_none() != SUCCESS) {
 		return;
@@ -421,6 +443,11 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Window, onUncaughtException) {}
 
+ZEND_BEGIN_ARG_INFO_EX(php_ui_window_resized_info, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Window, onResized) {}
+
 /* {{{ */
 const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, __construct,             php_ui_window_construct_info,       ZEND_ACC_PUBLIC)
@@ -441,6 +468,7 @@ const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, save,                    php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
 	PHP_ME(Window, onClosing,               php_ui_window_closing_info,         ZEND_ACC_PROTECTED)
 	PHP_ME(Window, onUncaughtException,     php_ui_window_uncaught_info,        ZEND_ACC_PROTECTED)
+	PHP_ME(Window, onResized,               php_ui_window_resized_info,         ZEND_ACC_PROTECTED)
 	PHP_FE_END
 }; /* }}} */
 

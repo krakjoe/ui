@@ -28,6 +28,10 @@ typedef struct _php_ui_window_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
 	} closing;
+	struct php_ui_window_resized_t {
+		zend_fcall_info fci;
+		zend_fcall_info_cache fcc;
+	} resized;
 	struct php_ui_window_uncaught_t {
 		zend_fcall_info fci;
 		zend_fcall_info_cache fcc;
