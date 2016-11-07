@@ -61,7 +61,7 @@ PHP_METHOD(Progress, setValue)
 	if (value < 0 || value > 100) {
 		php_ui_exception_ex(InvalidArgumentException, 
 			"progress bars have a range of 0-100 inclusive");
-		return
+		return;
 	}
 
 	uiProgressBarSetValue(progress->p, value);
