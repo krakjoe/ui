@@ -392,19 +392,6 @@ PHP_METHOD(Window, msg)
 	}
 } /* }}} */
 
-/* {{{ proto void Window::error(string title, string msg) */
-PHP_METHOD(Window, error) 
-{
-	php_ui_window_t *win = php_ui_window_fetch(getThis());
-	zend_string *title = NULL, *msg = NULL;
-
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SS", &title, &msg) != SUCCESS) {
-		return;
-	}
-
-	
-} /* }}} */
-
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 1)	
 ZEND_END_ARG_INFO()
 
