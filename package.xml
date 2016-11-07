@@ -26,6 +26,8 @@
    Fix Control::getParent
    Fix Control::destroy faulting when parent is still set
    Window::onUncaughtException will be invoked when callbacks throw exceptions
+   Window::onResized will be invoked when the user resizes the window
+   Progress::setValue throw exception when value is out of range
  </notes>
  <contents>
 	<dir name="/">

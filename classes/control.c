@@ -116,6 +116,11 @@ PHP_METHOD(Control, setParent)
 		return;
 	}
 
+	if (uiControlToplevel(ctrl->control)) {
+		php_ui_exception("cannot give a top level control a parent");
+		return;
+	}
+
 	uiControlSetParent(ctrl->control, pctrl->control);
 } /* }}} */
 
