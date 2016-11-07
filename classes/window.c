@@ -21,6 +21,7 @@
 
 #include "php.h"
 
+#include <classes/exceptions.h>
 #include <classes/control.h>
 #include <classes/point.h>
 #include <classes/size.h>
@@ -362,19 +363,33 @@ PHP_METHOD(Window, add)
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_box_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, title,  IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, msg,    IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, type,    IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Window::msg(string title, string msg) */
+/* {{{ proto void Window::msg(string title, string msg[, int type]) */
 PHP_METHOD(Window, msg) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
 	zend_string *title = NULL, *msg = NULL;
+	zend_long type = PHP_UI_WINDOW_MESSAGEBOX_INFO;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SS", &title, &msg) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "SS|l", &title, &msg, &type) != SUCCESS) {
 		return;
 	}
-
-	uiMsgBox(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
+	
+	switch (type) {
+		case PHP_UI_WINDOW_MESSAGEBOX_INFO:
+			uiMsgBox(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
+			break;
+		case PHP_UI_WINDOW_MESSAGEBOX_ERROR:
+			uiMsgBoxError(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
+			break;
+			
+		default:
+			php_ui_exception_ex(InvalidArgumentException, "invalid type");
+			return;
+			break;
+	}
 } /* }}} */
 
 /* {{{ proto void Window::error(string title, string msg) */
@@ -387,7 +402,7 @@ PHP_METHOD(Window, error)
 		return;
 	}
 
-	uiMsgBoxError(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
+	
 } /* }}} */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 1)	
@@ -463,7 +478,6 @@ const zend_function_entry php_ui_window_methods[] = {
 	PHP_ME(Window, hasMargin,               php_ui_window_has_margin_info,      ZEND_ACC_PUBLIC)
 	PHP_ME(Window, add,                     php_ui_window_add_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, msg,                     php_ui_window_box_info,             ZEND_ACC_PUBLIC)
-	PHP_ME(Window, error,                   php_ui_window_box_info,             ZEND_ACC_PUBLIC)
 	PHP_ME(Window, open,                    php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
 	PHP_ME(Window, save,                    php_ui_window_dialog_info,          ZEND_ACC_PUBLIC)
 	PHP_ME(Window, onClosing,               php_ui_window_closing_info,         ZEND_ACC_PROTECTED)
@@ -483,6 +497,9 @@ PHP_MINIT_FUNCTION(UI_Window)
 	uiWindow_ce->create_object = php_ui_window_create;
 	zend_declare_property_null(uiWindow_ce, ZEND_STRL("controls"), ZEND_ACC_PROTECTED);
 
+	zend_declare_class_constant_long(uiWindow_ce, ZEND_STRL("MessageBox_INFO"), PHP_UI_WINDOW_MESSAGEBOX_INFO);
+	zend_declare_class_constant_long(uiWindow_ce, ZEND_STRL("MessageBox_ERROR"), PHP_UI_WINDOW_MESSAGEBOX_ERROR);
+	
 	memcpy(&php_ui_window_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	php_ui_window_handlers.offset = XtOffsetOf(php_ui_window_t, std);

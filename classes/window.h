@@ -42,6 +42,9 @@ typedef struct _php_ui_window_t {
 #define php_ui_window_from(o) ((php_ui_window_t*) ((char*) o - XtOffsetOf(php_ui_window_t, std)))
 #define php_ui_window_fetch(z) php_ui_window_from(Z_OBJ_P(z))
 
+#define PHP_UI_WINDOW_MESSAGEBOX_INFO 1
+#define PHP_UI_WINDOW_MESSAGEBOX_ERROR 2
+
 zval *php_ui_window_construct(zval *object, uiWindow *w);
 
 PHP_MINIT_FUNCTION(UI_Window);
