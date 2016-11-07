@@ -102,7 +102,7 @@ PHP_METHOD(Grid, append)
 	zend_bool hexpand = 0, vexpand = 0;
 	php_ui_control_t *ctrl;
 
-	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Ollllblbl", &control, uiControl_ce, &left, &top, &xspan, &yspan, &hexpand, &halign, &vexpand, &valign) != SUCCESS) {
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "Olllllblbl", &control, uiControl_ce, &left, &top, &xspan, &yspan, &hexpand, &halign, &vexpand, &valign) != SUCCESS) {
 		return;
 	}
 

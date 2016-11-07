@@ -58,9 +58,9 @@ PHP_METHOD(Progress, setValue)
 		return;
 	}
 
-	if (value < 0 || value > 100) {
+	if (value < -1 || value > 100) {
 		php_ui_exception_ex(InvalidArgumentException, 
-			"progress bars have a range of 0-100 inclusive");
+			"progress bars have a range of -1 - 100 inclusive");
 		return;
 	}
 
