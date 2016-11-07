@@ -363,10 +363,10 @@ PHP_METHOD(Window, add)
 ZEND_BEGIN_ARG_INFO_EX(php_ui_window_box_info, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, title,  IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, msg,    IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, type,    IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, type,   IS_LONG,   0)
 ZEND_END_ARG_INFO()
 
-/* {{{ proto void Window::msg(string title, string msg[, int type]) */
+/* {{{ proto void Window::msg(string title, string msg[, int type = UI\Window::MessageBox_INFO]) */
 PHP_METHOD(Window, msg) 
 {
 	php_ui_window_t *win = php_ui_window_fetch(getThis());
@@ -381,14 +381,14 @@ PHP_METHOD(Window, msg)
 		case PHP_UI_WINDOW_MESSAGEBOX_INFO:
 			uiMsgBox(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
 			break;
+		
 		case PHP_UI_WINDOW_MESSAGEBOX_ERROR:
 			uiMsgBoxError(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
 			break;
-			
+		
 		default:
 			php_ui_exception_ex(InvalidArgumentException, "invalid type");
 			return;
-			break;
 	}
 } /* }}} */
 
