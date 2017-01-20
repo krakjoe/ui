@@ -83,7 +83,11 @@ PHP_METHOD(Box, __construct)
 	}
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_get_orientation_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_get_orientation_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int Box::getOrientation(void) */
@@ -98,7 +102,11 @@ PHP_METHOD(Box, getOrientation)
 	RETURN_LONG(box->orientation);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_append_info, 0, 1, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_append_info, 0, 1, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
 	ZEND_ARG_TYPE_INFO(0, stretchy, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
@@ -130,7 +138,11 @@ PHP_METHOD(Box, append)
 	RETURN_LONG(zend_hash_num_elements(box->controls) - 1);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_delete_info, 0, 1, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_delete_info, 0, 1, _IS_BOOL, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -172,7 +184,11 @@ PHP_METHOD(Box, setPadded)
 	uiBoxSetPadded(box->b, padded);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_is_padded_info, 0, 0, _IS_BOOL, NULL, 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_is_padded_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Box::isPadded(void) */

@@ -104,7 +104,11 @@ PHP_METHOD(DrawBrush, setColor)
 	}
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_brush_get_color_info, 0, 0, "UI\\Draw\\Color", 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto UI\Draw\Color Brush::getColor(void) */
@@ -140,7 +144,11 @@ const zend_function_entry php_ui_brush_methods[] = {
 	PHP_FE_END
 }; /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_add_stop_info, 0, 2, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_add_stop_info, 0, 2, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
 	ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
@@ -178,7 +186,11 @@ PHP_METHOD(DrawBrushGradient, addStop)
 	RETURN_LONG(brush->b.NumStops);	
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_del_stop_info, 0, 1, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_del_stop_info, 0, 1, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -223,7 +235,11 @@ PHP_METHOD(DrawBrushGradient, delStop)
 	RETURN_LONG(brush->b.NumStops);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_set_stop_info, 0, 3, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_gradient_set_stop_info, 0, 3, _IS_BOOL, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_DOUBLE, 0)
 	ZEND_ARG_OBJ_INFO(0, color, UI\\Draw\\Color, 0)

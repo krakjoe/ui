@@ -57,7 +57,11 @@ zend_object* php_ui_tab_create(zend_class_entry *ce) {
 	return &tab->std;
 }
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_append_info, 0, 2, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_append_info, 0, 2, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0,  control, UI\\Control, 0)
 ZEND_END_ARG_INFO()
@@ -88,7 +92,11 @@ PHP_METHOD(Tab, append)
 }
 /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_delete_info, 0, 1, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_delete_info, 0, 1, _IS_BOOL, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -113,7 +121,11 @@ PHP_METHOD(Tab, delete)
 	RETURN_FALSE;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_pages_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_pages_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int Tab::pages(void) */
@@ -128,7 +140,11 @@ PHP_METHOD(Tab, pages)
 	RETURN_LONG(zend_hash_num_elements(tab->controls));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_insert_at_info, 0, 3, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_insert_at_info, 0, 3, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, before, _IS_BOOL, 0)
 	ZEND_ARG_OBJ_INFO(0,  control, UI\\Control, 0)
@@ -182,7 +198,11 @@ PHP_METHOD(Tab, setMargin)
 	RETURN_TRUE;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_has_margin_info, 0, 1, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_tab_has_margin_info, 0, 1, _IS_BOOL, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, page, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 

@@ -62,7 +62,11 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_font_construct_info, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, descriptor, UI\\Draw\\Text\\Font\\Descriptor, 0)
 ZEND_END_ARG_INFO()
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_font_get_info, 0, 0, IS_DOUBLE, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_font_get_info, 0, 0, IS_DOUBLE, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto UI\Draw\Text\Font UI\Draw\Text\Font::__construct(UI\Draw\Text\Font\Descriptor descriptor) */

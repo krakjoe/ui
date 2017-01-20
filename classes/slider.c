@@ -103,7 +103,11 @@ PHP_METHOD(Slider, setValue)
 	uiSliderSetValue(slider->s, value);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_slider_get_value_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_slider_get_value_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Slider::getValue(void) */

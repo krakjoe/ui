@@ -81,7 +81,11 @@ PHP_METHOD(Group, setTitle)
 	uiGroupSetTitle(group->g, ZSTR_VAL(title));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_get_title_info, 0, 0, IS_STRING, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_get_title_info, 0, 0, IS_STRING, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Group::getTitle(void) */
@@ -113,7 +117,11 @@ PHP_METHOD(Group, setMargin)
 	uiGroupSetMargined(group->g, (int) margin);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_has_margin_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_group_has_margin_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Group::hasMargin(void) */

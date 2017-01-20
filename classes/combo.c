@@ -87,7 +87,11 @@ PHP_METHOD(Combo, setSelected)
 	uiComboboxSetSelected(combo->c, selected);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_combo_get_selected_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_combo_get_selected_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int Combo::getSelected(void) */

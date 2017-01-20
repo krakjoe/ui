@@ -3,6 +3,7 @@ sudo: required
 dist: trusty
 php:
   - 7.0
+  - 7.1
   - nightly
 
 addons:

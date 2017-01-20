@@ -120,7 +120,11 @@ PHP_METHOD(Entry, setText)
 	uiEntrySetText(entry->e, ZSTR_VAL(text));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_entry_get_text_info, 0, 0, IS_STRING, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_entry_get_text_info, 0, 0, IS_STRING, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Entry::getText(void) */

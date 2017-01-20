@@ -60,7 +60,11 @@ PHP_METHOD(Menu, __construct)
 	menu->m = uiNewMenu(ZSTR_VAL(name));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_info, 0, 0, "UI\\MenuItem", 1)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 1)
+#endif
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -115,7 +119,11 @@ PHP_METHOD(Menu, appendCheck)
 	item->i = uiMenuAppendCheckItem(menu->m, ZSTR_VAL(name));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_anon_info, 0, 0, "UI\\MenuItem", 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_anon_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
