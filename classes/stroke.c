@@ -84,7 +84,11 @@ PHP_METHOD(DrawStroke, setCap)
 	stroke->s.Cap = (uiDrawLineCap) cap;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_cap_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_cap_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int UI\Draw\Stroke::getCap(void) */
@@ -116,7 +120,11 @@ PHP_METHOD(DrawStroke, setJoin)
 	stroke->s.Join = (uiDrawLineJoin) join;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_join_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_join_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int UI\Draw\Stroke::getJoin(void) */
@@ -148,7 +156,11 @@ PHP_METHOD(DrawStroke, setThickness)
 	stroke->s.Thickness = thickness;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_thickness_info, 0, 0, IS_DOUBLE, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_thickness_info, 0, 0, IS_DOUBLE, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int UI\Draw\Stroke::getThickness(void) */
@@ -180,7 +192,11 @@ PHP_METHOD(DrawStroke, setMiterLimit)
 	stroke->s.MiterLimit = limit;
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_miter_limit_info, 0, 0, IS_DOUBLE, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_stroke_get_miter_limit_info, 0, 0, IS_DOUBLE, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int UI\Draw\Stroke::getMiterLimit(void) */

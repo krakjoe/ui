@@ -164,7 +164,11 @@ PHP_METHOD(Window, setTitle)
 	uiWindowSetTitle(win->w, ZSTR_VAL(title));
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_title_info, 0, 0, IS_STRING, NULL, 0)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_title_info, 0, 0, IS_STRING, 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_title_info, 0, 0, IS_STRING, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Window::getTitle(void) */
@@ -203,7 +207,11 @@ PHP_METHOD(Window, setSize)
 	uiWindowSetContentSize(win->w, (int) s->width, (int) s->height);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_size_info, 0, 0, IS_OBJECT, "UI\\Size", 0)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_window_get_size_info, 0, 0, "UI\\Size", 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_size_info, 0, 0, IS_OBJECT, "UI\\Size", 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto Size Window::getSize(void) */
@@ -238,7 +246,11 @@ PHP_METHOD(Window, setFullScreen)
 	uiWindowSetFullscreen(win->w, full);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_is_full_screen_info, 0, 0, _IS_BOOL, NULL, 0)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_is_full_screen_info, 0, 0, _IS_BOOL, 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_is_full_screen_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Window::isFullScreen(void) */
@@ -274,7 +286,11 @@ PHP_METHOD(Window, setBorders)
 	uiWindowSetBorderless(win->w, !borders);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_borders_info, 0, 0, _IS_BOOL, NULL, 0)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_borders_info, 0, 0, _IS_BOOL, 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_borders_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Window::hasBorders(void) */
@@ -310,7 +326,11 @@ PHP_METHOD(Window, setMargin)
 	uiWindowSetMargined(win->w, margin);
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_margin_info, 0, 0, _IS_BOOL, NULL, 0)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_margin_info, 0, 0, _IS_BOOL, 0)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_has_margin_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Window::hasMargin(void) */
@@ -390,7 +410,11 @@ PHP_METHOD(Window, error)
 	uiMsgBoxError(win->w, ZSTR_VAL(title), ZSTR_VAL(msg));
 } /* }}} */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 1)	
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, 1)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_dialog_info, 0, 0, IS_STRING, NULL, 1)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Window::open(void) */

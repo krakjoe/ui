@@ -102,7 +102,11 @@ PHP_METHOD(Check, setText)
 	uiCheckboxSetText(check->c, ZSTR_VAL(text));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_check_get_text_info, 0, 0, IS_STRING, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_check_get_text_info, 0, 0, IS_STRING, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto string Check::getText(void) */
@@ -134,7 +138,11 @@ PHP_METHOD(Check, setChecked)
 	uiCheckboxSetChecked(check->c, checked);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_check_is_checked_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_check_is_checked_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Check::isChecked(void) */

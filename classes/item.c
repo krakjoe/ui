@@ -104,7 +104,11 @@ PHP_METHOD(MenuItem, disable)
 	uiMenuItemDisable(item->i);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_item_is_checked_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_item_is_checked_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool MenuItem::isChecked(void) */

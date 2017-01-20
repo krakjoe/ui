@@ -75,7 +75,11 @@ void php_ui_control_finalize(void) {
 ZEND_BEGIN_ARG_INFO_EX(php_ui_control_void_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_control_get_parent_info, 0, 0, "UI\\Control", 1)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_parent_info, 0, 0, IS_OBJECT, "UI\\Control", 1)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto Control Control::getParent(void) */
@@ -124,7 +128,11 @@ PHP_METHOD(Control, setParent)
 	uiControlSetParent(ctrl->control, pctrl->control);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_top_level_info, 0, 0, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_top_level_info, 0, 0, IS_LONG, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto int Control::getTopLevel(void) */
@@ -139,7 +147,11 @@ PHP_METHOD(Control, getTopLevel)
 	RETURN_LONG(uiControlToplevel(ctrl->control));
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_visible_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_visible_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Control::isVisible(void) */
@@ -182,7 +194,11 @@ PHP_METHOD(Control, hide)
 	uiControlHide(ctrl->control);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_enabled_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_is_enabled_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Control::isEnabled(void) */

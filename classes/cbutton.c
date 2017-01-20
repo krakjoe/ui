@@ -95,7 +95,11 @@ PHP_METHOD(ColorButton, setColor)
 	uiColorButtonSetColor(cbutton->b, r, g, b, a);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_cbutton_get_color_info, 0, 0, "UI\\Draw\\Color", 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_cbutton_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto UI\Draw\Color ColorButton::getColor(void) */

@@ -75,7 +75,11 @@ PHP_METHOD(Form, setPadded)
 	uiFormSetPadded(form->f, padded);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_is_padded_info, 0, 0, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_is_padded_info, 0, 0, _IS_BOOL, NULL, 0)
+#endif
 ZEND_END_ARG_INFO()
 
 /* {{{ proto bool Form::isPadded(void) */
@@ -94,7 +98,11 @@ PHP_METHOD(Form, isPadded)
 	}
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_append_info, 0, 2, IS_LONG, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_append_info, 0, 2, IS_LONG, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, control, UI\\Control, 0)
 	ZEND_ARG_TYPE_INFO(0, stretchy, _IS_BOOL, 0)
@@ -128,7 +136,11 @@ PHP_METHOD(Form, append)
 	RETURN_LONG(zend_hash_num_elements(form->controls) - 1);
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_delete_info, 0, 1, _IS_BOOL, 0)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_form_delete_info, 0, 1, _IS_BOOL, NULL, 0)
+#endif
 	ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 

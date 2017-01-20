@@ -265,7 +265,11 @@ PHP_METHOD(DrawColor, setChannel)
 	}
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_color_get_channel_info, 0, 0, IS_DOUBLE, 1)
+#else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_color_get_channel_info, 0, 0, IS_DOUBLE, NULL, 1)
+#endif
 	ZEND_ARG_TYPE_INFO(0, channel, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
