@@ -128,7 +128,7 @@ $numbersVbox->append($slider);
 $numbersVbox->append($progress);
 
 $ip = new Progress();
-$ip->setValue(-1);
+$ip->setValue(0);
 $numbersVbox->append($ip);
 
 $listsGroup = new Group("Lists");
@@ -273,9 +273,9 @@ $errorButton = new class("Error Box", $window) extends Button {
 	}
 	
 	public function onClick() {
-		$this->window->error(
+		$this->window->msg(
 			"This message box describes an error",
-			"More detailed information can be shown here.");
+			"More detailed information can be shown here.", Window::MessageBox_ERROR);
 	}
 
 	private $window;
