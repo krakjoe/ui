@@ -91,7 +91,9 @@ void php_ui_set_call(zend_object *object, const char *name, size_t nlength, zend
 	fci->object = object;
 	fci->no_separation = 1;
 
+#if PHP_VERSION_ID < 70300
 	fcc->initialized = 1;
+#endif
 	fcc->object = object;
 	fcc->function_handler = function;
 	fcc->calling_scope = object->ce;
