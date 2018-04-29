@@ -15,6 +15,7 @@ if (PHP_UI != "no") {
 			"window.c box.c form.c grid.c button.c cbutton.c check.c  combo.c  control.c  ecombo.c  entry.c  group.c  item.c  label.c  menu.c  multi.c  picker.c  progress.c  radio.c  separator.c  slider.c  spin.c  tab.c point.c size.c area.c pen.c path.c color.c brush.c stroke.c matrix.c descriptor.c font.c layout.c exceptions.c executor.c",
 			"ui"
 		);
+		ADD_FLAG("CFLAGS", " /wd4018 /wd4244 /wd4013 /wd4716 ");		
 	} else {
 		WARNING("libui not found; libraries and headers not found");
 	}
