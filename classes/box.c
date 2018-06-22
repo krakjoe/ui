@@ -79,7 +79,7 @@ PHP_METHOD(Box, __construct)
 		break;
 
 		default:
-			{ /* throw */ }
+			php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$orientation'");
 	}
 } /* }}} */
 

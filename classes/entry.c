@@ -23,6 +23,7 @@
 
 #include <classes/control.h>
 #include <classes/entry.h>
+#include <classes/exceptions.h>
 
 zend_object_handlers php_ui_entry_handlers;
 
@@ -94,7 +95,7 @@ PHP_METHOD(Entry, __construct)
 		break;
 
 		default:
-			/* throw */
+			php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 			return;
 	}
 

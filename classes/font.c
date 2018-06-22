@@ -23,6 +23,7 @@
 
 #include <classes/descriptor.h>
 #include <classes/font.h>
+#include <classes/exceptions.h>
 
 zend_object_handlers php_ui_font_handlers;
 
@@ -85,7 +86,7 @@ PHP_METHOD(DrawTextFont, __construct)
 	font->f = uiDrawLoadClosestFont(&d->d);
 
 	if (!font->f) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid font descriptor");
 	}
 } /* }}} */
 
