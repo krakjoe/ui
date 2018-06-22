@@ -23,6 +23,7 @@
 
 #include <classes/control.h>
 #include <classes/multi.h>
+#include <classes/exceptions.h>
 
 zend_object_handlers php_ui_multi_handlers;
 
@@ -90,7 +91,7 @@ PHP_METHOD(Multi, __construct)
 		break;
 
 		default:
-			/* throw */
+			php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 			return;
 	}
 

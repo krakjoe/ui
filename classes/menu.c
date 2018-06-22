@@ -23,6 +23,7 @@
 
 #include <classes/menu.h>
 #include <classes/item.h>
+#include <classes/exceptions.h>
 
 zend_object_handlers php_ui_menu_handlers;
 
@@ -82,7 +83,7 @@ PHP_METHOD(Menu, append)
 	}
 
 	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 		return;
 	}
 
@@ -108,7 +109,7 @@ PHP_METHOD(Menu, appendCheck)
 	}
 
 	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 		return;
 	}
 
@@ -139,7 +140,7 @@ PHP_METHOD(Menu, appendQuit)
 	}
 
 	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 		return;
 	}
 
@@ -162,7 +163,7 @@ PHP_METHOD(Menu, appendPreferences)
 	}
 
 	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 		return;
 	}
 
@@ -185,7 +186,7 @@ PHP_METHOD(Menu, appendAbout)
 	}
 
 	if (ZEND_NUM_ARGS() > 1 && !instanceof_function(type, uiItem_ce)) {
-		/* throw */
+		php_ui_exception_ex(InvalidArgumentException, "Invalid value given for '$type'");
 		return;
 	}
 
