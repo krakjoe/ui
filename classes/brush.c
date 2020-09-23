@@ -105,7 +105,7 @@ PHP_METHOD(DrawBrush, setColor)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_brush_get_color_info, 0, 0, "UI\\Draw\\Color", 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_brush_get_color_info, 0, 0, UI\\Draw\\Color, 0)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_brush_get_color_info, 0, 0, IS_OBJECT, "UI\\Draw\\Color", 0)
 #endif

@@ -130,7 +130,7 @@ PHP_METHOD(DrawMatrix, skew)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_matrix_multiply_info, 0, 1, "UI\\DrawMatrix", 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_matrix_multiply_info, 0, 1, UI\\DrawMatrix, 0)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_matrix_multiply_info, 0, 1, IS_OBJECT, "UI\\DrawMatrix", 0)
 #endif

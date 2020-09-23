@@ -208,7 +208,7 @@ PHP_METHOD(Window, setSize)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_window_get_size_info, 0, 0, "UI\\Size", 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_window_get_size_info, 0, 0, UI\\Size, 0)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_window_get_size_info, 0, 0, IS_OBJECT, "UI\\Size", 0)
 #endif
