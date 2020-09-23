@@ -185,7 +185,7 @@ PHP_METHOD(Box, setPadded)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_is_padded_info, 0, 0, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_is_padded_info, 0, 0, _IS_BOOL, NULL, 0)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_box_is_padded_info, 0, 0, _IS_BOOL, NULL, 0)
 #endif
