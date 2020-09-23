@@ -61,7 +61,7 @@ PHP_METHOD(Menu, __construct)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_info, 0, 0, "UI\\MenuItem", 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_info, 0, 0, UI\\MenuItem, 1)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 1)
 #endif
@@ -120,7 +120,7 @@ PHP_METHOD(Menu, appendCheck)
 } /* }}} */
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_anon_info, 0, 0, "UI\\MenuItem", 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_menu_append_anon_info, 0, 0, UI\\MenuItem, 0)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_menu_append_anon_info, 0, 0, IS_OBJECT, "UI\\MenuItem", 0)
 #endif

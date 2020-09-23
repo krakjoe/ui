@@ -76,7 +76,7 @@ ZEND_BEGIN_ARG_INFO_EX(php_ui_control_void_info, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 #if PHP_VERSION_ID >= 70200
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_control_get_parent_info, 0, 0, "UI\\Control", 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(php_ui_control_get_parent_info, 0, 0, UI\\Control, 1)
 #else
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(php_ui_control_get_parent_info, 0, 0, IS_OBJECT, "UI\\Control", 1)
 #endif
