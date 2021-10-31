@@ -122,13 +122,13 @@ php_ui_executor_handler_leave:
 }
 
 static inline void php_ui_executor_time_set(struct timespec *result, zend_long seconds, zend_long microseconds) {
-	while (microseconds >= 1000000L) {
+	while (microseconds >= 1000000000L) {
 		seconds++;
-		microseconds -= 1000000L;
+		microseconds -= 1000000000L;
 	}
 
 	result->tv_sec = seconds;
-	result->tv_nsec = microseconds * 1000;
+	result->tv_nsec = microseconds;
 }
 
 static inline void php_ui_executor_time_add(struct timespec *a, struct timespec *b, struct timespec *result) {
